@@ -15,12 +15,18 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 #### 1. Feuerwehr-Standorte verwalten
 
 **Standort hinzufügen:**
+1. Klicken Sie mit der **rechten Maustaste** auf die gewünschte Position auf der Karte
+2. Wählen Sie "🏢 Standort hier hinzufügen" aus dem Kontextmenü
+3. Geben Sie den Namen des Standorts ein (z.B. "Feuerwache Nord")
+4. Optional: Geben Sie die Adresse ein
+5. Die Koordinaten werden automatisch ausgefüllt (können auch manuell angepasst werden)
+6. Klicken Sie auf "Speichern"
+
+**Alternative Methode:**
 1. Klicken Sie auf den Button "➕ Standort hinzufügen"
-2. Geben Sie den Namen des Standorts ein (z.B. "Feuerwache Nord")
-3. Optional: Geben Sie die Adresse ein
-4. Klicken Sie auf die Karte, um die Position zu markieren
-   - Alternativ können Sie die Koordinaten direkt eingeben
-5. Klicken Sie auf "Speichern"
+2. Geben Sie den Namen und die Adresse ein
+3. Geben Sie die Koordinaten manuell ein oder verwenden Sie Rechtsklick auf der Karte
+4. Klicken Sie auf "Speichern"
 
 **Standort bearbeiten:**
 1. Klicken Sie auf das Standort-Symbol auf der Karte

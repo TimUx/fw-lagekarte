@@ -5,7 +5,6 @@ let vehicles = [];
 let stationMarkers = {};
 let vehicleMarkers = {};
 let tempMarker = null;
-let clickMode = null; // 'station' when placing a station
 
 // Sanitize HTML to prevent XSS
 function escapeHtml(text) {
@@ -33,8 +32,8 @@ async function initMap() {
         maxZoom: 19
     }).addTo(map);
 
-    // Map click handler for placing stations
-    map.on('click', onMapClick);
+    // Map context menu handler for adding stations
+    map.on('contextmenu', onMapContextMenu);
 }
 
 // Load data from storage
@@ -178,18 +177,51 @@ function updateStationDropdown() {
     });
 }
 
-// Map click handler
-function onMapClick(e) {
-    if (clickMode === 'station') {
-        document.getElementById('stationLat').value = e.latlng.lat;
-        document.getElementById('stationLng').value = e.latlng.lng;
-        
-        // Show temporary marker
-        if (tempMarker) {
-            map.removeLayer(tempMarker);
-        }
-        tempMarker = L.marker(e.latlng).addTo(map);
+// Map context menu handler (right-click)
+function onMapContextMenu(e) {
+    // Prevent default browser context menu
+    L.DomEvent.stopPropagation(e);
+    
+    // Show a custom context menu
+    showContextMenu(e.latlng, e.originalEvent);
+}
+
+// Show custom context menu
+function showContextMenu(latlng, event) {
+    // Remove any existing context menu
+    const existingMenu = document.getElementById('customContextMenu');
+    if (existingMenu) {
+        existingMenu.remove();
     }
+    
+    // Create context menu
+    const menu = document.createElement('div');
+    menu.id = 'customContextMenu';
+    menu.className = 'context-menu';
+    menu.style.left = event.pageX + 'px';
+    menu.style.top = event.pageY + 'px';
+    
+    menu.innerHTML = `
+        <div class="context-menu-item" data-action="add-station">
+            🏢 Standort hier hinzufügen
+        </div>
+    `;
+    
+    document.body.appendChild(menu);
+    
+    // Handle menu item clicks
+    menu.querySelector('[data-action="add-station"]').addEventListener('click', () => {
+        openStationModalAtLocation(latlng);
+        menu.remove();
+    });
+    
+    // Close menu when clicking elsewhere
+    setTimeout(() => {
+        document.addEventListener('click', function closeContextMenu() {
+            menu.remove();
+            document.removeEventListener('click', closeContextMenu);
+        }, { once: true });
+    }, 10);
 }
 
 // Vehicle drag handlers
@@ -259,10 +291,24 @@ function openStationModal(station = null) {
         document.getElementById('stationLng').value = station.lng;
     } else {
         title.textContent = 'Standort hinzufügen';
-        clickMode = 'station';
     }
     
     modal.classList.add('show');
+}
+
+// Open station modal with pre-filled location
+function openStationModalAtLocation(latlng) {
+    openStationModal();
+    
+    // Pre-fill coordinates
+    document.getElementById('stationLat').value = latlng.lat.toFixed(6);
+    document.getElementById('stationLng').value = latlng.lng.toFixed(6);
+    
+    // Show temporary marker
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+    }
+    tempMarker = L.marker(latlng).addTo(map);
 }
 
 async function editStation(stationId) {
@@ -421,7 +467,6 @@ function setupEventListeners() {
             map.removeLayer(tempMarker);
             tempMarker = null;
         }
-        clickMode = null;
     });
     
     // Vehicle form submit
@@ -453,7 +498,6 @@ function setupEventListeners() {
             const modalId = btn.dataset.modal;
             closeModal(modalId);
             if (modalId === 'stationModal') {
-                clickMode = null;
                 if (tempMarker) {
                     map.removeLayer(tempMarker);
                     tempMarker = null;
@@ -467,7 +511,6 @@ function setupEventListeners() {
             const modalId = btn.dataset.close;
             closeModal(modalId);
             if (modalId === 'stationModal') {
-                clickMode = null;
                 if (tempMarker) {
                     map.removeLayer(tempMarker);
                     tempMarker = null;
@@ -482,7 +525,6 @@ function setupEventListeners() {
             if (e.target === modal) {
                 closeModal(modal.id);
                 if (modal.id === 'stationModal') {
-                    clickMode = null;
                     if (tempMarker) {
                         map.removeLayer(tempMarker);
                         tempMarker = null;
@@ -503,7 +545,6 @@ function setupEventListeners() {
             if (openModal) {
                 closeModal(openModal.id);
                 if (openModal.id === 'stationModal') {
-                    clickMode = null;
                     if (tempMarker) {
                         map.removeLayer(tempMarker);
                         tempMarker = null;

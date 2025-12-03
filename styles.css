@@ -369,3 +369,31 @@ body {
 .popup-actions .btn-recall:hover {
     background-color: #e67700;
 }
+
+/* Context Menu Styles */
+.context-menu {
+    position: fixed;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    padding: 4px 0;
+    z-index: 3000;
+    min-width: 200px;
+}
+
+.context-menu-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+    transition: background-color 0.2s;
+}
+
+.context-menu-item:hover {
+    background-color: #f8f9fa;
+}
+
+.context-menu-item:active {
+    background-color: #e9ecef;
+}
