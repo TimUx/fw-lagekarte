@@ -6,6 +6,9 @@ let stationMarkers = {};
 let vehicleMarkers = {};
 let tempMarker = null;
 
+// Constants
+const CONTEXT_MENU_CLOSE_DELAY = 10; // ms delay to avoid immediate closing
+
 // Sanitize HTML to prevent XSS
 function escapeHtml(text) {
     const div = document.createElement('div');
@@ -215,8 +218,9 @@ function showContextMenu(latlng, event) {
     let menuX = event.pageX;
     let menuY = event.pageY;
     
-    // Temporarily append to get dimensions
-    menu.style.visibility = 'hidden';
+    // Temporarily position off-screen to get dimensions
+    menu.style.position = 'absolute';
+    menu.style.left = '-9999px';
     document.body.appendChild(menu);
     const menuRect = menu.getBoundingClientRect();
     
@@ -232,7 +236,6 @@ function showContextMenu(latlng, event) {
     
     menu.style.left = menuX + 'px';
     menu.style.top = menuY + 'px';
-    menu.style.visibility = 'visible';
     
     menu.innerHTML = `
         <div class="context-menu-item" data-action="add-station">
@@ -260,7 +263,7 @@ function showContextMenu(latlng, event) {
     // Use setTimeout to avoid immediate closing from the same event
     setTimeout(() => {
         document.addEventListener('click', contextMenuCloseHandler);
-    }, 10);
+    }, CONTEXT_MENU_CLOSE_DELAY);
 }
 
 // Vehicle drag handlers
