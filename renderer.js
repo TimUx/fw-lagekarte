@@ -759,7 +759,12 @@ function updateSyncModalStatus() {
         'error': '🔴 Fehler'
     };
     
-    statusElement.textContent = statusTexts[status] || '⚫ Unbekannt';
+    statusElement.innerHTML = statusTexts[status] || '⚫ Unbekannt';
+    
+    // Show server info if available
+    if (status === 'server-mode' && Sync._serverInfo) {
+        statusElement.innerHTML += Sync._serverInfo;
+    }
 }
 
 // Discover servers in LAN

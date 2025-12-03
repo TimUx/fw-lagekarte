@@ -20,8 +20,10 @@
   "license": "ISC",
   "dependencies": {
     "electron": "^39.2.4",
+    "express": "^4.21.2",
     "leaflet": "^1.9.4",
-    "localforage": "^1.10.0"
+    "localforage": "^1.10.0",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "electron-builder": "^26.0.12"
@@ -48,7 +50,9 @@
       "storage.js",
       "sync.js",
       "tactical-symbols.js",
+      "embedded-server.js",
       "index.html",
+      "readonly-viewer.html",
       "styles.css",
       "assets/**/*",
       "node_modules/**/*"
