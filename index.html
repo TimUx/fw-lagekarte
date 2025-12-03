@@ -10,10 +10,15 @@
 <body>
     <div class="header">
         <h1>🚒 FW Lagekarte - Einsatzübersicht</h1>
+        <div class="sync-status-container">
+            <div id="syncStatus" class="sync-status sync-status-disconnected">⚫ Nicht verbunden</div>
+        </div>
         <div class="header-controls">
             <button id="addStationBtn" class="btn btn-primary">➕ Standort hinzufügen</button>
             <button id="addVehicleBtn" class="btn btn-primary">➕ Fahrzeug hinzufügen</button>
+            <button id="printMapBtn" class="btn btn-secondary">🖨️ Karte drucken</button>
             <button id="saveMapViewBtn" class="btn btn-secondary">💾 Kartenansicht speichern</button>
+            <button id="syncSettingsBtn" class="btn btn-secondary">🔄 Synchronisation</button>
             <button id="exportDataBtn" class="btn btn-secondary">📤 Daten exportieren</button>
             <button id="importDataBtn" class="btn btn-secondary">📥 Daten importieren</button>
             <input type="file" id="importFileInput" accept=".json" style="display: none;">
@@ -139,9 +144,54 @@
         </div>
     </div>
 
+    <!-- Modal für Synchronisations-Einstellungen -->
+    <div id="syncModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="syncModal">&times;</span>
+            <h2>Netzwerk-Synchronisation Einstellungen</h2>
+            <form id="syncForm">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="syncEnabled">
+                        Synchronisation aktivieren
+                    </label>
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">
+                        Aktiviert die Echtzeit-Synchronisation mit anderen Clients über einen WebSocket-Server.
+                    </small>
+                </div>
+                <div class="form-group">
+                    <label for="syncServerUrl">Server-URL:</label>
+                    <input type="text" id="syncServerUrl" placeholder="ws://localhost:8080">
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">
+                        WebSocket-Server-URL (z.B. ws://server.example.com:8080 oder wss://server.example.com für SSL)
+                    </small>
+                </div>
+                <div class="sync-status-info">
+                    <strong>Status:</strong> <span id="syncModalStatus">Nicht verbunden</span>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                    <button type="button" class="btn btn-secondary" data-close="syncModal">Abbrechen</button>
+                </div>
+            </form>
+            <div class="sync-info">
+                <h3>ℹ️ Informationen zur Synchronisation</h3>
+                <p>Die Netzwerk-Synchronisation ermöglicht es mehreren Benutzern, gleichzeitig an der gleichen Lagekarte zu arbeiten.</p>
+                <p><strong>Voraussetzungen:</strong></p>
+                <ul>
+                    <li>Ein WebSocket-Server muss eingerichtet und erreichbar sein</li>
+                    <li>Alle Clients müssen sich mit dem gleichen Server verbinden</li>
+                    <li>Änderungen werden automatisch zwischen allen Clients synchronisiert</li>
+                </ul>
+                <p><strong>Hinweis:</strong> Diese Funktion ist optional. Die Anwendung funktioniert auch ohne Synchronisation im Einzelplatz-Modus.</p>
+            </div>
+        </div>
+    </div>
+
     <script src="node_modules/leaflet/dist/leaflet.js"></script>
     <script src="node_modules/localforage/dist/localforage.min.js"></script>
     <script src="storage.js"></script>
+    <script src="sync.js"></script>
     <script src="tactical-symbols.js"></script>
     <script src="renderer.js"></script>
 </body>

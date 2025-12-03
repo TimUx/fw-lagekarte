@@ -21,6 +21,19 @@ async function init() {
     await initMap();
     await loadData();
     setupEventListeners();
+    setupSyncListeners();
+}
+
+// Setup sync event listeners
+function setupSyncListeners() {
+    if (typeof Sync !== 'undefined') {
+        Sync.addListener(async (eventType, data) => {
+            // Reload data when sync events occur
+            if (['station_update', 'station_delete', 'vehicle_update', 'vehicle_delete', 'vehicle_position', 'full_sync'].includes(eventType)) {
+                await loadData();
+            }
+        });
+    }
 }
 
 // Initialize Leaflet map
@@ -29,11 +42,48 @@ async function initMap() {
     
     map = L.map('map').setView(mapView.center, mapView.zoom);
     
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-        maxZoom: 19
+    // Define base layers
+    const baseLayers = {
+        'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }),
+        'Satellit (Esri)': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '© Esri, Earthstar Geographics',
+            maxZoom: 19
+        }),
+        'Topographisch (OpenTopoMap)': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenTopoMap contributors',
+            maxZoom: 17
+        }),
+        'Hybrid (Satellit mit Beschriftung)': L.layerGroup([
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri, Earthstar Geographics',
+                maxZoom: 19
+            }),
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19,
+                opacity: 0.3
+            })
+        ])
+    };
+    
+    // Get saved layer preference or default to OpenStreetMap
+    const savedLayer = await Storage.getSelectedLayer();
+    const defaultLayer = baseLayers[savedLayer] || baseLayers['OpenStreetMap'];
+    defaultLayer.addTo(map);
+    
+    // Add layer control to map
+    const layerControl = L.control.layers(baseLayers, null, {
+        position: 'topright',
+        collapsed: true
     }).addTo(map);
+    
+    // Save layer preference when changed
+    map.on('baselayerchange', async (e) => {
+        await Storage.saveSelectedLayer(e.name);
+    });
 
     // Map context menu handler for adding stations
     map.on('contextmenu', onMapContextMenu);
@@ -473,6 +523,54 @@ async function exportData() {
     alert('Daten wurden exportiert!');
 }
 
+// Print map
+async function printMap() {
+    // Create print legend
+    const printLegend = document.createElement('div');
+    printLegend.id = 'printLegend';
+    printLegend.className = 'print-legend';
+    
+    const deployedVehicles = vehicles.filter(v => v.deployed);
+    const availableVehicles = vehicles.filter(v => !v.deployed);
+    
+    printLegend.innerHTML = `
+        <div class="print-legend-header">
+            <h1>🚒 FW Lagekarte - Einsatzübersicht</h1>
+            <div class="print-timestamp">Gedruckt am: ${new Date().toLocaleString('de-DE')}</div>
+        </div>
+        <div class="print-legend-content">
+            <div class="print-section">
+                <h3>Im Einsatz (${deployedVehicles.length})</h3>
+                <ul>
+                    ${deployedVehicles.map(v => `<li><strong>${escapeHtml(v.callsign)}</strong> - ${escapeHtml(v.type)}${v.crew ? ` (${escapeHtml(v.crew)})` : ''}</li>`).join('')}
+                </ul>
+            </div>
+            <div class="print-section">
+                <h3>Verfügbar (${availableVehicles.length})</h3>
+                <ul>
+                    ${availableVehicles.map(v => `<li><strong>${escapeHtml(v.callsign)}</strong> - ${escapeHtml(v.type)}${v.crew ? ` (${escapeHtml(v.crew)})` : ''}</li>`).join('')}
+                </ul>
+            </div>
+            <div class="print-section">
+                <h3>Standorte (${stations.length})</h3>
+                <ul>
+                    ${stations.map(s => `<li><strong>${escapeHtml(s.name)}</strong>${s.address ? ` - ${escapeHtml(s.address)}` : ''}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(printLegend);
+    
+    // Trigger browser print dialog
+    window.print();
+    
+    // Remove legend after print
+    setTimeout(() => {
+        document.body.removeChild(printLegend);
+    }, 1000);
+}
+
 // Import data
 async function importData(file) {
     try {
@@ -498,6 +596,34 @@ async function importData(file) {
     }
 }
 
+// Open sync settings modal
+async function openSyncModal() {
+    const modal = document.getElementById('syncModal');
+    const config = await Sync.getConfig();
+    
+    document.getElementById('syncEnabled').checked = config.enabled || false;
+    document.getElementById('syncServerUrl').value = config.serverUrl || '';
+    updateSyncModalStatus();
+    
+    modal.classList.add('show');
+}
+
+// Update sync status in modal
+function updateSyncModalStatus() {
+    const statusElement = document.getElementById('syncModalStatus');
+    const status = Sync.getStatus();
+    
+    const statusTexts = {
+        'connected': '🟢 Verbunden',
+        'connecting': '🟡 Verbinde...',
+        'disconnected': '⚫ Nicht verbunden',
+        'disabled': '⚫ Deaktiviert',
+        'error': '🔴 Fehler'
+    };
+    
+    statusElement.textContent = statusTexts[status] || '⚫ Unbekannt';
+}
+
 // Setup event listeners
 function setupEventListeners() {
     // Station button
@@ -510,6 +636,9 @@ function setupEventListeners() {
         openVehicleModal();
     });
     
+    // Print map button
+    document.getElementById('printMapBtn').addEventListener('click', printMap);
+    
     // Save map view button
     document.getElementById('saveMapViewBtn').addEventListener('click', async () => {
         const center = map.getCenter();
@@ -517,6 +646,9 @@ function setupEventListeners() {
         await Storage.saveMapView([center.lat, center.lng], zoom);
         alert('Kartenansicht gespeichert!');
     });
+    
+    // Sync settings button
+    document.getElementById('syncSettingsBtn').addEventListener('click', openSyncModal);
     
     // Export data button
     document.getElementById('exportDataBtn').addEventListener('click', exportData);
@@ -577,6 +709,22 @@ function setupEventListeners() {
         await Storage.saveVehicle(vehicle);
         await loadData();
         closeModal('vehicleModal');
+    });
+    
+    // Sync form submit
+    document.getElementById('syncForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const config = {
+            enabled: document.getElementById('syncEnabled').checked,
+            serverUrl: document.getElementById('syncServerUrl').value,
+            clientId: (await Sync.getConfig()).clientId
+        };
+        
+        await Sync.saveConfig(config);
+        updateSyncModalStatus();
+        
+        alert('Synchronisations-Einstellungen gespeichert!');
     });
     
     // Modal close buttons
