@@ -100,6 +100,25 @@ body {
     gap: 10px;
 }
 
+.station-group-header {
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-left: 4px solid #c92a2a;
+}
+
+.station-group-header:first-child {
+    margin-top: 0;
+}
+
+.station-group-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #495057;
+}
+
 .vehicle-card {
     background: white;
     border: 2px solid #dee2e6;

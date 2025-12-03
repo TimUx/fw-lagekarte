@@ -99,13 +99,24 @@ const Storage = {
         }
     },
 
-    updateVehiclePosition: async function(vehicleId, position) {
+    updateVehiclePosition: async function(vehicleId, position, deploymentInfo = null) {
         const vehicles = await this.getVehicles();
         const vehicle = vehicles.find(v => v.id === vehicleId);
         
         if (vehicle) {
             vehicle.position = position;
             vehicle.deployed = !!position;
+            
+            // Update deployment info if provided
+            if (deploymentInfo !== null) {
+                vehicle.deploymentInfo = deploymentInfo;
+            }
+            
+            // Clear deployment info when recalling vehicle
+            if (!position) {
+                vehicle.deploymentInfo = null;
+            }
+            
             await localforage.setItem('vehicles', vehicles);
             
             // Broadcast to sync if available

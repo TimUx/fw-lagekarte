@@ -151,19 +151,34 @@
             <h2>Netzwerk-Synchronisation Einstellungen</h2>
             <form id="syncForm">
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="syncEnabled">
-                        Synchronisation aktivieren
-                    </label>
+                    <label for="syncMode">Modus:</label>
+                    <select id="syncMode" required>
+                        <option value="standalone">Standalone (Keine Synchronisation)</option>
+                        <option value="server">Server (Synchronisation bereitstellen)</option>
+                        <option value="client">Client (Zum Server verbinden)</option>
+                    </select>
                     <small style="color: #6c757d; display: block; margin-top: 5px;">
-                        Aktiviert die Echtzeit-Synchronisation mit anderen Clients über einen WebSocket-Server.
+                        <strong>Standalone:</strong> Keine Synchronisation, nur lokale Nutzung<br>
+                        <strong>Server:</strong> Stellt Synchronisation für andere Clients bereit<br>
+                        <strong>Client:</strong> Verbindet sich mit einem Server
                     </small>
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="syncServerUrlGroup">
                     <label for="syncServerUrl">Server-URL:</label>
                     <input type="text" id="syncServerUrl" placeholder="ws://localhost:8080">
+                    <button type="button" id="syncDiscoverBtn" class="btn btn-secondary" style="margin-top: 10px;">
+                        🔍 Server im LAN suchen
+                    </button>
+                    <div id="syncDiscoveryStatus" style="margin-top: 10px; font-size: 13px; color: #6c757d;"></div>
                     <small style="color: #6c757d; display: block; margin-top: 5px;">
-                        WebSocket-Server-URL (z.B. ws://server.example.com:8080 oder wss://server.example.com für SSL)
+                        WebSocket-Server-URL (z.B. ws://192.168.1.100:8080 oder wss://server.example.com für SSL)
+                    </small>
+                </div>
+                <div class="form-group" id="syncServerPortGroup" style="display: none;">
+                    <label for="syncServerPort">Server-Port:</label>
+                    <input type="number" id="syncServerPort" value="8080" min="1" max="65535">
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">
+                        Port für den lokalen Sync-Server (Standard: 8080)
                     </small>
                 </div>
                 <div class="sync-status-info">
@@ -177,14 +192,48 @@
             <div class="sync-info">
                 <h3>ℹ️ Informationen zur Synchronisation</h3>
                 <p>Die Netzwerk-Synchronisation ermöglicht es mehreren Benutzern, gleichzeitig an der gleichen Lagekarte zu arbeiten.</p>
-                <p><strong>Voraussetzungen:</strong></p>
+                <p><strong>Modi:</strong></p>
                 <ul>
-                    <li>Ein WebSocket-Server muss eingerichtet und erreichbar sein</li>
-                    <li>Alle Clients müssen sich mit dem gleichen Server verbinden</li>
-                    <li>Änderungen werden automatisch zwischen allen Clients synchronisiert</li>
+                    <li><strong>Standalone:</strong> Keine Synchronisation, alle Daten bleiben lokal</li>
+                    <li><strong>Server:</strong> Diese Instanz stellt Synchronisation bereit (automatischer WebSocket-Server)</li>
+                    <li><strong>Client:</strong> Verbindet sich mit einem Server und synchronisiert Daten</li>
                 </ul>
-                <p><strong>Hinweis:</strong> Diese Funktion ist optional. Die Anwendung funktioniert auch ohne Synchronisation im Einzelplatz-Modus.</p>
+                <p><strong>LAN-Suche (nur im Client-Modus):</strong> Klicken Sie auf "Server im LAN suchen", um automatisch nach verfügbaren Servern im lokalen Netzwerk zu suchen.</p>
+                <p><strong>Hinweis:</strong> Im Server-Modus wird automatisch ein WebSocket-Server auf dem angegebenen Port gestartet.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal für Einsatz-Informationen -->
+    <div id="deploymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="deploymentModal">&times;</span>
+            <h2 id="deploymentModalTitle">Fahrzeug einsetzen</h2>
+            <form id="deploymentForm">
+                <input type="hidden" id="deploymentVehicleId">
+                <input type="hidden" id="deploymentLat">
+                <input type="hidden" id="deploymentLng">
+                <div class="form-group">
+                    <label>Fahrzeug:</label>
+                    <div id="deploymentVehicleName" style="font-weight: bold; padding: 8px; background-color: #f8f9fa; border-radius: 5px;"></div>
+                </div>
+                <div class="form-group">
+                    <label for="deploymentMissionNumber">Einsatznummer:</label>
+                    <input type="text" id="deploymentMissionNumber" placeholder="z.B. E-2024-001">
+                </div>
+                <div class="form-group">
+                    <label for="deploymentMissionKeyword">Einsatzstichwort:</label>
+                    <input type="text" id="deploymentMissionKeyword" placeholder="z.B. Brand 3, TH VU">
+                </div>
+                <div class="form-group">
+                    <label for="deploymentRemarks">Bemerkungen:</label>
+                    <textarea id="deploymentRemarks" rows="3" placeholder="Zusätzliche Informationen..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Einsetzen</button>
+                    <button type="button" class="btn btn-secondary" data-close="deploymentModal">Abbrechen</button>
+                </div>
+            </form>
         </div>
     </div>
 

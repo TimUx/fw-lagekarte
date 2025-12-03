@@ -3,21 +3,28 @@
 
 const Sync = {
     ws: null,
-    enabled: false,
+    mode: 'standalone', // 'standalone', 'server', 'client'
     serverUrl: '',
+    serverPort: 8080,
     reconnectInterval: null,
     reconnectDelay: 5000,
     isConnecting: false,
     listeners: [],
+    localServer: null,
 
     // Initialize sync module
     init: async function() {
         const config = await this.getConfig();
-        this.enabled = config.enabled || false;
+        this.mode = config.mode || 'standalone';
         this.serverUrl = config.serverUrl || '';
+        this.serverPort = config.serverPort || 8080;
         
-        if (this.enabled && this.serverUrl) {
+        if (this.mode === 'client' && this.serverUrl) {
             this.connect();
+        } else if (this.mode === 'server') {
+            // Note: Server mode requires backend implementation
+            // This is a placeholder for future server functionality
+            console.log('[Sync] Server mode requires backend WebSocket server');
         }
     },
 
@@ -25,8 +32,9 @@ const Sync = {
     getConfig: async function() {
         const config = await localforage.getItem('syncConfig');
         return config || {
-            enabled: false,
+            mode: 'standalone',
             serverUrl: '',
+            serverPort: 8080,
             clientId: this.generateClientId()
         };
     },
@@ -34,14 +42,76 @@ const Sync = {
     // Save sync configuration
     saveConfig: async function(config) {
         await localforage.setItem('syncConfig', config);
-        this.enabled = config.enabled;
+        this.mode = config.mode;
         this.serverUrl = config.serverUrl;
+        this.serverPort = config.serverPort;
         
-        if (this.enabled && this.serverUrl) {
+        // Disconnect existing connection
+        this.disconnect();
+        
+        // Connect based on mode
+        if (this.mode === 'client' && this.serverUrl) {
             this.connect();
-        } else {
-            this.disconnect();
+        } else if (this.mode === 'server') {
+            console.log('[Sync] Server mode requires backend implementation');
+            this.updateConnectionStatus('server-mode');
         }
+    },
+
+    // Discover servers in LAN
+    discoverServers: async function(callback) {
+        // This is a simplified discovery mechanism
+        // In a real implementation, you would use mDNS/Bonjour or broadcast UDP packets
+        
+        const commonPorts = [8080, 8081, 8082, 3000, 3001];
+        const discovered = [];
+        
+        // Get local IP range (simplified)
+        const baseIP = '192.168.1.'; // This should be detected from network interface
+        
+        callback('Suche nach Servern im LAN...', false);
+        
+        // Try common IPs in the network
+        for (let i = 1; i <= 254; i++) {
+            for (const port of commonPorts) {
+                const url = `ws://${baseIP}${i}:${port}`;
+                
+                try {
+                    // Try to connect with short timeout
+                    const testWs = new WebSocket(url);
+                    
+                    await new Promise((resolve, reject) => {
+                        const timeout = setTimeout(() => {
+                            testWs.close();
+                            resolve();
+                        }, 100); // Very short timeout for discovery
+                        
+                        testWs.onopen = () => {
+                            clearTimeout(timeout);
+                            discovered.push(url);
+                            testWs.close();
+                            callback(`Server gefunden: ${url}`, false);
+                            resolve();
+                        };
+                        
+                        testWs.onerror = () => {
+                            clearTimeout(timeout);
+                            resolve();
+                        };
+                    });
+                } catch (e) {
+                    // Ignore errors during discovery
+                }
+            }
+        }
+        
+        if (discovered.length > 0) {
+            callback(`${discovered.length} Server gefunden!`, true, discovered);
+        } else {
+            callback('Kein Server im LAN gefunden. Bitte URL manuell eingeben.', true, []);
+        }
+        
+        return discovered;
     },
 
     // Generate unique client ID
@@ -188,7 +258,8 @@ const Sync = {
 
     // Helper to send broadcast if enabled and not receiving
     _broadcast: function(message) {
-        if (!this.enabled || this._isReceivingUpdate) return false;
+        if (this.mode === 'standalone' || this._isReceivingUpdate) return false;
+        if (this.mode === 'client' && !this.serverUrl) return false;
         return this.send(message);
     },
 
@@ -269,7 +340,9 @@ const Sync = {
                 'connected': '🟢 Synchronisation aktiv',
                 'connecting': '🟡 Verbinde...',
                 'disconnected': '⚫ Nicht verbunden',
-                'error': '🔴 Verbindungsfehler'
+                'error': '🔴 Verbindungsfehler',
+                'server-mode': '🟢 Server-Modus aktiv',
+                'standalone': '⚫ Standalone-Modus'
             };
             
             statusElement.textContent = statusTexts[status] || '⚫ Unbekannt';
@@ -278,7 +351,7 @@ const Sync = {
 
     // Start reconnect timer
     startReconnectTimer: function() {
-        if (!this.enabled || !this.serverUrl) return;
+        if (this.mode !== 'client' || !this.serverUrl) return;
         
         this.stopReconnectTimer();
         this.reconnectInterval = setInterval(() => {
@@ -297,7 +370,8 @@ const Sync = {
 
     // Get connection status
     getStatus: function() {
-        if (!this.enabled) return 'disabled';
+        if (this.mode === 'standalone') return 'standalone';
+        if (this.mode === 'server') return 'server-mode';
         if (!this.ws) return 'disconnected';
         
         switch (this.ws.readyState) {
