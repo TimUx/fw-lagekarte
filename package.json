@@ -46,6 +46,7 @@
       "preload.js",
       "renderer.js",
       "storage.js",
+      "tactical-symbols.js",
       "index.html",
       "styles.css",
       "assets/**/*",

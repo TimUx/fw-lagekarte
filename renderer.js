@@ -58,14 +58,24 @@ function renderStations() {
     updateStationDropdown();
     
     stations.forEach(station => {
+        // Use tactical symbol for station
+        const symbolPath = getStationSymbolPath();
         const icon = L.divIcon({
-            className: 'station-marker',
-            html: `🏢 ${escapeHtml(station.name)}`,
-            iconSize: null
+            className: 'station-marker-icon',
+            html: `<img src="${symbolPath}" alt="Station" class="station-icon-img" />`,
+            iconSize: [50, 50],
+            iconAnchor: [25, 25]
         });
         
         const marker = L.marker([station.lat, station.lng], { icon })
             .addTo(map);
+        
+        // Tooltip for hover with station name
+        marker.bindTooltip(escapeHtml(station.name), {
+            permanent: false,
+            direction: 'top',
+            className: 'station-tooltip'
+        });
         
         const popupContent = `
             <div class="popup-title">${escapeHtml(station.name)}</div>
@@ -93,14 +103,22 @@ function renderVehicles() {
         card.draggable = true;
         card.dataset.vehicleId = vehicle.id;
         
+        // Get tactical symbol path
+        const symbolPath = getTacticalSymbolPath(vehicle.type);
+        
         card.innerHTML = `
             <div class="vehicle-actions">
                 <button class="btn-icon" onclick="editVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">✏️</button>
                 <button class="btn-icon" onclick="deleteVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">🗑️</button>
             </div>
-            <div class="vehicle-callsign">${escapeHtml(vehicle.callsign)}</div>
-            <div class="vehicle-type">Typ: ${escapeHtml(vehicle.type)}</div>
-            ${vehicle.crew ? `<div class="vehicle-crew">Besatzung: ${escapeHtml(vehicle.crew)}</div>` : ''}
+            <div class="vehicle-card-content">
+                <img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />
+                <div class="vehicle-card-info">
+                    <div class="vehicle-callsign">${escapeHtml(vehicle.callsign)}</div>
+                    <div class="vehicle-type">Typ: ${escapeHtml(vehicle.type)}</div>
+                    ${vehicle.crew ? `<div class="vehicle-crew">Besatzung: ${escapeHtml(vehicle.crew)}</div>` : ''}
+                </div>
+            </div>
         `;
         
         // Drag event listeners
@@ -133,10 +151,18 @@ function renderDeployedVehicles() {
     vehicleMarkers = {};
     
     vehicles.filter(v => v.deployed && v.position).forEach(vehicle => {
+        // Use tactical symbol for vehicle with callsign overlay
+        const symbolPath = getTacticalSymbolPath(vehicle.type);
         const icon = L.divIcon({
-            className: 'vehicle-marker',
-            html: escapeHtml(vehicle.type),
-            iconSize: [40, 40]
+            className: 'vehicle-marker-icon',
+            html: `
+                <div class="vehicle-marker-container">
+                    <img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-icon-img" />
+                    <div class="vehicle-callsign-overlay">${escapeHtml(vehicle.callsign)}</div>
+                </div>
+            `,
+            iconSize: [80, 80],
+            iconAnchor: [40, 40]
         });
         
         const marker = L.marker([vehicle.position.lat, vehicle.position.lng], {
