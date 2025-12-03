@@ -93,7 +93,7 @@ fw-lagekarte/
 ```
 
 ### Technologie-Stack
-- **Electron 39.x** - Desktop-Framework
+- **Electron 39.x** - Plattformübergreifendes Desktop-Framework
 - **Leaflet.js 1.9.x** - Karten-Bibliothek
 - **LocalForage 1.10.x** - Datenspeicherung
 - **OpenStreetMap** - Kartendaten
@@ -114,13 +114,32 @@ Die Anwendung funktioniert vollständig offline:
 - Alle Daten lokal in IndexedDB
 - Keine externe Server-Kommunikation
 
-## 📦 Windows-Installer erstellen
+## 📦 Installer erstellen
 
 ```bash
+# Alle Plattformen
 npm run build
+
+# Nur Windows
+npm run build:win
+
+# Nur Linux (AppImage & .deb)
+npm run build:linux
+
+# Nur macOS
+npm run build:mac
 ```
 
-Der Installer wird im `dist/`-Verzeichnis erstellt.
+Die Installer werden im `dist/`-Verzeichnis erstellt.
+
+## 🖥️ Plattformunterstützung
+
+Die Anwendung läuft auf allen gängigen Betriebssystemen:
+- ✅ **Windows** - NSIS Installer (.exe)
+- ✅ **Linux** - AppImage und .deb Pakete
+- ✅ **macOS** - DMG Installer
+
+Alle Funktionen sind auf allen Plattformen verfügbar.
 
 ## 💡 Tipps
 

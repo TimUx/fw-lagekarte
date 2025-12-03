@@ -109,11 +109,16 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 
 ## Offline-Nutzung
 
-Die Anwendung ist offline-fähig:
+Die Anwendung ist auf allen Betriebssystemen offline-fähig:
 - Alle Daten werden lokal auf Ihrem Computer gespeichert
 - Kartenkacheln werden beim ersten Betrachten im Cache gespeichert
 - Bereiche, die Sie bereits angesehen haben, sind auch offline verfügbar
 - Für neue Bereiche ist eine Internetverbindung erforderlich
+
+Die Anwendung läuft auf:
+- ✅ **Windows** - als native Windows-Anwendung
+- ✅ **Linux** - als AppImage oder .deb Paket
+- ✅ **macOS** - als native Mac-Anwendung
 
 ## Datenspeicherung
 

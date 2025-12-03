@@ -56,12 +56,15 @@ All requirements from the original problem statement have been implemented:
 - "Save Map View" button stores current viewport
 - Saved view is restored on application restart
 
-### 8. Offline-Nutzung auf Windows ✅
-- Built with Electron for Windows desktop
+### 8. Offline-Nutzung auf allen Plattformen ✅
+- Built with Electron for cross-platform desktop deployment
 - Fully functional offline (after initial map tile loading)
 - Map tiles cached for offline access
 - No internet connection required for operation
-- Windows installer can be built with `npm run build`
+- Installer available for:
+  - **Windows**: NSIS Installer (.exe) - `npm run build:win`
+  - **Linux**: AppImage & .deb packages - `npm run build:linux`
+  - **macOS**: DMG Installer - `npm run build:mac`
 
 ## Additional Features Implemented
 
@@ -126,12 +129,27 @@ npm install
 npm start
 ```
 
-### Building for Windows
+### Building Installers
 ```bash
+# All platforms
 npm run build
+
+# Platform-specific
+npm run build:win    # Windows (NSIS .exe)
+npm run build:linux  # Linux (AppImage & .deb)
+npm run build:mac    # macOS (DMG)
 ```
 
-The installer will be created in the `dist/` directory.
+The installers will be created in the `dist/` directory.
+
+### Platform Support
+
+The application runs on all major operating systems:
+- ✅ **Windows** - NSIS Installer
+- ✅ **Linux** - AppImage and .deb packages
+- ✅ **macOS** - DMG Installer
+
+All features work identically across platforms.
 
 ## Data Storage
 
@@ -190,7 +208,7 @@ All original requirements have been met:
 ✅ Persistent data storage
 ✅ Edit and delete capabilities
 ✅ Saveable map view
-✅ Offline Windows desktop application
+✅ Cross-platform offline desktop application (Windows, Linux, macOS)
 
 ## Conclusion
 

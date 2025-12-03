@@ -11,7 +11,7 @@ Eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen mit interaktive
 - 💾 **Persistente Speicherung** - Alle Daten werden lokal gespeichert
 - ✏️ **Bearbeitung** - Standorte und Fahrzeuge können jederzeit bearbeitet oder gelöscht werden
 - 🔌 **Offline-Fähig** - Funktioniert komplett offline (nach erstem Kartenladen)
-- 💻 **Windows-Desktop-App** - Läuft als native Windows-Anwendung
+- 💻 **Plattformübergreifend** - Läuft auf Windows, Linux und macOS
 
 ## Installation
 
@@ -29,14 +29,23 @@ npm install
 npm start
 ```
 
-### Windows-Installer erstellen
+### Installer erstellen
 
 ```bash
-# Windows-Installer bauen
+# Alle Plattformen bauen
 npm run build
+
+# Nur Windows-Installer bauen
+npm run build:win
+
+# Nur Linux-Installer bauen (AppImage und .deb)
+npm run build:linux
+
+# Nur macOS-Installer bauen
+npm run build:mac
 ```
 
-Der Installer wird im `dist/`-Verzeichnis erstellt.
+Die Installer werden im `dist/`-Verzeichnis erstellt.
 
 ## Benutzung
 
@@ -69,7 +78,7 @@ Der Installer wird im `dist/`-Verzeichnis erstellt.
 
 ## Technologie
 
-- **Electron** - Desktop-Framework für Windows/Mac/Linux
+- **Electron** - Plattformübergreifendes Desktop-Framework für Windows/Linux/macOS
 - **Leaflet.js** - Interaktive Kartenvisualisierung
 - **OpenStreetMap** - Kartendaten
 - **LocalForage** - Lokale Datenspeicherung (IndexedDB)

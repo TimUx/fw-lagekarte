@@ -53,10 +53,12 @@ Die FW Lagekarte ist eine vollständige Desktop-Anwendung für Feuerwehr-Großei
 - ✅ Farbcodierung (verfügbar/eingesetzt)
 - ✅ Tastaturkürzel (ESC zum Schließen)
 
-### 7. Offline & Windows
+### 7. Offline & Plattformübergreifend
 - ✅ Electron Desktop-App
 - ✅ Vollständig offline nutzbar
 - ✅ Windows-Installer (.exe) erstellbar
+- ✅ Linux-Installer (AppImage & .deb) erstellbar
+- ✅ macOS-Installer (.dmg) erstellbar
 - ✅ Keine externe Server-Verbindung nötig
 
 ## Technische Details
