@@ -110,6 +110,67 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 
 5. **Notizen:** Nutzen Sie das Notizen-Feld für wichtige Informationen wie Ausrüstung oder besondere Fähigkeiten
 
+## Erweiterte Funktionen
+
+### Karten-Layer wechseln
+
+Die Anwendung bietet verschiedene Kartenansichten:
+
+1. **OpenStreetMap** (Standard) - Detaillierte Straßenkarte
+2. **Satellit (Esri)** - Satellitenaufnahmen für reale Geländeansicht
+3. **Topographisch (OpenTopoMap)** - Topographische Karte mit Höhenlinien
+4. **Hybrid** - Satellitenbilder mit Straßenbeschriftung
+
+**Layer wechseln:**
+1. Klicken Sie auf das Layer-Symbol (Rechteck-Icon) oben rechts auf der Karte
+2. Wählen Sie den gewünschten Karten-Layer aus
+3. Die Auswahl wird automatisch gespeichert und beim nächsten Start wiederhergestellt
+
+### Lagekarte drucken
+
+Drucken Sie eine professionelle Übersicht der aktuellen Lage:
+
+1. Klicken Sie auf "🖨️ Karte drucken" in der oberen Leiste
+2. Ein Druckdialog öffnet sich mit:
+   - Der aktuellen Kartenansicht
+   - Liste der im Einsatz befindlichen Fahrzeuge
+   - Liste der verfügbaren Fahrzeuge
+   - Liste aller Standorte
+   - Zeitstempel der Erstellung
+3. Wählen Sie Ihren Drucker und Druckeinstellungen
+4. Optional: Speichern Sie als PDF für digitale Archivierung
+
+**Tipp:** Stellen Sie vor dem Drucken sicher, dass die Karte den gewünschten Bereich zeigt und alle relevanten Fahrzeuge sichtbar sind.
+
+### Netzwerk-Synchronisation (Multi-User)
+
+Arbeiten Sie gemeinsam mit mehreren Benutzern an derselben Lagekarte in Echtzeit.
+
+**Voraussetzungen:**
+- Ein WebSocket-Server muss eingerichtet und erreichbar sein
+- Alle Benutzer müssen sich mit demselben Server verbinden
+
+**Synchronisation einrichten:**
+1. Klicken Sie auf "🔄 Synchronisation" in der oberen Leiste
+2. Aktivieren Sie "Synchronisation aktivieren"
+3. Geben Sie die Server-URL ein (z.B. `ws://192.168.1.100:8080` oder `wss://sync-server.example.com`)
+4. Klicken Sie auf "Speichern"
+5. Der Verbindungsstatus wird in der oberen Leiste angezeigt:
+   - 🟢 **Synchronisation aktiv** - Verbunden und synchronisiert
+   - 🟡 **Verbinde...** - Verbindung wird hergestellt
+   - ⚫ **Nicht verbunden** - Offline oder Server nicht erreichbar
+   - 🔴 **Verbindungsfehler** - Verbindung fehlgeschlagen
+
+**Was wird synchronisiert:**
+- Alle Standorte (Hinzufügen, Bearbeiten, Löschen)
+- Alle Fahrzeuge (Hinzufügen, Bearbeiten, Löschen)
+- Fahrzeugpositionen (Verschieben auf der Karte)
+- Einsatzstatus (Verfügbar/Im Einsatz)
+
+**Wichtig:** Die Synchronisation ist optional. Die Anwendung funktioniert auch ohne Synchronisation im Einzelplatz-Modus vollständig offline.
+
+**Hinweis für Administratoren:** Ein WebSocket-Server muss separat eingerichtet werden. Die Anwendung enthält nur den Client-Teil der Synchronisation.
+
 ## Offline-Nutzung
 
 Die Anwendung ist auf allen Betriebssystemen offline-fähig:
