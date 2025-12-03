@@ -38,9 +38,24 @@ class EmbeddedServer {
                 // Create WebSocket server on the same HTTP server
                 this.wss = new WebSocket.Server({ server: this.server });
 
-                // Serve static files from the app directory
-                this.app.use(express.static(__dirname));
-
+                // Only serve specific allowed static files (whitelist approach for security)
+                // Serve readonly-viewer.html
+                this.app.get('/readonly-viewer.html', (req, res) => {
+                    res.sendFile(path.join(__dirname, 'readonly-viewer.html'));
+                });
+                
+                // Serve required CSS and JS files
+                this.app.get('/styles.css', (req, res) => {
+                    res.sendFile(path.join(__dirname, 'styles.css'));
+                });
+                
+                this.app.get('/tactical-symbols.js', (req, res) => {
+                    res.sendFile(path.join(__dirname, 'tactical-symbols.js'));
+                });
+                
+                // Serve Leaflet library files
+                this.app.use('/node_modules/leaflet', express.static(path.join(__dirname, 'node_modules', 'leaflet')));
+                
                 // Serve readonly viewer at root
                 this.app.get('/', (req, res) => {
                     res.sendFile(path.join(__dirname, 'readonly-viewer.html'));
