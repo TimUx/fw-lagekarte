@@ -234,6 +234,17 @@ function createVehicleCard(vehicle) {
         ? `<img src="${escapeHtml(symbolPath)}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />`
         : `<div class="vehicle-card-icon-fallback">${escapeHtml(vehicle.type)}</div>`;
     
+    // Build deployment info section for vehicle card
+    let deploymentInfoHtml = '';
+    if (vehicle.deployed && vehicle.deploymentInfo) {
+        if (vehicle.deploymentInfo.missionNumber) {
+            deploymentInfoHtml += `<div class="vehicle-mission">📋 ${escapeHtml(vehicle.deploymentInfo.missionNumber)}</div>`;
+        }
+        if (vehicle.deploymentInfo.missionKeyword) {
+            deploymentInfoHtml += `<div class="vehicle-mission">🚨 ${escapeHtml(vehicle.deploymentInfo.missionKeyword)}</div>`;
+        }
+    }
+    
     card.innerHTML = `
         <div class="vehicle-actions">
             <button class="btn-icon" onclick="editVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">✏️</button>
@@ -245,6 +256,7 @@ function createVehicleCard(vehicle) {
                 <div class="vehicle-callsign">${escapeHtml(vehicle.callsign)}</div>
                 <div class="vehicle-type">Typ: ${escapeHtml(vehicle.type)}</div>
                 ${vehicle.crew ? `<div class="vehicle-crew">Besatzung: ${escapeHtml(vehicle.crew)}</div>` : ''}
+                ${deploymentInfoHtml}
             </div>
         </div>
     `;
