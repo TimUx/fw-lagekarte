@@ -41,7 +41,9 @@ function getTacticalSymbolPath(vehicleType) {
     
     const filename = TACTICAL_SYMBOLS[vehicleType];
     if (filename) {
-        return `assets/tactical-symbols/${encodeURIComponent(filename)}`;
+        // Return path with proper encoding for URLs
+        // The filenames may contain spaces and Unicode characters
+        return `assets/tactical-symbols/${filename.replace(/ /g, '%20')}`;
     }
     
     console.warn(`No tactical symbol found for vehicle type: ${vehicleType}`);

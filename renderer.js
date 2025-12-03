@@ -62,7 +62,7 @@ function renderStations() {
         const symbolPath = getStationSymbolPath();
         const icon = L.divIcon({
             className: 'station-marker-icon',
-            html: `<img src="${symbolPath}" alt="Station" class="station-icon-img" />`,
+            html: `<img src="${escapeHtml(symbolPath)}" alt="Station" class="station-icon-img" />`,
             iconSize: [50, 50],
             iconAnchor: [25, 25]
         });
@@ -108,7 +108,7 @@ function renderVehicles() {
         
         // Fallback if no symbol is found
         const symbolHtml = symbolPath 
-            ? `<img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />`
+            ? `<img src="${escapeHtml(symbolPath)}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />`
             : `<div class="vehicle-card-icon-fallback">${escapeHtml(vehicle.type)}</div>`;
         
         card.innerHTML = `
@@ -162,7 +162,7 @@ function renderDeployedVehicles() {
         // Fallback if no symbol is found
         const iconHtml = symbolPath 
             ? `<div class="vehicle-marker-container">
-                    <img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-icon-img" />
+                    <img src="${escapeHtml(symbolPath)}" alt="${escapeHtml(vehicle.type)}" class="vehicle-icon-img" />
                     <div class="vehicle-callsign-overlay">${escapeHtml(vehicle.callsign)}</div>
                </div>`
             : `<div class="vehicle-marker-fallback">
