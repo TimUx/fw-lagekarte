@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FW Lagekarte - Nur-Lese-Ansicht</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #c92a2a;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .readonly-badge {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .sync-status-container {
+            display: flex;
+            align-items: center;
+            margin: 0 20px;
+        }
+
+        .sync-status {
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 13px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: 500;
+        }
+
+        .sync-status-connected {
+            background-color: rgba(64, 192, 87, 0.9);
+        }
+
+        .sync-status-connecting {
+            background-color: rgba(255, 193, 7, 0.9);
+        }
+
+        .sync-status-disconnected {
+            background-color: rgba(108, 117, 125, 0.9);
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #f8f9fa;
+            border-right: 2px solid #dee2e6;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #495057;
+        }
+
+        .stats-bar {
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .vehicle-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .station-group-header {
+            background-color: #e9ecef;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            border-left: 4px solid #c92a2a;
+        }
+
+        .station-group-header:first-child {
+            margin-top: 0;
+        }
+
+        .station-group-name {
+            font-weight: bold;
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .vehicle-card {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+        }
+
+        .vehicle-card.deployed {
+            border-color: #40c057;
+            background-color: #d3f9d8;
+        }
+
+        .vehicle-card-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .vehicle-card-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .vehicle-card-icon-fallback {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+            background-color: #c92a2a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 4px;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .vehicle-card-info {
+            flex: 1;
+        }
+
+        .vehicle-callsign {
+            font-size: 16px;
+            font-weight: bold;
+            color: #c92a2a;
+            margin-bottom: 5px;
+        }
+
+        .vehicle-type {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 3px;
+        }
+
+        .vehicle-crew {
+            font-size: 12px;
+            color: #868e96;
+        }
+
+        .vehicle-mission {
+            font-size: 12px;
+            color: #c92a2a;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Leaflet custom styles */
+        .station-marker-icon {
+            border: none;
+            background: none;
+        }
+
+        .station-icon-img {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+        }
+
+        .vehicle-marker-icon {
+            border: none;
+            background: none;
+        }
+
+        .vehicle-marker-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .vehicle-icon-img {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+        }
+
+        .vehicle-callsign-overlay {
+            position: absolute;
+            bottom: 0;
+            background-color: rgba(201, 42, 42, 0.95);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 11px;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .leaflet-popup-content {
+            margin: 15px;
+            font-size: 14px;
+        }
+
+        .popup-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c92a2a;
+            margin-bottom: 10px;
+        }
+
+        .popup-info {
+            margin: 5px 0;
+            color: #495057;
+        }
+
+        .popup-info strong {
+            color: #212529;
+        }
+
+        .error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 400px;
+            z-index: 2000;
+        }
+
+        .error-message h2 {
+            color: #c92a2a;
+            margin-bottom: 15px;
+        }
+
+        .error-message p {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .error-message code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚒 FW Lagekarte - Nur-Lese-Ansicht</h1>
+        <div class="sync-status-container">
+            <div id="syncStatus" class="sync-status sync-status-disconnected">⚫ Nicht verbunden</div>
+        </div>
+        <div class="readonly-badge">📖 Nur Lesen</div>
+    </div>
+
+    <div class="main-container">
+        <!-- Sidebar für Fahrzeuge -->
+        <div class="sidebar" id="vehicleSidebar">
+            <h2>Verfügbare Fahrzeuge</h2>
+            <div class="stats-bar">
+                <span id="statsTotal">0 Fahrzeuge</span> | 
+                <span id="statsDeployed">0 im Einsatz</span>
+            </div>
+            <div id="vehicleList" class="vehicle-list">
+                <!-- Fahrzeuge werden hier dynamisch eingefügt -->
+            </div>
+        </div>
+
+        <!-- Karte -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Configuration - Modify this based on your server setup
+        const CONFIG = {
+            // WebSocket server URL - Change this to your server's IP/hostname
+            wsUrl: window.location.protocol === 'https:' 
+                ? 'wss://' + window.location.host 
+                : 'ws://' + window.location.hostname + ':8080',
+            
+            // Map default center and zoom
+            mapCenter: [51.1657, 10.4515], // Germany center
+            mapZoom: 6
+        };
+
+        // Global variables
+        let map;
+        let stations = [];
+        let vehicles = [];
+        let stationMarkers = {};
+        let vehicleMarkers = {};
+        let ws = null;
+        let reconnectTimer = null;
+
+        // Sanitize HTML to prevent XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize the application
+        function init() {
+            initMap();
+            connectWebSocket();
+        }
+
+        // Initialize Leaflet map
+        function initMap() {
+            map = L.map('map').setView(CONFIG.mapCenter, CONFIG.mapZoom);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        // Connect to WebSocket server
+        function connectWebSocket() {
+            updateConnectionStatus('connecting');
+            
+            try {
+                ws = new WebSocket(CONFIG.wsUrl);
+                
+                ws.onopen = () => {
+                    console.log('[ReadOnly] Connected to server');
+                    updateConnectionStatus('connected');
+                    clearTimeout(reconnectTimer);
+                    
+                    // Request initial sync
+                    ws.send(JSON.stringify({
+                        type: 'sync_request',
+                        timestamp: Date.now()
+                    }));
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        handleMessage(message);
+                    } catch (error) {
+                        console.error('[ReadOnly] Failed to parse message:', error);
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('[ReadOnly] WebSocket error:', error);
+                };
+                
+                ws.onclose = () => {
+                    console.log('[ReadOnly] Disconnected from server');
+                    updateConnectionStatus('disconnected');
+                    scheduleReconnect();
+                };
+            } catch (error) {
+                console.error('[ReadOnly] Failed to connect:', error);
+                updateConnectionStatus('disconnected');
+                scheduleReconnect();
+            }
+        }
+
+        // Schedule reconnection attempt
+        function scheduleReconnect() {
+            clearTimeout(reconnectTimer);
+            reconnectTimer = setTimeout(() => {
+                console.log('[ReadOnly] Attempting to reconnect...');
+                connectWebSocket();
+            }, 5000);
+        }
+
+        // Update connection status indicator
+        function updateConnectionStatus(status) {
+            const statusEl = document.getElementById('syncStatus');
+            statusEl.className = 'sync-status';
+            
+            switch (status) {
+                case 'connected':
+                    statusEl.classList.add('sync-status-connected');
+                    statusEl.textContent = '🟢 Verbunden';
+                    break;
+                case 'connecting':
+                    statusEl.classList.add('sync-status-connecting');
+                    statusEl.textContent = '🟡 Verbinde...';
+                    break;
+                case 'disconnected':
+                    statusEl.classList.add('sync-status-disconnected');
+                    statusEl.textContent = '⚫ Nicht verbunden';
+                    break;
+            }
+        }
+
+        // Handle incoming WebSocket messages
+        function handleMessage(message) {
+            switch (message.type) {
+                case 'sync_data':
+                    // Full data sync from server
+                    applySyncData(message.data);
+                    break;
+                
+                case 'station_update':
+                    updateStation(message.station);
+                    renderAll();
+                    break;
+                
+                case 'station_delete':
+                    deleteStation(message.stationId);
+                    renderAll();
+                    break;
+                
+                case 'vehicle_update':
+                    updateVehicle(message.vehicle);
+                    renderAll();
+                    break;
+                
+                case 'vehicle_delete':
+                    deleteVehicle(message.vehicleId);
+                    renderAll();
+                    break;
+                
+                case 'vehicle_position':
+                    updateVehiclePosition(message.vehicleId, message.position);
+                    renderAll();
+                    break;
+                
+                default:
+                    console.log('[ReadOnly] Unknown message type:', message.type);
+            }
+        }
+
+        // Apply full sync data
+        function applySyncData(data) {
+            if (data.stations) {
+                stations = data.stations;
+            }
+            if (data.vehicles) {
+                vehicles = data.vehicles;
+            }
+            renderAll();
+        }
+
+        // Update a single station
+        function updateStation(station) {
+            const index = stations.findIndex(s => s.id === station.id);
+            if (index !== -1) {
+                stations[index] = station;
+            } else {
+                stations.push(station);
+            }
+        }
+
+        // Delete a station
+        function deleteStation(stationId) {
+            stations = stations.filter(s => s.id !== stationId);
+        }
+
+        // Update a single vehicle
+        function updateVehicle(vehicle) {
+            const index = vehicles.findIndex(v => v.id === vehicle.id);
+            if (index !== -1) {
+                vehicles[index] = vehicle;
+            } else {
+                vehicles.push(vehicle);
+            }
+        }
+
+        // Delete a vehicle
+        function deleteVehicle(vehicleId) {
+            vehicles = vehicles.filter(v => v.id !== vehicleId);
+        }
+
+        // Update vehicle position
+        function updateVehiclePosition(vehicleId, position) {
+            const vehicle = vehicles.find(v => v.id === vehicleId);
+            if (vehicle) {
+                vehicle.position = position;
+                vehicle.deployed = !!position;
+            }
+        }
+
+        // Render everything
+        function renderAll() {
+            renderStations();
+            renderVehicles();
+        }
+
+        // Render stations on map
+        function renderStations() {
+            // Clear existing markers
+            Object.values(stationMarkers).forEach(marker => map.removeLayer(marker));
+            stationMarkers = {};
+            
+            stations.forEach(station => {
+                const icon = L.divIcon({
+                    className: 'station-marker-icon',
+                    html: `<div style="text-align: center;">
+                        <div style="font-size: 40px;">📍</div>
+                    </div>`,
+                    iconSize: [50, 50],
+                    iconAnchor: [25, 50]
+                });
+                
+                const marker = L.marker([station.lat, station.lng], { icon }).addTo(map);
+                
+                marker.bindTooltip(escapeHtml(station.name), {
+                    permanent: false,
+                    direction: 'top'
+                });
+                
+                const popupContent = `
+                    <div class="popup-title">${escapeHtml(station.name)}</div>
+                    <div class="popup-info"><strong>Adresse:</strong> ${escapeHtml(station.address || 'N/A')}</div>
+                    <div class="popup-info"><strong>Position:</strong> ${station.lat.toFixed(5)}, ${station.lng.toFixed(5)}</div>
+                `;
+                
+                marker.bindPopup(popupContent);
+                stationMarkers[station.id] = marker;
+            });
+        }
+
+        // Render vehicles
+        function renderVehicles() {
+            const vehicleList = document.getElementById('vehicleList');
+            vehicleList.innerHTML = '';
+            
+            // Group vehicles by station
+            const vehiclesByStation = {};
+            const unassignedVehicles = [];
+            
+            vehicles.forEach(vehicle => {
+                if (vehicle.stationId) {
+                    if (!vehiclesByStation[vehicle.stationId]) {
+                        vehiclesByStation[vehicle.stationId] = [];
+                    }
+                    vehiclesByStation[vehicle.stationId].push(vehicle);
+                } else {
+                    unassignedVehicles.push(vehicle);
+                }
+            });
+            
+            // Sort stations alphabetically
+            const sortedStations = stations
+                .filter(station => vehiclesByStation[station.id])
+                .sort((a, b) => a.name.localeCompare(b.name, 'de'));
+            
+            // Render grouped vehicles
+            sortedStations.forEach(station => {
+                const stationHeader = document.createElement('div');
+                stationHeader.className = 'station-group-header';
+                stationHeader.innerHTML = `<div class="station-group-name">📍 ${escapeHtml(station.name)}</div>`;
+                vehicleList.appendChild(stationHeader);
+                
+                const stationVehicles = vehiclesByStation[station.id]
+                    .sort((a, b) => a.callsign.localeCompare(b.callsign, 'de'));
+                
+                stationVehicles.forEach(vehicle => {
+                    vehicleList.appendChild(createVehicleCard(vehicle));
+                });
+            });
+            
+            // Render unassigned vehicles
+            if (unassignedVehicles.length > 0) {
+                const unassignedHeader = document.createElement('div');
+                unassignedHeader.className = 'station-group-header';
+                unassignedHeader.innerHTML = `<div class="station-group-name">📋 Nicht zugeordnet</div>`;
+                vehicleList.appendChild(unassignedHeader);
+                
+                unassignedVehicles
+                    .sort((a, b) => a.callsign.localeCompare(b.callsign, 'de'))
+                    .forEach(vehicle => {
+                        vehicleList.appendChild(createVehicleCard(vehicle));
+                    });
+            }
+            
+            // Update stats
+            updateStats();
+            
+            // Render deployed vehicles on map
+            renderDeployedVehicles();
+        }
+
+        // Create vehicle card element
+        function createVehicleCard(vehicle) {
+            const card = document.createElement('div');
+            card.className = 'vehicle-card' + (vehicle.deployed ? ' deployed' : '');
+            
+            // Build deployment info section
+            let deploymentInfoHtml = '';
+            if (vehicle.deployed && vehicle.deploymentInfo) {
+                if (vehicle.deploymentInfo.missionNumber) {
+                    deploymentInfoHtml += `<div class="vehicle-mission">📋 ${escapeHtml(vehicle.deploymentInfo.missionNumber)}</div>`;
+                }
+                if (vehicle.deploymentInfo.missionKeyword) {
+                    deploymentInfoHtml += `<div class="vehicle-mission">🚨 ${escapeHtml(vehicle.deploymentInfo.missionKeyword)}</div>`;
+                }
+            }
+            
+            card.innerHTML = `
+                <div class="vehicle-card-content">
+                    <div class="vehicle-card-icon-fallback">${escapeHtml(vehicle.type)}</div>
+                    <div class="vehicle-card-info">
+                        <div class="vehicle-callsign">${escapeHtml(vehicle.callsign)}</div>
+                        <div class="vehicle-type">Typ: ${escapeHtml(vehicle.type)}</div>
+                        ${vehicle.crew ? `<div class="vehicle-crew">Besatzung: ${escapeHtml(vehicle.crew)}</div>` : ''}
+                        ${deploymentInfoHtml}
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Update statistics
+        function updateStats() {
+            const totalVehicles = vehicles.length;
+            const deployedVehicles = vehicles.filter(v => v.deployed).length;
+            
+            document.getElementById('statsTotal').textContent = `${totalVehicles} Fahrzeuge`;
+            document.getElementById('statsDeployed').textContent = `${deployedVehicles} im Einsatz`;
+        }
+
+        // Render deployed vehicles on map
+        function renderDeployedVehicles() {
+            // Clear existing vehicle markers
+            Object.values(vehicleMarkers).forEach(marker => map.removeLayer(marker));
+            vehicleMarkers = {};
+            
+            vehicles.filter(v => v.deployed && v.position).forEach(vehicle => {
+                const iconHtml = `<div class="vehicle-marker-container">
+                    <div style="font-size: 40px;">🚒</div>
+                    <div class="vehicle-callsign-overlay">${escapeHtml(vehicle.callsign)}</div>
+                </div>`;
+                
+                const icon = L.divIcon({
+                    className: 'vehicle-marker-icon',
+                    html: iconHtml,
+                    iconSize: [80, 80],
+                    iconAnchor: [40, 40]
+                });
+                
+                const marker = L.marker([vehicle.position.lat, vehicle.position.lng], { icon }).addTo(map);
+                
+                // Build deployment info section
+                let deploymentInfoHtml = '';
+                if (vehicle.deploymentInfo) {
+                    if (vehicle.deploymentInfo.missionNumber) {
+                        deploymentInfoHtml += `<div class="popup-info"><strong>Einsatznummer:</strong> ${escapeHtml(vehicle.deploymentInfo.missionNumber)}</div>`;
+                    }
+                    if (vehicle.deploymentInfo.missionKeyword) {
+                        deploymentInfoHtml += `<div class="popup-info"><strong>Einsatzstichwort:</strong> ${escapeHtml(vehicle.deploymentInfo.missionKeyword)}</div>`;
+                    }
+                    if (vehicle.deploymentInfo.remarks) {
+                        deploymentInfoHtml += `<div class="popup-info"><strong>Bemerkungen:</strong> ${escapeHtml(vehicle.deploymentInfo.remarks)}</div>`;
+                    }
+                }
+                
+                const popupContent = `
+                    <div class="popup-title">${escapeHtml(vehicle.callsign)}</div>
+                    <div class="popup-info"><strong>Typ:</strong> ${escapeHtml(vehicle.type)}</div>
+                    ${vehicle.crew ? `<div class="popup-info"><strong>Besatzung:</strong> ${escapeHtml(vehicle.crew)}</div>` : ''}
+                    ${deploymentInfoHtml}
+                    ${vehicle.notes ? `<div class="popup-info"><strong>Notizen:</strong> ${escapeHtml(vehicle.notes)}</div>` : ''}
+                `;
+                
+                marker.bindPopup(popupContent);
+                vehicleMarkers[vehicle.id] = marker;
+            });
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
