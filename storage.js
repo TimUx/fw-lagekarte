@@ -1,5 +1,10 @@
 // Storage module using LocalForage for persistent storage
 const Storage = {
+    // Generate unique ID (UUID v4-like)
+    generateId: function(prefix) {
+        return prefix + '_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    },
+
     // Initialize storage
     init: async function() {
         localforage.config({
@@ -27,7 +32,7 @@ const Storage = {
             }
         } else {
             // Add new
-            station.id = 'station_' + Date.now();
+            station.id = this.generateId('station');
             stations.push(station);
         }
         
@@ -58,7 +63,7 @@ const Storage = {
             }
         } else {
             // Add new
-            vehicle.id = 'vehicle_' + Date.now();
+            vehicle.id = this.generateId('vehicle');
             vehicles.push(vehicle);
         }
         
@@ -98,6 +103,25 @@ const Storage = {
         const mapView = { center, zoom };
         await localforage.setItem('mapView', mapView);
         return mapView;
+    },
+
+    // Import data (replaces all existing data)
+    importData: async function(data) {
+        if (!data.stations || !Array.isArray(data.stations)) {
+            throw new Error('Invalid data format: stations must be an array');
+        }
+        if (!data.vehicles || !Array.isArray(data.vehicles)) {
+            throw new Error('Invalid data format: vehicles must be an array');
+        }
+
+        await localforage.setItem('stations', data.stations);
+        await localforage.setItem('vehicles', data.vehicles);
+        
+        if (data.mapView) {
+            await localforage.setItem('mapView', data.mapView);
+        }
+        
+        return true;
     }
 };
 

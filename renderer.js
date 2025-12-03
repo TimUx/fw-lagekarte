@@ -339,17 +339,9 @@ async function importData(file) {
         const text = await file.text();
         const data = JSON.parse(text);
         
-        if (!data.stations || !data.vehicles) {
-            throw new Error('Ungültiges Dateiformat');
-        }
-        
         if (confirm('Warnung: Dies überschreibt alle aktuellen Daten. Möchten Sie fortfahren?')) {
-            // Save data
-            await localforage.setItem('stations', data.stations);
-            await localforage.setItem('vehicles', data.vehicles);
-            if (data.mapView) {
-                await localforage.setItem('mapView', data.mapView);
-            }
+            // Save data using Storage module
+            await Storage.importData(data);
             
             // Reload
             await loadData();
