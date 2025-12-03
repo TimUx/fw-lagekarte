@@ -11,6 +11,8 @@ Die FW Lagekarte ist eine vollständige Desktop-Anwendung für Feuerwehr-Großei
 - ✅ Zoom- und Navigationsfunktionen
 - ✅ Speicherbare Kartenansicht
 - ✅ Offline-Fähigkeit (gecachte Kartenkacheln)
+- ✅ Mehrere Karten-Layer (OpenStreetMap, Satellit, Topographisch, Hybrid)
+- ✅ Layer-Auswahl mit automatischer Speicherung
 
 ### 2. Standortverwaltung
 - ✅ Standorte hinzufügen (Name, Adresse, GPS-Koordinaten)
@@ -60,6 +62,22 @@ Die FW Lagekarte ist eine vollständige Desktop-Anwendung für Feuerwehr-Großei
 - ✅ Linux-Installer (AppImage & .deb) erstellbar
 - ✅ macOS-Installer (.dmg) erstellbar
 - ✅ Keine externe Server-Verbindung nötig
+
+### 8. Druckfunktion
+- ✅ Professionelle Druckansicht der Lagekarte
+- ✅ Automatische Legende mit Fahrzeug- und Standortliste
+- ✅ Zeitstempel für Dokumentation
+- ✅ PDF-Export möglich
+- ✅ Optimierte Print-Layout mit separater Seite für Details
+
+### 9. Netzwerk-Synchronisation (Multi-User)
+- ✅ WebSocket-basierte Echtzeit-Synchronisation
+- ✅ Automatische Synchronisation von Standorten und Fahrzeugen
+- ✅ Verbindungsstatus-Anzeige
+- ✅ Automatische Wiederverbindung bei Verbindungsabbruch
+- ✅ Optional aktivierbar (funktioniert auch ohne Sync)
+- ✅ Konfigurierbarer Server-Endpoint
+- ✅ Echtzeit-Updates bei Änderungen anderer Benutzer
 
 ## Technische Details
 
@@ -152,12 +170,9 @@ npm run build
 ## Weiterentwicklungsmöglichkeiten
 
 Zukünftige Features könnten sein:
-- 🔄 Netzwerk-Synchronisation für Multi-User
 - 📊 Einsatzberichte und Statistiken
-- 🖨️ Druckfunktion für Lagekarten
 - 🎨 Anpassbare Fahrzeug-Icons
 - 📍 GPS-Integration für Echtzeit-Tracking
-- 🗺️ Mehrere Karten-Layer (Satellit, etc.)
 - 📱 Mobile App-Version
 
 ## Support & Dokumentation

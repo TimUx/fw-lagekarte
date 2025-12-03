@@ -37,6 +37,12 @@ const Storage = {
         }
         
         await localforage.setItem('stations', stations);
+        
+        // Broadcast to sync if available
+        if (typeof Sync !== 'undefined' && Sync.enabled) {
+            Sync.broadcastStationUpdate(station);
+        }
+        
         return station;
     },
 
@@ -44,6 +50,11 @@ const Storage = {
         const stations = await this.getStations();
         const filtered = stations.filter(s => s.id !== stationId);
         await localforage.setItem('stations', filtered);
+        
+        // Broadcast to sync if available
+        if (typeof Sync !== 'undefined' && Sync.enabled) {
+            Sync.broadcastStationDelete(stationId);
+        }
     },
 
     // Vehicles
@@ -68,6 +79,12 @@ const Storage = {
         }
         
         await localforage.setItem('vehicles', vehicles);
+        
+        // Broadcast to sync if available
+        if (typeof Sync !== 'undefined' && Sync.enabled) {
+            Sync.broadcastVehicleUpdate(vehicle);
+        }
+        
         return vehicle;
     },
 
@@ -75,16 +92,37 @@ const Storage = {
         const vehicles = await this.getVehicles();
         const filtered = vehicles.filter(v => v.id !== vehicleId);
         await localforage.setItem('vehicles', filtered);
+        
+        // Broadcast to sync if available
+        if (typeof Sync !== 'undefined' && Sync.enabled) {
+            Sync.broadcastVehicleDelete(vehicleId);
+        }
     },
 
-    updateVehiclePosition: async function(vehicleId, position) {
+    updateVehiclePosition: async function(vehicleId, position, deploymentInfo = null) {
         const vehicles = await this.getVehicles();
         const vehicle = vehicles.find(v => v.id === vehicleId);
         
         if (vehicle) {
             vehicle.position = position;
             vehicle.deployed = !!position;
+            
+            // Update deployment info if provided
+            if (deploymentInfo !== null) {
+                vehicle.deploymentInfo = deploymentInfo;
+            }
+            
+            // Clear deployment info when recalling vehicle
+            if (!position) {
+                vehicle.deploymentInfo = null;
+            }
+            
             await localforage.setItem('vehicles', vehicles);
+            
+            // Broadcast to sync if available
+            if (typeof Sync !== 'undefined' && Sync.enabled) {
+                Sync.broadcastVehiclePosition(vehicleId, position);
+            }
         }
         
         return vehicle;
@@ -103,6 +141,17 @@ const Storage = {
         const mapView = { center, zoom };
         await localforage.setItem('mapView', mapView);
         return mapView;
+    },
+
+    // Selected Layer
+    getSelectedLayer: async function() {
+        const layer = await localforage.getItem('selectedLayer');
+        return layer || 'OpenStreetMap';
+    },
+
+    saveSelectedLayer: async function(layerName) {
+        await localforage.setItem('selectedLayer', layerName);
+        return layerName;
     },
 
     // Import data (replaces all existing data)

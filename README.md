@@ -5,10 +5,13 @@ Eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen mit interaktive
 ## Features
 
 - 🗺️ **OpenStreetMap Integration** - Interaktive Kartenansicht mit OSM
+- 🌍 **Mehrere Karten-Layer** - Wechsel zwischen OpenStreetMap, Satellit, Topographisch und Hybrid-Ansicht
 - 🏢 **Standortverwaltung** - Feuerwehr-Standorte auf der Karte markieren und verwalten
 - 🚒 **Fahrzeugverwaltung** - Fahrzeuge mit Typ, Rufname, Besatzung usw. anlegen
 - 🎯 **Drag & Drop** - Fahrzeuge per Drag & Drop auf der Karte platzieren
 - 💾 **Persistente Speicherung** - Alle Daten werden lokal gespeichert
+- 🖨️ **Druckfunktion** - Professionelle Druckausgabe der Lagekarte mit Legende
+- 🔄 **Netzwerk-Synchronisation** - Optional: Multi-User Echtzeit-Synchronisation über WebSocket
 - ✏️ **Bearbeitung** - Standorte und Fahrzeuge können jederzeit bearbeitet oder gelöscht werden
 - 🔌 **Offline-Fähig** - Funktioniert komplett offline (nach erstem Kartenladen)
 - 💻 **Plattformübergreifend** - Läuft auf Windows, Linux und macOS

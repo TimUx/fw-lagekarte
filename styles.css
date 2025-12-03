@@ -28,6 +28,37 @@ body {
     margin: 0;
 }
 
+.sync-status-container {
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.sync-status {
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-weight: 500;
+}
+
+.sync-status-connected {
+    background-color: rgba(64, 192, 87, 0.9);
+}
+
+.sync-status-connecting {
+    background-color: rgba(255, 193, 7, 0.9);
+}
+
+.sync-status-disconnected {
+    background-color: rgba(108, 117, 125, 0.9);
+}
+
+.sync-status-error {
+    background-color: rgba(201, 42, 42, 0.9);
+}
+
 .header-controls {
     display: flex;
     gap: 10px;
@@ -67,6 +98,25 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.station-group-header {
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-left: 4px solid #c92a2a;
+}
+
+.station-group-header:first-child {
+    margin-top: 0;
+}
+
+.station-group-name {
+    font-weight: bold;
+    font-size: 14px;
+    color: #495057;
 }
 
 .vehicle-card {
@@ -515,4 +565,128 @@ body {
 
 .context-menu-item:active {
     background-color: #e9ecef;
+}
+
+/* Print Styles */
+@media print {
+    /* Hide UI elements during print */
+    .header,
+    .sidebar,
+    .leaflet-control-container,
+    .modal {
+        display: none !important;
+    }
+    
+    /* Make map full page */
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    
+    .main-container {
+        display: block;
+        height: 100vh;
+        width: 100vw;
+    }
+    
+    .map-container {
+        width: 100%;
+        height: 70vh;
+        page-break-after: avoid;
+    }
+    
+    #map {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+    
+    /* Print legend styles */
+    .print-legend {
+        display: block !important;
+        page-break-before: always;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .print-legend-header h1 {
+        color: #c92a2a;
+        margin-bottom: 5px;
+        font-size: 24px;
+    }
+    
+    .print-timestamp {
+        color: #6c757d;
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .print-section {
+        margin-bottom: 20px;
+    }
+    
+    .print-section h3 {
+        color: #495057;
+        font-size: 16px;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 5px;
+    }
+    
+    .print-section ul {
+        list-style-type: disc;
+        margin-left: 20px;
+        padding-left: 0;
+    }
+    
+    .print-section li {
+        margin-bottom: 5px;
+        font-size: 12px;
+        color: #495057;
+    }
+}
+
+/* Print legend (hidden by default, shown during print) */
+.print-legend {
+    display: none;
+}
+
+/* Sync modal specific styles */
+.sync-status-info {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.sync-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e7f5ff;
+    border-left: 4px solid #339af0;
+    border-radius: 5px;
+}
+
+.sync-info h3 {
+    margin-top: 0;
+    color: #495057;
+    font-size: 16px;
+}
+
+.sync-info p {
+    margin: 10px 0;
+    font-size: 13px;
+    color: #495057;
+}
+
+.sync-info ul {
+    margin: 10px 0;
+    padding-left: 20px;
+    font-size: 13px;
+    color: #495057;
+}
+
+.sync-info li {
+    margin: 5px 0;
 }
