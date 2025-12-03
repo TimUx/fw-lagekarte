@@ -272,7 +272,7 @@ const Sync = {
             clearTimeout(this._serverSyncTimeout);
             this._serverSyncTimeout = setTimeout(() => {
                 this.syncServerState();
-            }, 100);
+            }, 250); // Batch updates for 250ms to reduce sync calls
             return true;
         }
         
@@ -444,8 +444,8 @@ const Sync = {
         }
 
         try {
-            const stations = await Storage.getAllStations();
-            const vehicles = await Storage.getAllVehicles();
+            const stations = await Storage.getStations();
+            const vehicles = await Storage.getVehicles();
             await window.embeddedServer.updateState(stations, vehicles);
             console.log('[Sync] Server state synchronized');
         } catch (error) {
@@ -460,15 +460,21 @@ const Sync = {
         }
 
         try {
-            const networkInfo = await window.embeddedServer.getNetworkInfo();
+            // Get fresh server status
             const serverStatus = await window.embeddedServer.getStatus();
+            const networkInfo = await window.embeddedServer.getNetworkInfo();
+            
+            // Use provided result or current status
+            const port = serverResult ? serverResult.port : serverStatus.port;
+            const wsUrl = serverResult ? serverResult.wsUrl : serverStatus.wsUrl;
+            const httpUrl = serverResult ? serverResult.httpUrl : serverStatus.httpUrl;
             
             let infoHtml = `<div style="padding: 10px; background: #e7f5ff; border-radius: 5px; margin-top: 5px; font-size: 13px; line-height: 1.6;">`;
-            infoHtml += `<strong>🟢 Server läuft auf Port ${serverResult.port}</strong><br>`;
+            infoHtml += `<strong>🟢 Server läuft auf Port ${port}</strong><br>`;
             infoHtml += `<strong>Verbundene Clients:</strong> ${serverStatus.clientCount}<br><br>`;
             infoHtml += `<strong>Lokale Verbindungen:</strong><br>`;
-            infoHtml += `• WebSocket: <code>${serverResult.wsUrl}</code><br>`;
-            infoHtml += `• Web Viewer: <code>${serverResult.httpUrl}</code><br>`;
+            infoHtml += `• WebSocket: <code>${wsUrl}</code><br>`;
+            infoHtml += `• Web Viewer: <code>${httpUrl}</code><br>`;
             
             if (networkInfo && networkInfo.length > 0) {
                 infoHtml += `<br><strong>Netzwerk-Adressen (andere Geräte):</strong><br>`;
@@ -484,10 +490,11 @@ const Sync = {
             // Store info for display in modal
             this._serverInfo = infoHtml;
             
-            // Schedule next update
+            // Schedule next update (only set up once)
             if (this.mode === 'server' && !this._serverInfoInterval) {
                 this._serverInfoInterval = setInterval(() => {
-                    this.showServerInfo(serverResult);
+                    // Fetch fresh status on each interval
+                    this.showServerInfo();
                 }, 5000); // Update every 5 seconds
             }
             

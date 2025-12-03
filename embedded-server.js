@@ -194,6 +194,9 @@ class EmbeddedServer {
         };
         
         // Broadcast updated state to all connected clients
+        // Note: This broadcasts the full state. For large datasets with many clients,
+        // consider optimizing to send only incremental updates (individual changes)
+        // instead of the full state on every update.
         this.broadcast({
             type: 'sync_data',
             data: this.currentState

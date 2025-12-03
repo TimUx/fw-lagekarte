@@ -996,6 +996,12 @@ function setupEventListeners() {
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
+    
+    // Clean up sync modal status interval
+    if (modalId === 'syncModal' && window._syncModalStatusInterval) {
+        clearInterval(window._syncModalStatusInterval);
+        window._syncModalStatusInterval = null;
+    }
 }
 
 // Start the application
