@@ -7,6 +7,13 @@ let vehicleMarkers = {};
 let tempMarker = null;
 let clickMode = null; // 'station' when placing a station
 
+// Sanitize HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 // Initialize the application
 async function init() {
     await initMap();
@@ -51,7 +58,7 @@ function renderStations() {
     stations.forEach(station => {
         const icon = L.divIcon({
             className: 'station-marker',
-            html: `🏢 ${station.name}`,
+            html: `🏢 ${escapeHtml(station.name)}`,
             iconSize: null
         });
         
@@ -59,12 +66,12 @@ function renderStations() {
             .addTo(map);
         
         const popupContent = `
-            <div class="popup-title">${station.name}</div>
-            <div class="popup-info"><strong>Adresse:</strong> ${station.address || 'N/A'}</div>
+            <div class="popup-title">${escapeHtml(station.name)}</div>
+            <div class="popup-info"><strong>Adresse:</strong> ${escapeHtml(station.address || 'N/A')}</div>
             <div class="popup-info"><strong>Position:</strong> ${station.lat.toFixed(5)}, ${station.lng.toFixed(5)}</div>
             <div class="popup-actions">
-                <button class="btn btn-edit" onclick="editStation('${station.id}')">✏️ Bearbeiten</button>
-                <button class="btn btn-danger" onclick="deleteStation('${station.id}')">🗑️ Löschen</button>
+                <button class="btn btn-edit" onclick="editStation('${escapeHtml(station.id)}')">✏️ Bearbeiten</button>
+                <button class="btn btn-danger" onclick="deleteStation('${escapeHtml(station.id)}')">🗑️ Löschen</button>
             </div>
         `;
         
@@ -86,12 +93,12 @@ function renderVehicles() {
         
         card.innerHTML = `
             <div class="vehicle-actions">
-                <button class="btn-icon" onclick="editVehicle('${vehicle.id}'); event.stopPropagation();">✏️</button>
-                <button class="btn-icon" onclick="deleteVehicle('${vehicle.id}'); event.stopPropagation();">🗑️</button>
+                <button class="btn-icon" onclick="editVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">✏️</button>
+                <button class="btn-icon" onclick="deleteVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">🗑️</button>
             </div>
-            <div class="vehicle-callsign">${vehicle.callsign}</div>
-            <div class="vehicle-type">Typ: ${vehicle.type}</div>
-            ${vehicle.crew ? `<div class="vehicle-crew">Besatzung: ${vehicle.crew}</div>` : ''}
+            <div class="vehicle-callsign">${escapeHtml(vehicle.callsign)}</div>
+            <div class="vehicle-type">Typ: ${escapeHtml(vehicle.type)}</div>
+            ${vehicle.crew ? `<div class="vehicle-crew">Besatzung: ${escapeHtml(vehicle.crew)}</div>` : ''}
         `;
         
         // Drag event listeners
@@ -126,7 +133,7 @@ function renderDeployedVehicles() {
     vehicles.filter(v => v.deployed && v.position).forEach(vehicle => {
         const icon = L.divIcon({
             className: 'vehicle-marker',
-            html: vehicle.type,
+            html: escapeHtml(vehicle.type),
             iconSize: [40, 40]
         });
         
@@ -136,12 +143,12 @@ function renderDeployedVehicles() {
         }).addTo(map);
         
         const popupContent = `
-            <div class="popup-title">${vehicle.callsign}</div>
-            <div class="popup-info"><strong>Typ:</strong> ${vehicle.type}</div>
-            ${vehicle.crew ? `<div class="popup-info"><strong>Besatzung:</strong> ${vehicle.crew}</div>` : ''}
-            ${vehicle.notes ? `<div class="popup-info"><strong>Notizen:</strong> ${vehicle.notes}</div>` : ''}
+            <div class="popup-title">${escapeHtml(vehicle.callsign)}</div>
+            <div class="popup-info"><strong>Typ:</strong> ${escapeHtml(vehicle.type)}</div>
+            ${vehicle.crew ? `<div class="popup-info"><strong>Besatzung:</strong> ${escapeHtml(vehicle.crew)}</div>` : ''}
+            ${vehicle.notes ? `<div class="popup-info"><strong>Notizen:</strong> ${escapeHtml(vehicle.notes)}</div>` : ''}
             <div class="popup-actions">
-                <button class="btn btn-recall" onclick="recallVehicle('${vehicle.id}')">↩️ Zurückrufen</button>
+                <button class="btn btn-recall" onclick="recallVehicle('${escapeHtml(vehicle.id)}')">↩️ Zurückrufen</button>
             </div>
         `;
         
