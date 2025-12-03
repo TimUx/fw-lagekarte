@@ -189,13 +189,22 @@ function onMapContextMenu(e) {
 
 // Show custom context menu
 let contextMenuInstance = null;
+let contextMenuCloseHandler = null;
 
-function showContextMenu(latlng, event) {
-    // Remove any existing context menu
+function closeContextMenu() {
     if (contextMenuInstance) {
         contextMenuInstance.remove();
         contextMenuInstance = null;
     }
+    if (contextMenuCloseHandler) {
+        document.removeEventListener('click', contextMenuCloseHandler);
+        contextMenuCloseHandler = null;
+    }
+}
+
+function showContextMenu(latlng, event) {
+    // Remove any existing context menu
+    closeContextMenu();
     
     // Create context menu
     const menu = document.createElement('div');
@@ -237,23 +246,20 @@ function showContextMenu(latlng, event) {
     menu.querySelector('[data-action="add-station"]').addEventListener('click', (e) => {
         e.stopPropagation();
         openStationModalAtLocation(latlng);
-        menu.remove();
-        contextMenuInstance = null;
+        closeContextMenu();
     });
     
     // Close menu when clicking elsewhere
-    const closeContextMenu = (e) => {
+    contextMenuCloseHandler = (e) => {
         // Check if menu still exists in DOM and click was outside
         if (contextMenuInstance && document.body.contains(contextMenuInstance) && !contextMenuInstance.contains(e.target)) {
-            contextMenuInstance.remove();
-            contextMenuInstance = null;
-            document.removeEventListener('click', closeContextMenu);
+            closeContextMenu();
         }
     };
     
     // Use setTimeout to avoid immediate closing from the same event
     setTimeout(() => {
-        document.addEventListener('click', closeContextMenu);
+        document.addEventListener('click', contextMenuCloseHandler);
     }, 10);
 }
 
