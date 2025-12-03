@@ -45,15 +45,12 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 1. Klicken Sie auf den Button "➕ Fahrzeug hinzufügen"
 2. Geben Sie den Rufnamen ein (z.B. "Florian Hamburg 1/44/1")
 3. Wählen Sie den Fahrzeugtyp aus der Liste:
-   - LF - Löschfahrzeug
-   - DLK - Drehleiter
-   - TLF - Tanklöschfahrzeug
-   - RW - Rüstwagen
-   - ELW - Einsatzleitwagen
-   - MTW - Mannschaftstransportwagen
-   - KTW - Krankentransportwagen
-   - RTW - Rettungswagen
-   - NEF - Notarzteinsatzfahrzeug
+   - **Einsatzleitung:** ELW
+   - **Löschfahrzeuge:** HLF, LF, StLF, TLF, TSF, TSF-W
+   - **Rüst- und Gerätewagen:** GW-L1, GW-L2, RW
+   - **Mannschaft und Transport:** MTF, MTW
+   - **Hubrettungsfahrzeuge:** DLK
+   - **Rettungsfahrzeuge:** KTW, NEF, RTW
 4. Geben Sie die Besatzung ein (z.B. "1/8" für einen Trupp mit 8 Personen)
 5. Optional: Wählen Sie eine zugeordnete Station aus
 6. Optional: Fügen Sie Notizen hinzu
