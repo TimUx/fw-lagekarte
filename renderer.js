@@ -187,11 +187,13 @@ function onMapContextMenu(e) {
 }
 
 // Show custom context menu
+let contextMenuInstance = null;
+
 function showContextMenu(latlng, event) {
     // Remove any existing context menu
-    const existingMenu = document.getElementById('customContextMenu');
-    if (existingMenu) {
-        existingMenu.remove();
+    if (contextMenuInstance) {
+        contextMenuInstance.remove();
+        contextMenuInstance = null;
     }
     
     // Create context menu
@@ -208,19 +210,28 @@ function showContextMenu(latlng, event) {
     `;
     
     document.body.appendChild(menu);
+    contextMenuInstance = menu;
     
     // Handle menu item clicks
-    menu.querySelector('[data-action="add-station"]').addEventListener('click', () => {
+    menu.querySelector('[data-action="add-station"]').addEventListener('click', (e) => {
+        e.stopPropagation();
         openStationModalAtLocation(latlng);
         menu.remove();
+        contextMenuInstance = null;
     });
     
     // Close menu when clicking elsewhere
-    setTimeout(() => {
-        document.addEventListener('click', function closeContextMenu() {
+    const closeContextMenu = (e) => {
+        if (!menu.contains(e.target)) {
             menu.remove();
+            contextMenuInstance = null;
             document.removeEventListener('click', closeContextMenu);
-        }, { once: true });
+        }
+    };
+    
+    // Use setTimeout to avoid immediate closing from the same event
+    setTimeout(() => {
+        document.addEventListener('click', closeContextMenu);
     }, 10);
 }
 
@@ -300,9 +311,9 @@ function openStationModal(station = null) {
 function openStationModalAtLocation(latlng) {
     openStationModal();
     
-    // Pre-fill coordinates
-    document.getElementById('stationLat').value = latlng.lat.toFixed(6);
-    document.getElementById('stationLng').value = latlng.lng.toFixed(6);
+    // Pre-fill coordinates (using 5 decimal places for consistency)
+    document.getElementById('stationLat').value = latlng.lat.toFixed(5);
+    document.getElementById('stationLng').value = latlng.lng.toFixed(5);
     
     // Show temporary marker
     if (tempMarker) {
