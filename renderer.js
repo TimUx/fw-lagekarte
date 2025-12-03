@@ -8,6 +8,7 @@ let tempMarker = null;
 
 // Constants
 const CONTEXT_MENU_CLOSE_DELAY = 10; // ms delay to avoid immediate closing
+const PRINT_CLEANUP_DELAY = 1000; // ms delay before removing print legend
 
 // Sanitize HTML to prevent XSS
 function escapeHtml(text) {
@@ -568,7 +569,7 @@ async function printMap() {
     // Remove legend after print
     setTimeout(() => {
         document.body.removeChild(printLegend);
-    }, 1000);
+    }, PRINT_CLEANUP_DELAY);
 }
 
 // Import data

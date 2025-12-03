@@ -123,44 +123,51 @@ const Sync = {
 
     // Handle incoming messages
     handleMessage: async function(message) {
-        switch (message.type) {
-            case 'sync_data':
-                // Full data sync from server
-                await this.applySyncData(message.data);
-                break;
-            
-            case 'station_update':
-                // Single station update
-                await Storage.saveStation(message.station);
-                this.notifyListeners('station_update', message.station);
-                break;
-            
-            case 'station_delete':
-                // Station deletion
-                await Storage.deleteStation(message.stationId);
-                this.notifyListeners('station_delete', message.stationId);
-                break;
-            
-            case 'vehicle_update':
-                // Single vehicle update
-                await Storage.saveVehicle(message.vehicle);
-                this.notifyListeners('vehicle_update', message.vehicle);
-                break;
-            
-            case 'vehicle_delete':
-                // Vehicle deletion
-                await Storage.deleteVehicle(message.vehicleId);
-                this.notifyListeners('vehicle_delete', message.vehicleId);
-                break;
-            
-            case 'vehicle_position':
-                // Vehicle position update
-                await Storage.updateVehiclePosition(message.vehicleId, message.position);
-                this.notifyListeners('vehicle_position', { vehicleId: message.vehicleId, position: message.position });
-                break;
-            
-            default:
-                console.log('[Sync] Unknown message type:', message.type);
+        // Set flag to prevent re-broadcasting received updates
+        this._isReceivingUpdate = true;
+        
+        try {
+            switch (message.type) {
+                case 'sync_data':
+                    // Full data sync from server
+                    await this.applySyncData(message.data);
+                    break;
+                
+                case 'station_update':
+                    // Single station update
+                    await Storage.saveStation(message.station);
+                    this.notifyListeners('station_update', message.station);
+                    break;
+                
+                case 'station_delete':
+                    // Station deletion
+                    await Storage.deleteStation(message.stationId);
+                    this.notifyListeners('station_delete', message.stationId);
+                    break;
+                
+                case 'vehicle_update':
+                    // Single vehicle update
+                    await Storage.saveVehicle(message.vehicle);
+                    this.notifyListeners('vehicle_update', message.vehicle);
+                    break;
+                
+                case 'vehicle_delete':
+                    // Vehicle deletion
+                    await Storage.deleteVehicle(message.vehicleId);
+                    this.notifyListeners('vehicle_delete', message.vehicleId);
+                    break;
+                
+                case 'vehicle_position':
+                    // Vehicle position update
+                    await Storage.updateVehiclePosition(message.vehicleId, message.position);
+                    this.notifyListeners('vehicle_position', { vehicleId: message.vehicleId, position: message.position });
+                    break;
+                
+                default:
+                    console.log('[Sync] Unknown message type:', message.type);
+            }
+        } finally {
+            this._isReceivingUpdate = false;
         }
     },
 
@@ -179,10 +186,15 @@ const Sync = {
         this.notifyListeners('full_sync', data);
     },
 
+    // Helper to send broadcast if enabled and not receiving
+    _broadcast: function(message) {
+        if (!this.enabled || this._isReceivingUpdate) return false;
+        return this.send(message);
+    },
+
     // Broadcast station update
     broadcastStationUpdate: function(station) {
-        if (!this.enabled) return;
-        this.send({
+        this._broadcast({
             type: 'station_update',
             station: station,
             timestamp: Date.now()
@@ -191,8 +203,7 @@ const Sync = {
 
     // Broadcast station deletion
     broadcastStationDelete: function(stationId) {
-        if (!this.enabled) return;
-        this.send({
+        this._broadcast({
             type: 'station_delete',
             stationId: stationId,
             timestamp: Date.now()
@@ -201,8 +212,7 @@ const Sync = {
 
     // Broadcast vehicle update
     broadcastVehicleUpdate: function(vehicle) {
-        if (!this.enabled) return;
-        this.send({
+        this._broadcast({
             type: 'vehicle_update',
             vehicle: vehicle,
             timestamp: Date.now()
@@ -211,8 +221,7 @@ const Sync = {
 
     // Broadcast vehicle deletion
     broadcastVehicleDelete: function(vehicleId) {
-        if (!this.enabled) return;
-        this.send({
+        this._broadcast({
             type: 'vehicle_delete',
             vehicleId: vehicleId,
             timestamp: Date.now()
@@ -221,8 +230,7 @@ const Sync = {
 
     // Broadcast vehicle position update
     broadcastVehiclePosition: function(vehicleId, position) {
-        if (!this.enabled) return;
-        this.send({
+        this._broadcast({
             type: 'vehicle_position',
             vehicleId: vehicleId,
             position: position,
