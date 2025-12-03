@@ -60,6 +60,13 @@ function renderStations() {
     stations.forEach(station => {
         // Use tactical symbol for station
         const symbolPath = getStationSymbolPath();
+        
+        // If no symbol path is available, skip this station or use fallback
+        if (!symbolPath) {
+            console.error('Station symbol path not found');
+            return;
+        }
+        
         const icon = L.divIcon({
             className: 'station-marker-icon',
             html: `<img src="${escapeHtml(symbolPath)}" alt="Station" class="station-icon-img" />`,
