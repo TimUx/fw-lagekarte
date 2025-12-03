@@ -301,6 +301,66 @@ body {
     cursor: move;
 }
 
+/* New tactical symbol styles for vehicles on map */
+.vehicle-marker-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.vehicle-marker-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vehicle-icon-img {
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+}
+
+.vehicle-callsign-overlay {
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(201, 42, 42, 0.95);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 11px;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Station marker styles */
+.station-marker-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.station-icon-img {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+}
+
+.station-tooltip {
+    background-color: rgba(24, 100, 171, 0.95) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 4px !important;
+    padding: 5px 10px !important;
+    font-weight: bold !important;
+    font-size: 13px !important;
+}
+
+.station-tooltip::before {
+    border-top-color: rgba(24, 100, 171, 0.95) !important;
+}
+
 .station-marker {
     background-color: #1864ab;
     color: white;
@@ -311,6 +371,65 @@ body {
     font-size: 14px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     white-space: nowrap;
+}
+
+/* Vehicle card styles with tactical symbols */
+.vehicle-card-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vehicle-card-icon {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+}
+
+.vehicle-card-icon-fallback {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    background-color: #c92a2a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.vehicle-card-info {
+    flex: 1;
+}
+
+/* Fallback styles for vehicles without tactical symbols */
+.vehicle-marker-fallback {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.vehicle-type-fallback {
+    background-color: #c92a2a;
+    color: white;
+    border: 3px solid white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .leaflet-popup-content {

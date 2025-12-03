@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tactical Symbols Visual Test</title>
+    <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #c92a2a; }
+        h2 { color: #495057; border-bottom: 2px solid #dee2e6; padding-bottom: 10px; }
+        
+        /* Station icon test */
+        .station-icon-img {
+            width: 50px;
+            height: 50px;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+        }
+        
+        /* Vehicle marker test */
+        .vehicle-marker-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px;
+        }
+        .vehicle-icon-img {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4));
+        }
+        .vehicle-callsign-overlay {
+            position: absolute;
+            bottom: 0;
+            background-color: rgba(201, 42, 42, 0.95);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 11px;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        
+        /* Vehicle card test */
+        .vehicle-card {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            position: relative;
+        }
+        .vehicle-card-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .vehicle-card-icon {
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+        .vehicle-card-info {
+            flex: 1;
+        }
+        .vehicle-callsign {
+            font-size: 16px;
+            font-weight: bold;
+            color: #c92a2a;
+            margin-bottom: 5px;
+        }
+        .vehicle-type {
+            font-size: 14px;
+            color: #495057;
+            margin-bottom: 3px;
+        }
+        .vehicle-crew {
+            font-size: 12px;
+            color: #868e96;
+        }
+        
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚒 FW Lagekarte - Tactical Symbols Visual Test</h1>
+    
+    <div class="test-section">
+        <h2>1. Station Symbol (Feuerwehrgerätehaus)</h2>
+        <p>This symbol will be used for fire station locations on the map. The name will appear on hover.</p>
+        <img src="assets/tactical-symbols/Feuerwehrgerätehaus.svg" alt="Station" class="station-icon-img" />
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Vehicle Symbols on Map (with Callsign Overlay)</h2>
+        <p>These are how vehicles will appear when deployed on the map. The tactical symbol shows the vehicle type, and the callsign is displayed below.</p>
+        <div class="grid">
+            <div class="vehicle-marker-container">
+                <img src="assets/tactical-symbols/ELW_1.svg" alt="ELW" class="vehicle-icon-img" />
+                <div class="vehicle-callsign-overlay">Florian 1 ELW</div>
+            </div>
+            
+            <div class="vehicle-marker-container">
+                <img src="assets/tactical-symbols/Hilfeleistungslöschfahrzeug.svg" alt="HLF" class="vehicle-icon-img" />
+                <div class="vehicle-callsign-overlay">Florian 1 HLF 20</div>
+            </div>
+            
+            <div class="vehicle-marker-container">
+                <img src="assets/tactical-symbols/Löschfahrzeug.svg" alt="LF" class="vehicle-icon-img" />
+                <div class="vehicle-callsign-overlay">Florian 2 LF</div>
+            </div>
+            
+            <div class="vehicle-marker-container">
+                <img src="assets/tactical-symbols/Drehleiter_Automatik_mit Korb.svg" alt="DLK" class="vehicle-icon-img" />
+                <div class="vehicle-callsign-overlay">Florian 3 DLK 23</div>
+            </div>
+            
+            <div class="vehicle-marker-container">
+                <img src="assets/tactical-symbols/Tanklöschfahrzeug.svg" alt="TLF" class="vehicle-icon-img" />
+                <div class="vehicle-callsign-overlay">Florian 1 TLF</div>
+            </div>
+            
+            <div class="vehicle-marker-container">
+                <img src="assets/tactical-symbols/Rettungswagen.svg" alt="RTW" class="vehicle-icon-img" />
+                <div class="vehicle-callsign-overlay">RTW 1/83-1</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. Vehicle Cards in Sidebar</h2>
+        <p>These are how vehicles will appear in the left sidebar before deployment.</p>
+        
+        <div class="vehicle-card">
+            <div class="vehicle-card-content">
+                <img src="assets/tactical-symbols/ELW_1.svg" alt="ELW" class="vehicle-card-icon" />
+                <div class="vehicle-card-info">
+                    <div class="vehicle-callsign">Florian 1 ELW</div>
+                    <div class="vehicle-type">Typ: ELW</div>
+                    <div class="vehicle-crew">Besatzung: 1/2</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="vehicle-card">
+            <div class="vehicle-card-content">
+                <img src="assets/tactical-symbols/Hilfeleistungslöschfahrzeug.svg" alt="HLF" class="vehicle-card-icon" />
+                <div class="vehicle-card-info">
+                    <div class="vehicle-callsign">Florian 1 HLF 20</div>
+                    <div class="vehicle-type">Typ: HLF</div>
+                    <div class="vehicle-crew">Besatzung: 1/8</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="vehicle-card">
+            <div class="vehicle-card-content">
+                <img src="assets/tactical-symbols/Drehleiter_Automatik_mit Korb.svg" alt="DLK" class="vehicle-card-icon" />
+                <div class="vehicle-card-info">
+                    <div class="vehicle-callsign">Florian 3 DLK 23</div>
+                    <div class="vehicle-type">Typ: DLK</div>
+                    <div class="vehicle-crew">Besatzung: 1/2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>4. All Available Vehicle Symbols</h2>
+        <p>Complete list of tactical symbols for all supported vehicle types.</p>
+        <div class="grid">
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/ELW_1.svg" style="width: 50px; height: 50px;" alt="ELW" /><br>
+                <small><strong>ELW</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Hilfeleistungslöschfahrzeug.svg" style="width: 50px; height: 50px;" alt="HLF" /><br>
+                <small><strong>HLF</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Löschfahrzeug.svg" style="width: 50px; height: 50px;" alt="LF" /><br>
+                <small><strong>LF</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Löschfahrzeug_10.svg" style="width: 50px; height: 50px;" alt="StLF" /><br>
+                <small><strong>StLF</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Tanklöschfahrzeug.svg" style="width: 50px; height: 50px;" alt="TLF" /><br>
+                <small><strong>TLF</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Tragkraftspritzenfahrzeug.svg" style="width: 50px; height: 50px;" alt="TSF" /><br>
+                <small><strong>TSF/TSF-W</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Gerätewagen_Logistik_1.svg" style="width: 50px; height: 50px;" alt="GW-L1" /><br>
+                <small><strong>GW-L1</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Gerätewagen_Logistik_2.svg" style="width: 50px; height: 50px;" alt="GW-L2" /><br>
+                <small><strong>GW-L2</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Rüstwagen.svg" style="width: 50px; height: 50px;" alt="RW" /><br>
+                <small><strong>RW</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Mannschaftstransportwagen.svg" style="width: 50px; height: 50px;" alt="MTW" /><br>
+                <small><strong>MTF/MTW</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Drehleiter_Automatik_mit Korb.svg" style="width: 50px; height: 50px;" alt="DLK" /><br>
+                <small><strong>DLK</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Krankentransportwagen.svg" style="width: 50px; height: 50px;" alt="KTW" /><br>
+                <small><strong>KTW</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Notarzteinsatzfahrzeug.svg" style="width: 50px; height: 50px;" alt="NEF" /><br>
+                <small><strong>NEF</strong></small>
+            </div>
+            <div style="text-align: center;">
+                <img src="assets/tactical-symbols/Rettungswagen.svg" style="width: 50px; height: 50px;" alt="RTW" /><br>
+                <small><strong>RTW</strong></small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>✅ Changes Summary</h2>
+        <ul>
+            <li>✅ <strong>Station markers:</strong> Now use tactical symbol (Feuerwehrgerätehaus) instead of emoji + text. Name appears on hover.</li>
+            <li>✅ <strong>Vehicle markers on map:</strong> Now use proper tactical symbols (80x80px) with callsign overlay at bottom.</li>
+            <li>✅ <strong>Sidebar vehicle cards:</strong> Now show tactical symbols alongside vehicle information.</li>
+            <li>✅ <strong>Size increase:</strong> Vehicle markers are now larger (60px icon) making them much more visible.</li>
+            <li>✅ <strong>Callsign visibility:</strong> Callsign is now clearly displayed on each vehicle marker.</li>
+        </ul>
+    </div>
+    
+</body>
+</html>
