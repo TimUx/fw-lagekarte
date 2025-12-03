@@ -180,6 +180,7 @@ function updateStationDropdown() {
 // Map context menu handler (right-click)
 function onMapContextMenu(e) {
     // Prevent default browser context menu
+    L.DomEvent.preventDefault(e);
     L.DomEvent.stopPropagation(e);
     
     // Show a custom context menu
@@ -200,8 +201,29 @@ function showContextMenu(latlng, event) {
     const menu = document.createElement('div');
     menu.id = 'customContextMenu';
     menu.className = 'context-menu';
-    menu.style.left = event.pageX + 'px';
-    menu.style.top = event.pageY + 'px';
+    
+    // Position menu with boundary checks to keep it in viewport
+    let menuX = event.pageX;
+    let menuY = event.pageY;
+    
+    // Temporarily append to get dimensions
+    menu.style.visibility = 'hidden';
+    document.body.appendChild(menu);
+    const menuRect = menu.getBoundingClientRect();
+    
+    // Check right boundary
+    if (menuX + menuRect.width > window.innerWidth) {
+        menuX = window.innerWidth - menuRect.width - 5;
+    }
+    
+    // Check bottom boundary
+    if (menuY + menuRect.height > window.innerHeight) {
+        menuY = window.innerHeight - menuRect.height - 5;
+    }
+    
+    menu.style.left = menuX + 'px';
+    menu.style.top = menuY + 'px';
+    menu.style.visibility = 'visible';
     
     menu.innerHTML = `
         <div class="context-menu-item" data-action="add-station">
@@ -209,7 +231,6 @@ function showContextMenu(latlng, event) {
         </div>
     `;
     
-    document.body.appendChild(menu);
     contextMenuInstance = menu;
     
     // Handle menu item clicks
@@ -222,8 +243,9 @@ function showContextMenu(latlng, event) {
     
     // Close menu when clicking elsewhere
     const closeContextMenu = (e) => {
-        if (!menu.contains(e.target)) {
-            menu.remove();
+        // Check if menu still exists in DOM and click was outside
+        if (contextMenuInstance && document.body.contains(contextMenuInstance) && !contextMenuInstance.contains(e.target)) {
+            contextMenuInstance.remove();
             contextMenuInstance = null;
             document.removeEventListener('click', closeContextMenu);
         }
