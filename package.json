@@ -1,0 +1,55 @@
+{
+  "name": "fw-lagekarte",
+  "version": "1.0.0",
+  "description": "Eine Lagekarte für Großeinsätze",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --linux --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "build:mac": "electron-builder --mac",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fire-department",
+    "tactical-map",
+    "emergency"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^39.2.4",
+    "leaflet": "^1.9.4",
+    "localforage": "^1.10.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "com.fw-lagekarte.app",
+    "productName": "FW Lagekarte",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "Utility"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.utilities"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "storage.js",
+      "index.html",
+      "styles.css",
+      "assets/**/*",
+      "node_modules/**/*"
+    ]
+  }
+}
