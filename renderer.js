@@ -101,8 +101,20 @@ function renderVehicles() {
         vehicleList.appendChild(card);
     });
     
+    // Update stats
+    updateStats();
+    
     // Render deployed vehicles on map
     renderDeployedVehicles();
+}
+
+// Update statistics bar
+function updateStats() {
+    const totalVehicles = vehicles.length;
+    const deployedVehicles = vehicles.filter(v => v.deployed).length;
+    
+    document.getElementById('statsTotal').textContent = `${totalVehicles} Fahrzeuge`;
+    document.getElementById('statsDeployed').textContent = `${deployedVehicles} im Einsatz`;
 }
 
 // Render deployed vehicles on map
@@ -297,6 +309,63 @@ async function deleteVehicle(vehicleId) {
     }
 }
 
+// Export data
+async function exportData() {
+    const data = {
+        stations: await Storage.getStations(),
+        vehicles: await Storage.getVehicles(),
+        mapView: await Storage.getMapView(),
+        exportDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `fw-lagekarte-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    alert('Daten wurden exportiert!');
+}
+
+// Import data
+async function importData(file) {
+    try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        if (!data.stations || !data.vehicles) {
+            throw new Error('Ungültiges Dateiformat');
+        }
+        
+        if (confirm('Warnung: Dies überschreibt alle aktuellen Daten. Möchten Sie fortfahren?')) {
+            // Save data
+            await localforage.setItem('stations', data.stations);
+            await localforage.setItem('vehicles', data.vehicles);
+            if (data.mapView) {
+                await localforage.setItem('mapView', data.mapView);
+            }
+            
+            // Reload
+            await loadData();
+            
+            // Update map view if available
+            if (data.mapView) {
+                map.setView(data.mapView.center, data.mapView.zoom);
+            }
+            
+            alert('Daten wurden erfolgreich importiert!');
+        }
+    } catch (error) {
+        alert('Fehler beim Importieren der Daten: ' + error.message);
+    }
+}
+
 // Setup event listeners
 function setupEventListeners() {
     // Station button
@@ -315,6 +384,22 @@ function setupEventListeners() {
         const zoom = map.getZoom();
         await Storage.saveMapView([center.lat, center.lng], zoom);
         alert('Kartenansicht gespeichert!');
+    });
+    
+    // Export data button
+    document.getElementById('exportDataBtn').addEventListener('click', exportData);
+    
+    // Import data button
+    document.getElementById('importDataBtn').addEventListener('click', () => {
+        document.getElementById('importFileInput').click();
+    });
+    
+    document.getElementById('importFileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            importData(file);
+        }
+        e.target.value = ''; // Reset input
     });
     
     // Station form submit
@@ -410,6 +495,24 @@ function setupEventListeners() {
     
     // Setup map drop zone
     setupMapDrop();
+    
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // ESC key closes modals
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.modal.show');
+            if (openModal) {
+                closeModal(openModal.id);
+                if (openModal.id === 'stationModal') {
+                    clickMode = null;
+                    if (tempMarker) {
+                        map.removeLayer(tempMarker);
+                        tempMarker = null;
+                    }
+                }
+            }
+        }
+    });
 }
 
 function closeModal(modalId) {

@@ -49,8 +49,18 @@ body {
 
 .sidebar h2 {
     font-size: 18px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     color: #495057;
+}
+
+.stats-bar {
+    background-color: #e9ecef;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    color: #495057;
+    margin-bottom: 15px;
+    text-align: center;
 }
 
 .vehicle-list {

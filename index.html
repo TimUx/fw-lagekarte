@@ -14,6 +14,9 @@
             <button id="addStationBtn" class="btn btn-primary">➕ Standort hinzufügen</button>
             <button id="addVehicleBtn" class="btn btn-primary">➕ Fahrzeug hinzufügen</button>
             <button id="saveMapViewBtn" class="btn btn-secondary">💾 Kartenansicht speichern</button>
+            <button id="exportDataBtn" class="btn btn-secondary">📤 Daten exportieren</button>
+            <button id="importDataBtn" class="btn btn-secondary">📥 Daten importieren</button>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;">
         </div>
     </div>
 
@@ -21,6 +24,10 @@
         <!-- Sidebar für Fahrzeuge -->
         <div class="sidebar" id="vehicleSidebar">
             <h2>Verfügbare Fahrzeuge</h2>
+            <div class="stats-bar">
+                <span id="statsTotal">0 Fahrzeuge</span> | 
+                <span id="statsDeployed">0 im Einsatz</span>
+            </div>
             <div id="vehicleList" class="vehicle-list">
                 <!-- Fahrzeuge werden hier dynamisch eingefügt -->
             </div>
