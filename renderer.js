@@ -106,13 +106,18 @@ function renderVehicles() {
         // Get tactical symbol path
         const symbolPath = getTacticalSymbolPath(vehicle.type);
         
+        // Fallback if no symbol is found
+        const symbolHtml = symbolPath 
+            ? `<img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />`
+            : `<div class="vehicle-card-icon-fallback">${escapeHtml(vehicle.type)}</div>`;
+        
         card.innerHTML = `
             <div class="vehicle-actions">
                 <button class="btn-icon" onclick="editVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">✏️</button>
                 <button class="btn-icon" onclick="deleteVehicle('${escapeHtml(vehicle.id)}'); event.stopPropagation();">🗑️</button>
             </div>
             <div class="vehicle-card-content">
-                <img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />
+                ${symbolHtml}
                 <div class="vehicle-card-info">
                     <div class="vehicle-callsign">${escapeHtml(vehicle.callsign)}</div>
                     <div class="vehicle-type">Typ: ${escapeHtml(vehicle.type)}</div>
@@ -153,14 +158,21 @@ function renderDeployedVehicles() {
     vehicles.filter(v => v.deployed && v.position).forEach(vehicle => {
         // Use tactical symbol for vehicle with callsign overlay
         const symbolPath = getTacticalSymbolPath(vehicle.type);
-        const icon = L.divIcon({
-            className: 'vehicle-marker-icon',
-            html: `
-                <div class="vehicle-marker-container">
+        
+        // Fallback if no symbol is found
+        const iconHtml = symbolPath 
+            ? `<div class="vehicle-marker-container">
                     <img src="${symbolPath}" alt="${escapeHtml(vehicle.type)}" class="vehicle-icon-img" />
                     <div class="vehicle-callsign-overlay">${escapeHtml(vehicle.callsign)}</div>
-                </div>
-            `,
+               </div>`
+            : `<div class="vehicle-marker-fallback">
+                    <div class="vehicle-type-fallback">${escapeHtml(vehicle.type)}</div>
+                    <div class="vehicle-callsign-overlay">${escapeHtml(vehicle.callsign)}</div>
+               </div>`;
+        
+        const icon = L.divIcon({
+            className: 'vehicle-marker-icon',
+            html: iconHtml,
             iconSize: [80, 80],
             iconAnchor: [40, 40]
         });

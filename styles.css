@@ -386,8 +386,50 @@ body {
     flex-shrink: 0;
 }
 
+.vehicle-card-icon-fallback {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    background-color: #c92a2a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
 .vehicle-card-info {
     flex: 1;
+}
+
+/* Fallback styles for vehicles without tactical symbols */
+.vehicle-marker-fallback {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.vehicle-type-fallback {
+    background-color: #c92a2a;
+    color: white;
+    border: 3px solid white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .leaflet-popup-content {

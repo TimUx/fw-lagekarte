@@ -34,10 +34,17 @@ const TACTICAL_SYMBOLS = {
 
 // Get the path to a tactical symbol
 function getTacticalSymbolPath(vehicleType) {
+    if (!vehicleType) {
+        console.warn('getTacticalSymbolPath called with null/undefined vehicleType');
+        return null;
+    }
+    
     const filename = TACTICAL_SYMBOLS[vehicleType];
     if (filename) {
         return `assets/tactical-symbols/${encodeURIComponent(filename)}`;
     }
+    
+    console.warn(`No tactical symbol found for vehicle type: ${vehicleType}`);
     return null;
 }
 
