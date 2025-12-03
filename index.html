@@ -55,11 +55,14 @@
                     <input type="text" id="stationAddress">
                 </div>
                 <div class="form-group">
-                    <label>Position auf Karte anklicken oder eingeben:</label>
+                    <label>Position (Koordinaten):</label>
                     <div class="coord-inputs">
                         <input type="number" id="stationLat" step="any" placeholder="Breitengrad" required>
                         <input type="number" id="stationLng" step="any" placeholder="Längengrad" required>
                     </div>
+                    <small style="color: #6c757d; font-size: 12px; margin-top: 5px; display: block;">
+                        Tipp: Rechtsklick auf die Karte, um Position zu wählen
+                    </small>
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Speichern</button>
@@ -84,15 +87,34 @@
                     <label for="vehicleType">Typ:</label>
                     <select id="vehicleType" required>
                         <option value="">Bitte wählen...</option>
-                        <option value="LF">LF - Löschfahrzeug</option>
-                        <option value="DLK">DLK - Drehleiter</option>
-                        <option value="TLF">TLF - Tanklöschfahrzeug</option>
-                        <option value="RW">RW - Rüstwagen</option>
-                        <option value="ELW">ELW - Einsatzleitwagen</option>
-                        <option value="MTW">MTW - Mannschaftstransportwagen</option>
-                        <option value="KTW">KTW - Krankentransportwagen</option>
-                        <option value="RTW">RTW - Rettungswagen</option>
-                        <option value="NEF">NEF - Notarzteinsatzfahrzeug</option>
+                        <optgroup label="Einsatzleitung">
+                            <option value="ELW">ELW - Einsatzleitwagen</option>
+                        </optgroup>
+                        <optgroup label="Löschfahrzeuge">
+                            <option value="HLF">HLF - Hilfeleistungslöschfahrzeug</option>
+                            <option value="LF">LF - Löschfahrzeug</option>
+                            <option value="StLF">StLF - Staffellöschfahrzeug</option>
+                            <option value="TLF">TLF - Tanklöschfahrzeug</option>
+                            <option value="TSF">TSF - Tragkraftspritzenfahrzeug</option>
+                            <option value="TSF-W">TSF-W - Tragkraftspritzenfahrzeug Wasser</option>
+                        </optgroup>
+                        <optgroup label="Rüst- und Gerätewagen">
+                            <option value="GW-L1">GW-L1 - Gerätewagen Logistik 1</option>
+                            <option value="GW-L2">GW-L2 - Gerätewagen Logistik 2</option>
+                            <option value="RW">RW - Rüstwagen</option>
+                        </optgroup>
+                        <optgroup label="Mannschaft und Transport">
+                            <option value="MTF">MTF - Mannschaftstransportfahrzeug</option>
+                            <option value="MTW">MTW - Mannschaftstransportwagen</option>
+                        </optgroup>
+                        <optgroup label="Hubrettungsfahrzeuge">
+                            <option value="DLK">DLK - Drehleiter</option>
+                        </optgroup>
+                        <optgroup label="Rettungsfahrzeuge">
+                            <option value="KTW">KTW - Krankentransportwagen</option>
+                            <option value="NEF">NEF - Notarzteinsatzfahrzeug</option>
+                            <option value="RTW">RTW - Rettungswagen</option>
+                        </optgroup>
                     </select>
                 </div>
                 <div class="form-group">

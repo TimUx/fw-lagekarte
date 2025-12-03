@@ -15,12 +15,18 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 #### 1. Feuerwehr-Standorte verwalten
 
 **Standort hinzufügen:**
+1. Klicken Sie mit der **rechten Maustaste** auf die gewünschte Position auf der Karte
+2. Wählen Sie "🏢 Standort hier hinzufügen" aus dem Kontextmenü
+3. Geben Sie den Namen des Standorts ein (z.B. "Feuerwache Nord")
+4. Optional: Geben Sie die Adresse ein
+5. Die Koordinaten werden automatisch ausgefüllt (können auch manuell angepasst werden)
+6. Klicken Sie auf "Speichern"
+
+**Alternative Methode:**
 1. Klicken Sie auf den Button "➕ Standort hinzufügen"
-2. Geben Sie den Namen des Standorts ein (z.B. "Feuerwache Nord")
-3. Optional: Geben Sie die Adresse ein
-4. Klicken Sie auf die Karte, um die Position zu markieren
-   - Alternativ können Sie die Koordinaten direkt eingeben
-5. Klicken Sie auf "Speichern"
+2. Geben Sie den Namen und die Adresse ein
+3. Geben Sie die Koordinaten manuell ein oder verwenden Sie Rechtsklick auf der Karte
+4. Klicken Sie auf "Speichern"
 
 **Standort bearbeiten:**
 1. Klicken Sie auf das Standort-Symbol auf der Karte
@@ -39,15 +45,12 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 1. Klicken Sie auf den Button "➕ Fahrzeug hinzufügen"
 2. Geben Sie den Rufnamen ein (z.B. "Florian Hamburg 1/44/1")
 3. Wählen Sie den Fahrzeugtyp aus der Liste:
-   - LF - Löschfahrzeug
-   - DLK - Drehleiter
-   - TLF - Tanklöschfahrzeug
-   - RW - Rüstwagen
-   - ELW - Einsatzleitwagen
-   - MTW - Mannschaftstransportwagen
-   - KTW - Krankentransportwagen
-   - RTW - Rettungswagen
-   - NEF - Notarzteinsatzfahrzeug
+   - **Einsatzleitung:** ELW
+   - **Löschfahrzeuge:** HLF, LF, StLF, TLF, TSF, TSF-W
+   - **Rüst- und Gerätewagen:** GW-L1, GW-L2, RW
+   - **Mannschaft und Transport:** MTF, MTW
+   - **Hubrettungsfahrzeuge:** DLK
+   - **Rettungsfahrzeuge:** KTW, NEF, RTW
 4. Geben Sie die Besatzung ein (z.B. "1/8" für einen Trupp mit 8 Personen)
 5. Optional: Wählen Sie eine zugeordnete Station aus
 6. Optional: Fügen Sie Notizen hinzu

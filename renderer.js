@@ -5,7 +5,9 @@ let vehicles = [];
 let stationMarkers = {};
 let vehicleMarkers = {};
 let tempMarker = null;
-let clickMode = null; // 'station' when placing a station
+
+// Constants
+const CONTEXT_MENU_CLOSE_DELAY = 10; // ms delay to avoid immediate closing
 
 // Sanitize HTML to prevent XSS
 function escapeHtml(text) {
@@ -33,8 +35,8 @@ async function initMap() {
         maxZoom: 19
     }).addTo(map);
 
-    // Map click handler for placing stations
-    map.on('click', onMapClick);
+    // Map context menu handler for adding stations
+    map.on('contextmenu', onMapContextMenu);
 }
 
 // Load data from storage
@@ -178,18 +180,90 @@ function updateStationDropdown() {
     });
 }
 
-// Map click handler
-function onMapClick(e) {
-    if (clickMode === 'station') {
-        document.getElementById('stationLat').value = e.latlng.lat;
-        document.getElementById('stationLng').value = e.latlng.lng;
-        
-        // Show temporary marker
-        if (tempMarker) {
-            map.removeLayer(tempMarker);
-        }
-        tempMarker = L.marker(e.latlng).addTo(map);
+// Map context menu handler (right-click)
+function onMapContextMenu(e) {
+    // Prevent default browser context menu
+    L.DomEvent.preventDefault(e);
+    L.DomEvent.stopPropagation(e);
+    
+    // Show a custom context menu
+    showContextMenu(e.latlng, e.originalEvent);
+}
+
+// Show custom context menu
+let contextMenuInstance = null;
+let contextMenuCloseHandler = null;
+
+function closeContextMenu() {
+    if (contextMenuInstance) {
+        contextMenuInstance.remove();
+        contextMenuInstance = null;
     }
+    if (contextMenuCloseHandler) {
+        document.removeEventListener('click', contextMenuCloseHandler);
+        contextMenuCloseHandler = null;
+    }
+}
+
+function showContextMenu(latlng, event) {
+    // Remove any existing context menu
+    closeContextMenu();
+    
+    // Create context menu
+    const menu = document.createElement('div');
+    menu.id = 'customContextMenu';
+    menu.className = 'context-menu';
+    
+    // Position menu with boundary checks to keep it in viewport
+    let menuX = event.pageX;
+    let menuY = event.pageY;
+    
+    // Temporarily position off-screen to get dimensions
+    menu.style.position = 'absolute';
+    menu.style.left = '-9999px';
+    document.body.appendChild(menu);
+    const menuRect = menu.getBoundingClientRect();
+    
+    // Check right boundary
+    if (menuX + menuRect.width > window.innerWidth) {
+        menuX = window.innerWidth - menuRect.width - 5;
+    }
+    
+    // Check bottom boundary
+    if (menuY + menuRect.height > window.innerHeight) {
+        menuY = window.innerHeight - menuRect.height - 5;
+    }
+    
+    menu.style.left = menuX + 'px';
+    menu.style.top = menuY + 'px';
+    
+    menu.innerHTML = `
+        <div class="context-menu-item" data-action="add-station">
+            🏢 Standort hier hinzufügen
+        </div>
+    `;
+    
+    contextMenuInstance = menu;
+    
+    // Handle menu item clicks
+    menu.querySelector('[data-action="add-station"]').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openStationModalAtLocation(latlng);
+        closeContextMenu();
+    });
+    
+    // Close menu when clicking elsewhere
+    contextMenuCloseHandler = (e) => {
+        // Check if menu still exists in DOM and click was outside
+        if (contextMenuInstance && document.body.contains(contextMenuInstance) && !contextMenuInstance.contains(e.target)) {
+            closeContextMenu();
+        }
+    };
+    
+    // Use setTimeout to avoid immediate closing from the same event
+    setTimeout(() => {
+        document.addEventListener('click', contextMenuCloseHandler);
+    }, CONTEXT_MENU_CLOSE_DELAY);
 }
 
 // Vehicle drag handlers
@@ -259,10 +333,24 @@ function openStationModal(station = null) {
         document.getElementById('stationLng').value = station.lng;
     } else {
         title.textContent = 'Standort hinzufügen';
-        clickMode = 'station';
     }
     
     modal.classList.add('show');
+}
+
+// Open station modal with pre-filled location
+function openStationModalAtLocation(latlng) {
+    openStationModal();
+    
+    // Pre-fill coordinates (using 5 decimal places for consistency)
+    document.getElementById('stationLat').value = latlng.lat.toFixed(5);
+    document.getElementById('stationLng').value = latlng.lng.toFixed(5);
+    
+    // Show temporary marker
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+    }
+    tempMarker = L.marker(latlng).addTo(map);
 }
 
 async function editStation(stationId) {
@@ -421,7 +509,6 @@ function setupEventListeners() {
             map.removeLayer(tempMarker);
             tempMarker = null;
         }
-        clickMode = null;
     });
     
     // Vehicle form submit
@@ -453,7 +540,6 @@ function setupEventListeners() {
             const modalId = btn.dataset.modal;
             closeModal(modalId);
             if (modalId === 'stationModal') {
-                clickMode = null;
                 if (tempMarker) {
                     map.removeLayer(tempMarker);
                     tempMarker = null;
@@ -467,7 +553,6 @@ function setupEventListeners() {
             const modalId = btn.dataset.close;
             closeModal(modalId);
             if (modalId === 'stationModal') {
-                clickMode = null;
                 if (tempMarker) {
                     map.removeLayer(tempMarker);
                     tempMarker = null;
@@ -482,7 +567,6 @@ function setupEventListeners() {
             if (e.target === modal) {
                 closeModal(modal.id);
                 if (modal.id === 'stationModal') {
-                    clickMode = null;
                     if (tempMarker) {
                         map.removeLayer(tempMarker);
                         tempMarker = null;
@@ -503,7 +587,6 @@ function setupEventListeners() {
             if (openModal) {
                 closeModal(openModal.id);
                 if (openModal.id === 'stationModal') {
-                    clickMode = null;
                     if (tempMarker) {
                         map.removeLayer(tempMarker);
                         tempMarker = null;
