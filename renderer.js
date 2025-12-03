@@ -724,6 +724,18 @@ async function openSyncModal() {
     updateSyncModalFields();
     updateSyncModalStatus();
     
+    // If in server mode, refresh status periodically while modal is open
+    if (config.mode === 'server' && !window._syncModalStatusInterval) {
+        window._syncModalStatusInterval = setInterval(() => {
+            if (modal.classList.contains('show')) {
+                updateSyncModalStatus();
+            } else {
+                clearInterval(window._syncModalStatusInterval);
+                window._syncModalStatusInterval = null;
+            }
+        }, 2000); // Update every 2 seconds
+    }
+    
     modal.classList.add('show');
 }
 

@@ -422,9 +422,16 @@ const Sync = {
         }
 
         try {
+            // Clear server info refresh interval
+            if (this._serverInfoInterval) {
+                clearInterval(this._serverInfoInterval);
+                this._serverInfoInterval = null;
+            }
+            
             const result = await window.embeddedServer.stop();
             console.log('[Sync] Embedded server stopped:', result);
             this.updateConnectionStatus('standalone');
+            this._serverInfo = null;
         } catch (error) {
             console.error('[Sync] Error stopping embedded server:', error);
         }
@@ -454,19 +461,21 @@ const Sync = {
 
         try {
             const networkInfo = await window.embeddedServer.getNetworkInfo();
-            const statusElement = document.getElementById('syncStatus');
+            const serverStatus = await window.embeddedServer.getStatus();
             
-            let infoHtml = `<div style="padding: 10px; background: #e7f5ff; border-radius: 5px; margin-top: 5px; font-size: 13px;">`;
+            let infoHtml = `<div style="padding: 10px; background: #e7f5ff; border-radius: 5px; margin-top: 5px; font-size: 13px; line-height: 1.6;">`;
             infoHtml += `<strong>🟢 Server läuft auf Port ${serverResult.port}</strong><br>`;
-            infoHtml += `<strong>WebSocket:</strong> ${serverResult.wsUrl}<br>`;
-            infoHtml += `<strong>Web Viewer:</strong> ${serverResult.httpUrl}<br>`;
+            infoHtml += `<strong>Verbundene Clients:</strong> ${serverStatus.clientCount}<br><br>`;
+            infoHtml += `<strong>Lokale Verbindungen:</strong><br>`;
+            infoHtml += `• WebSocket: <code>${serverResult.wsUrl}</code><br>`;
+            infoHtml += `• Web Viewer: <code>${serverResult.httpUrl}</code><br>`;
             
             if (networkInfo && networkInfo.length > 0) {
-                infoHtml += `<br><strong>Netzwerk-Adressen:</strong><br>`;
+                infoHtml += `<br><strong>Netzwerk-Adressen (andere Geräte):</strong><br>`;
                 networkInfo.forEach(info => {
-                    infoHtml += `• ${info.name}: ${info.address}<br>`;
-                    infoHtml += `  WS: ${info.wsUrl}<br>`;
-                    infoHtml += `  HTTP: ${info.httpUrl}<br>`;
+                    infoHtml += `<strong>${info.name} (${info.address}):</strong><br>`;
+                    infoHtml += `• WS: <code>${info.wsUrl}</code><br>`;
+                    infoHtml += `• HTTP: <code>${info.httpUrl}</code><br>`;
                 });
             }
             
@@ -474,6 +483,13 @@ const Sync = {
             
             // Store info for display in modal
             this._serverInfo = infoHtml;
+            
+            // Schedule next update
+            if (this.mode === 'server' && !this._serverInfoInterval) {
+                this._serverInfoInterval = setInterval(() => {
+                    this.showServerInfo(serverResult);
+                }, 5000); // Update every 5 seconds
+            }
             
         } catch (error) {
             console.error('[Sync] Error getting server info:', error);
