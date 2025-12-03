@@ -1,0 +1,361 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: #c92a2a;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.header-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.main-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 300px;
+    background-color: #f8f9fa;
+    border-right: 2px solid #dee2e6;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #495057;
+}
+
+.vehicle-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vehicle-card {
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    cursor: move;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.vehicle-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.vehicle-card.dragging {
+    opacity: 0.5;
+}
+
+.vehicle-card.deployed {
+    border-color: #40c057;
+    background-color: #d3f9d8;
+}
+
+.vehicle-callsign {
+    font-size: 16px;
+    font-weight: bold;
+    color: #c92a2a;
+    margin-bottom: 5px;
+}
+
+.vehicle-type {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 3px;
+}
+
+.vehicle-crew {
+    font-size: 12px;
+    color: #868e96;
+}
+
+.vehicle-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 5px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+.btn-icon:hover {
+    opacity: 1;
+}
+
+.map-container {
+    flex: 1;
+    position: relative;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background-color: #fff;
+    color: #c92a2a;
+}
+
+.btn-primary:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-secondary {
+    background-color: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255,255,255,0.3);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 30px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: #000;
+}
+
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: #c92a2a;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #c92a2a;
+}
+
+.coord-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.coord-inputs input {
+    flex: 1;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.form-actions .btn {
+    flex: 1;
+}
+
+.form-actions .btn-primary {
+    background-color: #c92a2a;
+    color: white;
+}
+
+.form-actions .btn-primary:hover {
+    background-color: #a61e1e;
+}
+
+.form-actions .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.form-actions .btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Leaflet Custom Styles */
+.vehicle-marker {
+    background-color: #c92a2a;
+    color: white;
+    border: 3px solid white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    cursor: move;
+}
+
+.station-marker {
+    background-color: #1864ab;
+    color: white;
+    border: 3px solid white;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    white-space: nowrap;
+}
+
+.leaflet-popup-content {
+    margin: 15px;
+    min-width: 200px;
+}
+
+.popup-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #c92a2a;
+    margin-bottom: 10px;
+}
+
+.popup-info {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.popup-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.popup-actions .btn {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.popup-actions .btn-danger {
+    background-color: #fa5252;
+    color: white;
+}
+
+.popup-actions .btn-danger:hover {
+    background-color: #e03131;
+}
+
+.popup-actions .btn-edit {
+    background-color: #228be6;
+    color: white;
+}
+
+.popup-actions .btn-edit:hover {
+    background-color: #1c7ed6;
+}
+
+.popup-actions .btn-recall {
+    background-color: #f59f00;
+    color: white;
+}
+
+.popup-actions .btn-recall:hover {
+    background-color: #e67700;
+}

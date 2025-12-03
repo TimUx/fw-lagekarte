@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FW Lagekarte</title>
+    <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="header">
+        <h1>🚒 FW Lagekarte - Einsatzübersicht</h1>
+        <div class="header-controls">
+            <button id="addStationBtn" class="btn btn-primary">➕ Standort hinzufügen</button>
+            <button id="addVehicleBtn" class="btn btn-primary">➕ Fahrzeug hinzufügen</button>
+            <button id="saveMapViewBtn" class="btn btn-secondary">💾 Kartenansicht speichern</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Sidebar für Fahrzeuge -->
+        <div class="sidebar" id="vehicleSidebar">
+            <h2>Verfügbare Fahrzeuge</h2>
+            <div id="vehicleList" class="vehicle-list">
+                <!-- Fahrzeuge werden hier dynamisch eingefügt -->
+            </div>
+        </div>
+
+        <!-- Karte -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Modal für Standort hinzufügen/bearbeiten -->
+    <div id="stationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="stationModal">&times;</span>
+            <h2 id="stationModalTitle">Standort hinzufügen</h2>
+            <form id="stationForm">
+                <input type="hidden" id="stationId">
+                <div class="form-group">
+                    <label for="stationName">Name:</label>
+                    <input type="text" id="stationName" required>
+                </div>
+                <div class="form-group">
+                    <label for="stationAddress">Adresse:</label>
+                    <input type="text" id="stationAddress">
+                </div>
+                <div class="form-group">
+                    <label>Position auf Karte anklicken oder eingeben:</label>
+                    <div class="coord-inputs">
+                        <input type="number" id="stationLat" step="any" placeholder="Breitengrad" required>
+                        <input type="number" id="stationLng" step="any" placeholder="Längengrad" required>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                    <button type="button" class="btn btn-secondary" data-close="stationModal">Abbrechen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal für Fahrzeug hinzufügen/bearbeiten -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" data-modal="vehicleModal">&times;</span>
+            <h2 id="vehicleModalTitle">Fahrzeug hinzufügen</h2>
+            <form id="vehicleForm">
+                <input type="hidden" id="vehicleId">
+                <div class="form-group">
+                    <label for="vehicleCallsign">Rufname:</label>
+                    <input type="text" id="vehicleCallsign" required>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleType">Typ:</label>
+                    <select id="vehicleType" required>
+                        <option value="">Bitte wählen...</option>
+                        <option value="LF">LF - Löschfahrzeug</option>
+                        <option value="DLK">DLK - Drehleiter</option>
+                        <option value="TLF">TLF - Tanklöschfahrzeug</option>
+                        <option value="RW">RW - Rüstwagen</option>
+                        <option value="ELW">ELW - Einsatzleitwagen</option>
+                        <option value="MTW">MTW - Mannschaftstransportwagen</option>
+                        <option value="KTW">KTW - Krankentransportwagen</option>
+                        <option value="RTW">RTW - Rettungswagen</option>
+                        <option value="NEF">NEF - Notarzteinsatzfahrzeug</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleCrew">Besatzung:</label>
+                    <input type="text" id="vehicleCrew" placeholder="z.B. 1/8">
+                </div>
+                <div class="form-group">
+                    <label for="vehicleStation">Station:</label>
+                    <select id="vehicleStation">
+                        <option value="">Keine Station zugeordnet</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="vehicleNotes">Notizen:</label>
+                    <textarea id="vehicleNotes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Speichern</button>
+                    <button type="button" class="btn btn-secondary" data-close="vehicleModal">Abbrechen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="node_modules/leaflet/dist/leaflet.js"></script>
+    <script src="node_modules/localforage/dist/localforage.min.js"></script>
+    <script src="storage.js"></script>
+    <script src="renderer.js"></script>
+</body>
+</html>
