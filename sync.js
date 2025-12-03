@@ -422,12 +422,6 @@ const Sync = {
         }
 
         try {
-            // Clear server info refresh interval
-            if (this._serverInfoInterval) {
-                clearInterval(this._serverInfoInterval);
-                this._serverInfoInterval = null;
-            }
-            
             const result = await window.embeddedServer.stop();
             console.log('[Sync] Embedded server stopped:', result);
             this.updateConnectionStatus('standalone');
@@ -490,13 +484,8 @@ const Sync = {
             // Store info for display in modal
             this._serverInfo = infoHtml;
             
-            // Schedule next update (only set up once)
-            if (this.mode === 'server' && !this._serverInfoInterval) {
-                this._serverInfoInterval = setInterval(() => {
-                    // Fetch fresh status on each interval
-                    this.showServerInfo();
-                }, 5000); // Update every 5 seconds
-            }
+            // Note: Status refresh is handled by the renderer.js modal interval
+            // to avoid redundant updates
             
         } catch (error) {
             console.error('[Sync] Error getting server info:', error);

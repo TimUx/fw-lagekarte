@@ -74,9 +74,18 @@ app.on('window-all-closed', () => {
     }
 });
 
-// Stop server when app is quitting
-app.on('before-quit', async () => {
-    if (embeddedServer.getStatus().isRunning) {
-        await embeddedServer.stop();
+// Stop server when app is quitting (with proper async handling)
+let quitting = false;
+app.on('will-quit', (event) => {
+    if (!quitting && embeddedServer.getStatus().isRunning) {
+        event.preventDefault();
+        quitting = true;
+        
+        embeddedServer.stop().then(() => {
+            app.quit();
+        }).catch((error) => {
+            console.error('Error stopping server:', error);
+            app.quit();
+        });
     }
 });
