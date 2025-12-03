@@ -724,6 +724,16 @@ async function openSyncModal() {
     updateSyncModalFields();
     updateSyncModalStatus();
     
+    // If in server mode, refresh status periodically while modal is open
+    if (config.mode === 'server' && !window._syncModalStatusInterval) {
+        window._syncModalStatusInterval = setInterval(() => {
+            // Check if modal is still open before updating
+            if (modal.classList.contains('show')) {
+                updateSyncModalStatus();
+            }
+        }, 2000); // Update every 2 seconds
+    }
+    
     modal.classList.add('show');
 }
 
@@ -759,7 +769,12 @@ function updateSyncModalStatus() {
         'error': '🔴 Fehler'
     };
     
-    statusElement.textContent = statusTexts[status] || '⚫ Unbekannt';
+    statusElement.innerHTML = statusTexts[status] || '⚫ Unbekannt';
+    
+    // Show server info if available
+    if (status === 'server-mode' && Sync._serverInfo) {
+        statusElement.innerHTML += Sync._serverInfo;
+    }
 }
 
 // Discover servers in LAN
@@ -979,6 +994,12 @@ function setupEventListeners() {
 
 function closeModal(modalId) {
     document.getElementById(modalId).classList.remove('show');
+    
+    // Clean up sync modal status interval
+    if (modalId === 'syncModal' && window._syncModalStatusInterval) {
+        clearInterval(window._syncModalStatusInterval);
+        window._syncModalStatusInterval = null;
+    }
 }
 
 // Start the application

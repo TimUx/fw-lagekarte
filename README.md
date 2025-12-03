@@ -12,6 +12,8 @@ Eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen mit interaktive
 - 💾 **Persistente Speicherung** - Alle Daten werden lokal gespeichert
 - 🖨️ **Druckfunktion** - Professionelle Druckausgabe der Lagekarte mit Legende
 - 🔄 **Netzwerk-Synchronisation** - Optional: Multi-User Echtzeit-Synchronisation über WebSocket
+- 🖥️ **Integrierter Server** - Eingebauter WebSocket + HTTP Server für einfache Multi-User-Nutzung
+- 🌐 **Web Viewer** - Schreibgeschützter Browser-Zugriff ohne Installation
 - ✏️ **Bearbeitung** - Standorte und Fahrzeuge können jederzeit bearbeitet oder gelöscht werden
 - 🔌 **Offline-Fähig** - Funktioniert komplett offline (nach erstem Kartenladen)
 - 💻 **Plattformübergreifend** - Läuft auf Windows, Linux und macOS
@@ -79,12 +81,24 @@ Die Installer werden im `dist/`-Verzeichnis erstellt.
 2. Klicken Sie auf "💾 Kartenansicht speichern"
 3. Die Ansicht wird beim nächsten Start wiederhergestellt
 
+### Multi-User Synchronisation (Server-Modus)
+1. Klicken Sie auf **"🔄 Synchronisation"**
+2. Wählen Sie Modus **"Server (Synchronisation bereitstellen)"**
+3. Klicken Sie auf **"Speichern"** - Der Server startet automatisch!
+4. Teilen Sie die angezeigten URLs mit anderen Benutzern:
+   - **WebSocket-URL** für andere Desktop-Clients (z.B. `ws://192.168.1.100:8080`)
+   - **HTTP-URL** für Browser-Zugriff (z.B. `http://192.168.1.100:8080`)
+
+**Ausführliche Dokumentation:** Siehe [EMBEDDED_SERVER.md](EMBEDDED_SERVER.md) für Details zum integrierten Server.
+
 ## Technologie
 
 - **Electron** - Plattformübergreifendes Desktop-Framework für Windows/Linux/macOS
 - **Leaflet.js** - Interaktive Kartenvisualisierung
 - **OpenStreetMap** - Kartendaten
 - **LocalForage** - Lokale Datenspeicherung (IndexedDB)
+- **WebSocket (ws)** - Echtzeit-Synchronisation
+- **Express** - HTTP-Server für Web Viewer
 
 ## Lizenz
 

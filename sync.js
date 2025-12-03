@@ -22,9 +22,8 @@ const Sync = {
         if (this.mode === 'client' && this.serverUrl) {
             this.connect();
         } else if (this.mode === 'server') {
-            // Note: Server mode requires backend implementation
-            // This is a placeholder for future server functionality
-            console.log('[Sync] Server mode requires backend WebSocket server');
+            // Start embedded server
+            await this.startEmbeddedServer();
         }
     },
 
@@ -49,12 +48,16 @@ const Sync = {
         // Disconnect existing connection
         this.disconnect();
         
+        // Stop embedded server if it was running
+        if (window.embeddedServer) {
+            await this.stopEmbeddedServer();
+        }
+        
         // Connect based on mode
         if (this.mode === 'client' && this.serverUrl) {
             this.connect();
         } else if (this.mode === 'server') {
-            console.log('[Sync] Server mode requires backend implementation');
-            this.updateConnectionStatus('server-mode');
+            await this.startEmbeddedServer();
         }
     },
 
@@ -259,7 +262,20 @@ const Sync = {
     // Helper to send broadcast if enabled and not receiving
     _broadcast: function(message) {
         if (this.mode === 'standalone' || this._isReceivingUpdate) return false;
+        
         if (this.mode === 'client' && !this.serverUrl) return false;
+        
+        if (this.mode === 'server') {
+            // In server mode, we need to sync the state periodically
+            // The embedded server will handle broadcasting to clients
+            // We'll sync state after a short delay to batch updates
+            clearTimeout(this._serverSyncTimeout);
+            this._serverSyncTimeout = setTimeout(() => {
+                this.syncServerState();
+            }, 250); // Batch updates for 250ms to reduce sync calls
+            return true;
+        }
+        
         return this.send(message);
     },
 
@@ -365,6 +381,114 @@ const Sync = {
         if (this.reconnectInterval) {
             clearInterval(this.reconnectInterval);
             this.reconnectInterval = null;
+        }
+    },
+
+    // Start embedded server (server mode)
+    startEmbeddedServer: async function() {
+        if (!window.embeddedServer) {
+            console.error('[Sync] Embedded server API not available');
+            this.updateConnectionStatus('error');
+            return;
+        }
+
+        try {
+            console.log('[Sync] Starting embedded server on port', this.serverPort);
+            const result = await window.embeddedServer.start(this.serverPort);
+            
+            if (result.success) {
+                console.log('[Sync] Embedded server started:', result);
+                this.updateConnectionStatus('server-mode');
+                
+                // Update server state with current data
+                await this.syncServerState();
+                
+                // Show server info to user
+                this.showServerInfo(result);
+            } else {
+                console.error('[Sync] Failed to start embedded server:', result.message);
+                this.updateConnectionStatus('error');
+            }
+        } catch (error) {
+            console.error('[Sync] Error starting embedded server:', error);
+            this.updateConnectionStatus('error');
+        }
+    },
+
+    // Stop embedded server
+    stopEmbeddedServer: async function() {
+        if (!window.embeddedServer) {
+            return;
+        }
+
+        try {
+            const result = await window.embeddedServer.stop();
+            console.log('[Sync] Embedded server stopped:', result);
+            this.updateConnectionStatus('standalone');
+            this._serverInfo = null;
+        } catch (error) {
+            console.error('[Sync] Error stopping embedded server:', error);
+        }
+    },
+
+    // Sync current local state to embedded server
+    syncServerState: async function() {
+        if (!window.embeddedServer || this.mode !== 'server') {
+            return;
+        }
+
+        try {
+            const stations = await Storage.getStations();
+            const vehicles = await Storage.getVehicles();
+            await window.embeddedServer.updateState(stations, vehicles);
+            console.log('[Sync] Server state synchronized');
+        } catch (error) {
+            console.error('[Sync] Error syncing server state:', error);
+        }
+    },
+
+    // Show server connection info to user
+    showServerInfo: async function(serverResult) {
+        if (!window.embeddedServer) {
+            return;
+        }
+
+        try {
+            // Get fresh server status
+            const serverStatus = await window.embeddedServer.getStatus();
+            const networkInfo = await window.embeddedServer.getNetworkInfo();
+            
+            // Use provided result or current status
+            const port = serverResult ? serverResult.port : serverStatus.port;
+            const wsUrl = serverResult ? serverResult.wsUrl : serverStatus.wsUrl;
+            const httpUrl = serverResult ? serverResult.httpUrl : serverStatus.httpUrl;
+            
+            let infoHtml = `<div style="padding: 10px; background: #e7f5ff; border-radius: 5px; margin-top: 5px; font-size: 13px; line-height: 1.6;">`;
+            infoHtml += `<strong>🟢 Server läuft auf Port ${port}</strong><br>`;
+            infoHtml += `<strong>Verbundene Clients:</strong> ${serverStatus.clientCount}<br><br>`;
+            infoHtml += `<strong>Lokale Verbindungen:</strong><br>`;
+            infoHtml += `• WebSocket: <code>${wsUrl}</code><br>`;
+            infoHtml += `• Web Viewer: <code>${httpUrl}</code><br>`;
+            
+            if (networkInfo && networkInfo.length > 0) {
+                infoHtml += `<br><strong>Netzwerk-Adressen (andere Geräte):</strong><br>`;
+                networkInfo.forEach(info => {
+                    infoHtml += `<strong>${info.name} (${info.address}):</strong><br>`;
+                    infoHtml += `• WS: <code>${info.wsUrl}</code><br>`;
+                    infoHtml += `• HTTP: <code>${info.httpUrl}</code><br>`;
+                });
+            }
+            
+            infoHtml += `</div>`;
+            
+            // Store info for display in modal
+            this._serverInfo = infoHtml;
+            
+            // Note: Status refresh is handled by the renderer.js modal interval
+            // to avoid redundant updates
+            
+        } catch (error) {
+            console.error('[Sync] Error getting server info:', error);
         }
     },
 

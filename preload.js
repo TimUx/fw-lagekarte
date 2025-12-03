@@ -2,9 +2,16 @@
 // This file runs before the renderer process loads
 // It has access to Node.js APIs but runs in the context of the web page
 
-// Since we're using browser-compatible libraries (Leaflet, LocalForage),
-// we don't need to expose any Node.js APIs to the renderer
-// This keeps the security boundary intact
+const { contextBridge, ipcRenderer } = require('electron');
+
+// Expose embedded server API to renderer process
+contextBridge.exposeInMainWorld('embeddedServer', {
+    start: (port) => ipcRenderer.invoke('server:start', port),
+    stop: () => ipcRenderer.invoke('server:stop'),
+    getStatus: () => ipcRenderer.invoke('server:status'),
+    getNetworkInfo: () => ipcRenderer.invoke('server:networkInfo'),
+    updateState: (stations, vehicles) => ipcRenderer.invoke('server:updateState', stations, vehicles)
+});
 
 window.addEventListener('DOMContentLoaded', () => {
     console.log('FW Lagekarte loaded successfully');
