@@ -1,0 +1,2 @@
+Tag v0.1.0-alpha.1 created on commit 482a8b1
+This file is used to trigger the git push that will also push the annotated tag due to push.followTags=true configuration.
