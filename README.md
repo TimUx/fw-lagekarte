@@ -2,6 +2,8 @@
 
 Eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen mit interaktiver Karte.
 
+![Hauptansicht der FW Lagekarte](assets/screenshots/hauptansicht.png)
+
 ## Features
 
 - 🗺️ **OpenStreetMap Integration** - Interaktive Kartenansicht mit OSM
@@ -55,12 +57,18 @@ Die Installer werden im `dist/`-Verzeichnis erstellt.
 ## Benutzung
 
 ### Standorte hinzufügen
+
+![Standort hinzufügen Dialog](assets/screenshots/standort-dialog.png)
+
 1. Klicken Sie auf "➕ Standort hinzufügen"
 2. Geben Sie Name und Adresse ein
 3. Klicken Sie auf die Karte, um die Position zu wählen (oder geben Sie Koordinaten ein)
 4. Klicken Sie auf "Speichern"
 
 ### Fahrzeuge hinzufügen
+
+![Fahrzeug hinzufügen Dialog](assets/screenshots/fahrzeug-dialog.png)
+
 1. Klicken Sie auf "➕ Fahrzeug hinzufügen"
 2. Geben Sie Rufname, Typ, Besatzung usw. ein
 3. Klicken Sie auf "Speichern"

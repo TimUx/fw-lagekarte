@@ -4,6 +4,10 @@
 
 Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen. Sie ermöglicht die Visualisierung von Standorten und Fahrzeugen auf einer interaktiven Karte.
 
+![Hauptansicht der Anwendung](assets/screenshots/hauptansicht.png)
+
+*Die Hauptansicht zeigt die Seitenleiste mit Fahrzeugen (gruppiert nach Standorten mit taktischen Zeichen) und die interaktive Karte.*
+
 ## Erste Schritte
 
 ### Installation
@@ -15,6 +19,9 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 #### 1. Feuerwehr-Standorte verwalten
 
 **Standort hinzufügen:**
+
+![Standort hinzufügen Dialog](assets/screenshots/standort-dialog.png)
+
 1. Klicken Sie mit der **rechten Maustaste** auf die gewünschte Position auf der Karte
 2. Wählen Sie "🏢 Standort hier hinzufügen" aus dem Kontextmenü
 3. Geben Sie den Namen des Standorts ein (z.B. "Feuerwache Nord")
@@ -42,6 +49,9 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 #### 2. Fahrzeuge verwalten
 
 **Fahrzeug hinzufügen:**
+
+![Fahrzeug hinzufügen Dialog](assets/screenshots/fahrzeug-dialog.png)
+
 1. Klicken Sie auf den Button "➕ Fahrzeug hinzufügen"
 2. Geben Sie den Rufnamen ein (z.B. "Florian Hamburg 1/44/1")
 3. Wählen Sie den Fahrzeugtyp aus der Liste:
