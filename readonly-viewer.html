@@ -739,6 +739,33 @@
                 marker.bindPopup(popupContent);
                 vehicleMarkers[vehicle.id] = marker;
             });
+            
+            // Auto-zoom to fit all stations and deployed vehicles
+            autoZoomToMarkers();
+        }
+
+        // Automatically zoom map to fit all stations and deployed vehicles
+        function autoZoomToMarkers() {
+            const bounds = [];
+            
+            // Add all station positions
+            stations.forEach(station => {
+                bounds.push([station.lat, station.lng]);
+            });
+            
+            // Add all deployed vehicle positions
+            vehicles.filter(v => v.deployed && v.position).forEach(vehicle => {
+                bounds.push([vehicle.position.lat, vehicle.position.lng]);
+            });
+            
+            // If we have at least one marker, fit the map to show all of them
+            if (bounds.length > 0) {
+                const leafletBounds = L.latLngBounds(bounds);
+                map.fitBounds(leafletBounds, {
+                    padding: [50, 50], // Add 50px padding around the bounds
+                    maxZoom: 15 // Don't zoom in too close if there's only one marker
+                });
+            }
         }
 
         // Initialize when page loads
