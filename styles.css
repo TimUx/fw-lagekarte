@@ -26,6 +26,15 @@ body {
 .header h1 {
     font-size: 24px;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-icon {
+    height: 32px;
+    width: 32px;
+    vertical-align: middle;
 }
 
 .sync-status-container {

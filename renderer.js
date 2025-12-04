@@ -657,7 +657,7 @@ async function printMap() {
     
     printLegend.innerHTML = `
         <div class="print-legend-header">
-            <h1>🚒 FW Lagekarte - Einsatzübersicht</h1>
+            <h1>Lagekarte | Einsatzübersicht</h1>
             <div class="print-timestamp">Gedruckt am: ${new Date().toLocaleString('de-DE')}</div>
         </div>
         <div class="print-legend-content">
