@@ -66,10 +66,7 @@
       "node_modules/**/*"
     ],
     "extraResources": [
-      {
-        "from": "*.md",
-        "to": "."
-      }
+      "*.md"
     ]
   }
 }
