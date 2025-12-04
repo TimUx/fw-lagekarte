@@ -44,6 +44,8 @@ function openDocumentation(filename) {
         
         // Inject the converted HTML content and title once the page is ready
         docWindow.webContents.on('did-finish-load', () => {
+            // Note: innerHTML is safe here because markdown-it is configured with html: false,
+            // which escapes all HTML tags in the markdown content
             docWindow.webContents.executeJavaScript(`
                 window.docContent = ${JSON.stringify(htmlContent)};
                 window.docTitle = ${JSON.stringify(docTitle)};
