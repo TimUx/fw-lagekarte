@@ -4,14 +4,21 @@ const embeddedServer = require('./embedded-server');
 
 let mainWindow;
 
+function openDocumentation(filename) {
+    shell.openPath(path.join(__dirname, filename));
+}
+
 function createMenu() {
+    const isMac = process.platform === 'darwin';
+    
     const template = [
         {
             label: 'Datei',
             submenu: [
                 {
                     label: 'Beenden',
-                    accelerator: process.platform === 'darwin' ? 'Cmd+Q' : 'Alt+F4',
+                    accelerator: isMac ? 'Cmd+Q' : 'Alt+F4',
+                    visible: !isMac, // Hide on macOS since quit is in app menu
                     click: () => {
                         app.quit();
                     }
@@ -23,59 +30,43 @@ function createMenu() {
             submenu: [
                 {
                     label: 'Benutzerhandbuch',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'BENUTZERHANDBUCH.md'));
-                    }
+                    click: () => openDocumentation('BENUTZERHANDBUCH.md')
                 },
                 {
                     label: 'README',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'README.md'));
-                    }
+                    click: () => openDocumentation('README.md')
                 },
                 {
                     label: 'Quickstart',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'QUICKSTART.md'));
-                    }
+                    click: () => openDocumentation('QUICKSTART.md')
                 },
                 {
                     label: 'Features',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'FEATURES.md'));
-                    }
+                    click: () => openDocumentation('FEATURES.md')
                 },
                 { type: 'separator' },
                 {
                     label: 'Readonly Viewer Dokumentation',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'READONLY_VIEWER.md'));
-                    }
+                    click: () => openDocumentation('READONLY_VIEWER.md')
                 },
                 {
                     label: 'Sync Server Setup',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'SYNC_SERVER_SETUP.md'));
-                    }
+                    click: () => openDocumentation('SYNC_SERVER_SETUP.md')
                 },
                 {
                     label: 'Embedded Server Dokumentation',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'EMBEDDED_SERVER.md'));
-                    }
+                    click: () => openDocumentation('EMBEDDED_SERVER.md')
                 },
                 {
                     label: 'Taktische Zeichen Implementierung',
-                    click: () => {
-                        shell.openPath(path.join(__dirname, 'TACTICAL_SYMBOLS_IMPLEMENTATION.md'));
-                    }
+                    click: () => openDocumentation('TACTICAL_SYMBOLS_IMPLEMENTATION.md')
                 }
             ]
         }
     ];
 
     // On macOS, add the app menu
-    if (process.platform === 'darwin') {
+    if (isMac) {
         template.unshift({
             label: app.getName(),
             submenu: [
