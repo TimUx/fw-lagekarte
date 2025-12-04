@@ -180,8 +180,15 @@ function renderVehicles() {
         // Create station header
         const stationHeader = document.createElement('div');
         stationHeader.className = 'station-group-header';
+        
+        // Get tactical symbol for station
+        const stationSymbolPath = getStationSymbolPath();
+        const stationSymbolHtml = stationSymbolPath 
+            ? `<img src="${escapeHtml(stationSymbolPath)}" alt="Station" class="station-group-icon" />`
+            : '📍';
+        
         stationHeader.innerHTML = `
-            <div class="station-group-name">📍 ${escapeHtml(station.name)}</div>
+            <div class="station-group-name">${stationSymbolHtml} ${escapeHtml(station.name)}</div>
         `;
         vehicleList.appendChild(stationHeader);
         
