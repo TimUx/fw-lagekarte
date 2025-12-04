@@ -32,7 +32,6 @@
   "build": {
     "appId": "com.fw-lagekarte.app",
     "productName": "Lagekarte",
-    "icon": "assets/icon",
     "win": {
       "target": "nsis",
       "icon": "assets/icon.ico"
