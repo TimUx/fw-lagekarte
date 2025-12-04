@@ -5,12 +5,23 @@ const embeddedServer = require('./embedded-server');
 let mainWindow;
 
 function openDocumentation(filename) {
-    const filePath = path.join(__dirname, filename);
-    // Use file:// protocol for better compatibility with packaged apps
-    const fileUrl = `file://${filePath}`;
-    shell.openExternal(fileUrl).catch(error => {
+    // In packaged apps, extraResources are in process.resourcesPath
+    // In development, they're in __dirname
+    const basePath = app.isPackaged ? process.resourcesPath : __dirname;
+    const filePath = path.join(basePath, filename);
+    
+    // Use shell.openPath() which works better for local files
+    shell.openPath(filePath).then(result => {
+        if (result) {
+            console.error(`Failed to open documentation: ${filename}`, result);
+            // Show error dialog to user
+            dialog.showErrorBox(
+                'Dokumentation konnte nicht geöffnet werden',
+                `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.\n\nFehler: ${result}`
+            );
+        }
+    }).catch(error => {
         console.error(`Failed to open documentation: ${filename}`, error);
-        // Show error dialog to user
         dialog.showErrorBox(
             'Dokumentation konnte nicht geöffnet werden',
             `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.`
