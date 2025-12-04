@@ -156,20 +156,97 @@ Drucken Sie eine professionelle Übersicht der aktuellen Lage:
 
 Arbeiten Sie gemeinsam mit mehreren Benutzern an derselben Lagekarte in Echtzeit.
 
-**Voraussetzungen:**
-- Ein WebSocket-Server muss eingerichtet und erreichbar sein
-- Alle Benutzer müssen sich mit demselben Server verbinden
+#### Integrierter Server (Empfohlen)
 
-**Synchronisation einrichten:**
-1. Klicken Sie auf "🔄 Synchronisation" in der oberen Leiste
-2. Aktivieren Sie "Synchronisation aktivieren"
-3. Geben Sie die Server-URL ein (z.B. `ws://192.168.1.100:8080` oder `wss://sync-server.example.com`)
-4. Klicken Sie auf "Speichern"
-5. Der Verbindungsstatus wird in der oberen Leiste angezeigt:
-   - 🟢 **Synchronisation aktiv** - Verbunden und synchronisiert
-   - 🟡 **Verbinde...** - Verbindung wird hergestellt
-   - ⚫ **Nicht verbunden** - Offline oder Server nicht erreichbar
-   - 🔴 **Verbindungsfehler** - Verbindung fehlgeschlagen
+Die FW Lagekarte verfügt über einen **integrierten WebSocket + HTTP Server**, der direkt in der Electron-App läuft. Sie müssen keinen separaten Server mehr einrichten!
+
+**Der integrierte Server bietet:**
+- ✅ WebSocket-Synchronisation für Multi-User Echtzeit-Updates
+- ✅ HTTP Web Viewer für schreibgeschützten Browser-Zugriff
+- ✅ Automatisches Starten/Stoppen direkt aus der App
+- ✅ Netzwerk-Erkennung zeigt alle IP-Adressen für Client-Verbindungen
+- ✅ Live Client-Zähler zeigt verbundene Clients an
+- ✅ Null-Konfiguration - einfach aktivieren und verwenden
+
+**Server-Modus aktivieren:**
+
+1. **Öffnen Sie die Synchronisations-Einstellungen**
+   - Klicken Sie auf den Button **"🔄 Synchronisation"** in der Kopfzeile
+
+2. **Wählen Sie den Server-Modus**
+   - Setzen Sie **Modus** auf **"Server (Synchronisation bereitstellen)"**
+   - Wählen Sie optional einen anderen Port (Standard: 8080)
+
+3. **Speichern und Server starten**
+   - Klicken Sie auf **"Speichern"**
+   - Der Server startet automatisch!
+
+4. **Server-Informationen anzeigen**
+   - Nach dem Speichern zeigt das Modal die Server-URLs an:
+     - **Lokale Adressen** (localhost)
+     - **Netzwerk-Adressen** (für andere Geräte im LAN)
+     - **Anzahl verbundener Clients**
+
+**Server-URLs verstehen:**
+
+Nach dem Aktivieren sehen Sie verschiedene URLs:
+
+- **Lokale Verbindungen (localhost):**
+  - WebSocket: `ws://localhost:8080`
+  - Web Viewer: `http://localhost:8080`
+  - Diese URLs funktionieren nur auf dem gleichen Computer
+
+- **Netzwerk-Adressen (LAN):**
+  - z.B. Ethernet: `ws://192.168.1.100:8080` und `http://192.168.1.100:8080`
+  - z.B. WiFi: `ws://192.168.1.101:8080` und `http://192.168.1.101:8080`
+  - Diese URLs können von anderen Geräten im gleichen Netzwerk verwendet werden
+
+**Clients verbinden:**
+
+**Option 1: Electron-App (Desktop-Clients mit Bearbeitungsrechten)**
+1. Öffnen Sie die FW Lagekarte auf einem anderen Computer
+2. Klicken Sie auf **"🔄 Synchronisation"**
+3. Wählen Sie Modus **"Client (Zum Server verbinden)"**
+4. Geben Sie die WebSocket-URL des Servers ein (z.B. `ws://192.168.1.100:8080`)
+5. Klicken Sie auf **"Speichern"**
+6. Die App verbindet sich automatisch und synchronisiert Daten
+
+**Option 2: Web Viewer (Browser - schreibgeschützt)**
+1. Öffnen Sie einen beliebigen modernen Browser (Chrome, Firefox, Edge, Safari)
+2. Geben Sie die HTTP-URL in die Adresszeile ein (z.B. `http://192.168.1.100:8080`)
+3. Der Read-Only Viewer wird geladen und zeigt die Lagekarte an
+4. Alle Änderungen werden live aktualisiert
+
+**Web Viewer Funktionen:**
+- ✅ Anzeige aller Standorte und Fahrzeuge
+- ✅ Live-Updates bei Änderungen
+- ✅ Anzeige von Einsatznummern und Einsatzstichworten
+- ✅ Interaktive Karte mit Zoom und Pan
+- ✅ Fahrzeugliste mit Gruppierung nach Standorten
+- ✅ Statistiken (Anzahl Fahrzeuge im Einsatz)
+- ❌ Keine Bearbeitungsmöglichkeiten (schreibgeschützt)
+
+**Verwendungszwecke:**
+
+1. **Leitstelle**
+   - Ein Computer im Server-Modus
+   - Mehrere Tablets/Computer im Client-Modus
+   - Alle sehen die gleiche Live-Lagekarte
+
+2. **Einsatzleitung vor Ort**
+   - Laptop mit Server-Modus am Einsatzort
+   - Abschnittsleiter mit Tablets verbinden sich als Clients
+   - Gemeinsame Lagekarte für alle Beteiligten
+
+3. **Große Bildschirme**
+   - Server läuft auf einem Computer
+   - Browser auf großem Display zeigt Web Viewer
+   - Keine Installation auf dem Display-Computer notwendig
+
+4. **Mobile Geräte**
+   - Server läuft auf Desktop/Laptop
+   - Smartphones und Tablets öffnen Web Viewer
+   - Schreibgeschützter Zugriff für Informationszwecke
 
 **Was wird synchronisiert:**
 - Alle Standorte (Hinzufügen, Bearbeiten, Löschen)
@@ -177,9 +254,24 @@ Arbeiten Sie gemeinsam mit mehreren Benutzern an derselben Lagekarte in Echtzeit
 - Fahrzeugpositionen (Verschieben auf der Karte)
 - Einsatzstatus (Verfügbar/Im Einsatz)
 
-**Wichtig:** Die Synchronisation ist optional. Die Anwendung funktioniert auch ohne Synchronisation im Einzelplatz-Modus vollständig offline.
+**Verbindungsstatus:**
 
-**Hinweis für Administratoren:** Ein WebSocket-Server muss separat eingerichtet werden. Die Anwendung enthält nur den Client-Teil der Synchronisation.
+Der Verbindungsstatus wird in der oberen Leiste angezeigt:
+- 🟢 **Synchronisation aktiv / Server aktiv** - Verbunden und synchronisiert / Server läuft
+- 🟡 **Verbinde...** - Verbindung wird hergestellt
+- ⚫ **Nicht verbunden** - Offline oder Server nicht erreichbar
+- 🔴 **Verbindungsfehler** - Verbindung fehlgeschlagen
+
+**Sicherheitshinweise:**
+
+⚠️ **Wichtig:**
+- Der integrierte Server ist für den Betrieb in vertrauenswürdigen Netzwerken (LAN) konzipiert
+- Der Server hat keine Benutzerauthentifizierung - jeder mit Zugriff auf die URL kann sich verbinden
+- WebSocket-Verbindungen sind nicht verschlüsselt (ws://, nicht wss://)
+- Verwenden Sie keine sensiblen Daten über öffentliche Netzwerke
+- Stellen Sie sicher, dass Ihre Firewall den Server-Port blockiert, wenn er nicht im LAN verfügbar sein soll
+
+**Wichtig:** Die Synchronisation ist optional. Die Anwendung funktioniert auch ohne Synchronisation im Einzelplatz-Modus vollständig offline.
 
 ## Offline-Nutzung
 
@@ -203,6 +295,8 @@ Die Anwendung läuft auf:
 
 ## Fehlerbehebung
 
+### Allgemeine Probleme
+
 **Die Karte lädt nicht:**
 - Überprüfen Sie Ihre Internetverbindung (nur beim ersten Laden erforderlich)
 - Starten Sie die Anwendung neu
@@ -214,6 +308,49 @@ Die Anwendung läuft auf:
 **Änderungen werden nicht gespeichert:**
 - Klicken Sie immer auf "Speichern" in den Formularen
 - Überprüfen Sie, ob ausreichend Speicherplatz vorhanden ist
+
+### Server-Modus Probleme
+
+**Server startet nicht:**
+- **Problem:** "Server konnte nicht gestartet werden"
+- **Lösungen:**
+  1. Prüfen Sie, ob der Port bereits verwendet wird:
+     - Windows: Öffnen Sie Eingabeaufforderung und führen Sie aus: `netstat -ano | findstr :8080`
+     - Linux/Mac: Öffnen Sie Terminal und führen Sie aus: `lsof -i :8080`
+  2. Wählen Sie einen anderen Port in den Einstellungen (z.B. 8081, 8082, 3000)
+  3. Starten Sie die App neu
+
+**Clients können sich nicht verbinden:**
+- **Problem:** Client zeigt "Verbindungsfehler"
+- **Lösungen:**
+  1. **Prüfen Sie die Firewall:**
+     - Windows: Windows Defender Firewall muss die App erlauben
+     - Linux: ufw oder iptables muss den Port freigeben
+     - Mac: Systemeinstellungen > Sicherheit & Datenschutz > Firewall
+  2. **Prüfen Sie die IP-Adresse:**
+     - Verwenden Sie die richtige Netzwerk-Adresse (nicht localhost für andere Computer)
+     - Testen Sie die Verbindung mit `ping 192.168.1.100` (Ihre Server-IP)
+  3. **Prüfen Sie den Server-Status:**
+     - Im Server: Status sollte "🟢 Server aktiv" zeigen
+     - Anzahl verbundener Clients sollte angezeigt werden
+  4. **Prüfen Sie das Netzwerk:**
+     - Beide Computer müssen im gleichen Netzwerk sein
+     - Router-Einstellungen können Geräte-zu-Geräte-Kommunikation blockieren
+
+**Synchronisation verzögert:**
+- **Problem:** Updates brauchen zu lange
+- **Lösungen:**
+  1. Prüfen Sie die Netzwerklatenz mit `ping 192.168.1.100` (Ihre Server-IP)
+  2. Reduzieren Sie die Anzahl der Clients
+  3. Verwenden Sie kabelgebundenes Ethernet statt WLAN
+
+**Web Viewer lädt nicht:**
+- **Problem:** Browser zeigt "Seite nicht gefunden"
+- **Lösungen:**
+  1. Prüfen Sie die URL - muss `http://` sein, nicht `ws://`
+  2. Prüfen Sie, ob der Server läuft (Server-Status im Modal prüfen)
+  3. Versuchen Sie einen anderen Browser
+  4. Leeren Sie den Browser-Cache
 
 ## Tastenkombinationen
 

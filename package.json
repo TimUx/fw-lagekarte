@@ -70,7 +70,7 @@
       "node_modules/**/*"
     ],
     "extraResources": [
-      "*.md"
+      "BENUTZERHANDBUCH.md"
     ]
   }
 }
