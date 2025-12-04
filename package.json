@@ -54,8 +54,13 @@
       "readonly-viewer.html",
       "styles.css",
       "assets/**/*",
-      "node_modules/**/*",
-      "*.md"
+      "node_modules/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "*.md",
+        "to": "."
+      }
     ]
   }
 }

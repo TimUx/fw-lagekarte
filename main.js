@@ -5,10 +5,24 @@ const embeddedServer = require('./embedded-server');
 let mainWindow;
 
 function openDocumentation(filename) {
-    const filePath = path.join(__dirname, filename);
-    shell.openPath(filePath).catch(error => {
+    // In packaged apps, extraResources are in process.resourcesPath
+    // In development, they're in __dirname
+    const basePath = app.isPackaged ? process.resourcesPath : __dirname;
+    const filePath = path.join(basePath, filename);
+    
+    // Use shell.openPath() which works better for local files
+    // shell.openPath() returns an empty string on success, or an error message on failure
+    shell.openPath(filePath).then(result => {
+        if (result !== '') {
+            console.error(`Failed to open documentation: ${filename}`, result);
+            // Show error dialog to user
+            dialog.showErrorBox(
+                'Dokumentation konnte nicht geöffnet werden',
+                `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.\n\nFehler: ${result}`
+            );
+        }
+    }).catch(error => {
         console.error(`Failed to open documentation: ${filename}`, error);
-        // Show error dialog to user
         dialog.showErrorBox(
             'Dokumentation konnte nicht geöffnet werden',
             `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.`
@@ -29,6 +43,71 @@ function createMenu() {
                     visible: !isMac, // Hide on macOS since quit is in app menu
                     click: () => {
                         app.quit();
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Ansicht',
+            submenu: [
+                {
+                    label: 'Neu laden',
+                    accelerator: 'CmdOrCtrl+R',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.reload();
+                    }
+                },
+                {
+                    label: 'Erzwungenes Neuladen',
+                    accelerator: 'CmdOrCtrl+Shift+R',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.webContents.reloadIgnoringCache();
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Vergrößern',
+                    accelerator: 'CmdOrCtrl+=',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) {
+                            const currentZoom = focusedWindow.webContents.getZoomLevel();
+                            focusedWindow.webContents.setZoomLevel(currentZoom + 1);
+                        }
+                    }
+                },
+                {
+                    label: 'Verkleinern',
+                    accelerator: 'CmdOrCtrl+-',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) {
+                            const currentZoom = focusedWindow.webContents.getZoomLevel();
+                            focusedWindow.webContents.setZoomLevel(currentZoom - 1);
+                        }
+                    }
+                },
+                {
+                    label: 'Tatsächliche Größe',
+                    accelerator: 'CmdOrCtrl+0',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.webContents.setZoomLevel(0);
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Vollbild',
+                    accelerator: isMac ? 'Ctrl+Cmd+F' : 'F11',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) {
+                            focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                        }
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Entwicklertools',
+                    accelerator: isMac ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.webContents.toggleDevTools();
                     }
                 }
             ]
