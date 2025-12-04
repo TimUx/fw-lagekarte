@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const embeddedServer = require('./embedded-server');
+const MarkdownIt = require('markdown-it');
 
 let mainWindow;
 
@@ -10,24 +12,54 @@ function openDocumentation(filename) {
     const basePath = app.isPackaged ? process.resourcesPath : __dirname;
     const filePath = path.join(basePath, filename);
     
-    // Use shell.openPath() which works better for local files
-    // shell.openPath() returns an empty string on success, or an error message on failure
-    shell.openPath(filePath).then(result => {
-        if (result !== '') {
-            console.error(`Failed to open documentation: ${filename}`, result);
-            // Show error dialog to user
-            dialog.showErrorBox(
-                'Dokumentation konnte nicht geöffnet werden',
-                `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.\n\nFehler: ${result}`
-            );
-        }
-    }).catch(error => {
+    try {
+        // Read the markdown file
+        const markdownContent = fs.readFileSync(filePath, 'utf-8');
+        
+        // Convert markdown to HTML
+        const md = new MarkdownIt({
+            html: true,
+            linkify: true,
+            typographer: true
+        });
+        const htmlContent = md.render(markdownContent);
+        
+        // Get a nice title from filename
+        const docTitle = filename.replace('.md', '').replace(/_/g, ' ');
+        
+        // Create a new window to display the documentation
+        const docWindow = new BrowserWindow({
+            width: 1000,
+            height: 800,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                preload: path.join(__dirname, 'preload.js')
+            },
+            title: docTitle,
+            icon: path.join(__dirname, 'assets', 'icon.png')
+        });
+        
+        // Load the doc viewer HTML
+        docWindow.loadFile('doc-viewer.html');
+        
+        // Inject the converted HTML content and title once the page is ready
+        docWindow.webContents.on('did-finish-load', () => {
+            docWindow.webContents.executeJavaScript(`
+                window.docContent = ${JSON.stringify(htmlContent)};
+                window.docTitle = ${JSON.stringify(docTitle)};
+                document.title = window.docTitle;
+                document.getElementById('content').innerHTML = window.docContent;
+            `);
+        });
+        
+    } catch (error) {
         console.error(`Failed to open documentation: ${filename}`, error);
         dialog.showErrorBox(
             'Dokumentation konnte nicht geöffnet werden',
-            `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.`
+            `Die Datei ${filename} konnte nicht geöffnet werden.\n\nFehler: ${error.message}`
         );
-    });
+    }
 }
 
 function createMenu() {

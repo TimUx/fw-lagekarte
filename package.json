@@ -22,6 +22,7 @@
     "express": "^4.21.2",
     "leaflet": "^1.9.4",
     "localforage": "^1.10.0",
+    "markdown-it": "^14.1.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
@@ -35,7 +36,10 @@
       "target": "nsis"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Utility"
     },
     "mac": {
@@ -52,6 +56,7 @@
       "embedded-server.js",
       "index.html",
       "readonly-viewer.html",
+      "doc-viewer.html",
       "styles.css",
       "assets/**/*",
       "node_modules/**/*"
