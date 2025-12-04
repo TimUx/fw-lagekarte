@@ -232,8 +232,8 @@ const Sync = {
                 
                 case 'vehicle_position':
                     // Vehicle position update
-                    await Storage.updateVehiclePosition(message.vehicleId, message.position);
-                    this.notifyListeners('vehicle_position', { vehicleId: message.vehicleId, position: message.position });
+                    await Storage.updateVehiclePosition(message.vehicleId, message.position, message.deploymentInfo);
+                    this.notifyListeners('vehicle_position', { vehicleId: message.vehicleId, position: message.position, deploymentInfo: message.deploymentInfo });
                     break;
                 
                 default:
@@ -316,11 +316,12 @@ const Sync = {
     },
 
     // Broadcast vehicle position update
-    broadcastVehiclePosition: function(vehicleId, position) {
+    broadcastVehiclePosition: function(vehicleId, position, deploymentInfo = null) {
         this._broadcast({
             type: 'vehicle_position',
             vehicleId: vehicleId,
             position: position,
+            deploymentInfo: deploymentInfo,
             timestamp: Date.now()
         });
     },

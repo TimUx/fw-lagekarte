@@ -39,7 +39,7 @@ const Storage = {
         await localforage.setItem('stations', stations);
         
         // Broadcast to sync if available
-        if (typeof Sync !== 'undefined' && Sync.enabled) {
+        if (typeof Sync !== 'undefined') {
             Sync.broadcastStationUpdate(station);
         }
         
@@ -52,7 +52,7 @@ const Storage = {
         await localforage.setItem('stations', filtered);
         
         // Broadcast to sync if available
-        if (typeof Sync !== 'undefined' && Sync.enabled) {
+        if (typeof Sync !== 'undefined') {
             Sync.broadcastStationDelete(stationId);
         }
     },
@@ -81,7 +81,7 @@ const Storage = {
         await localforage.setItem('vehicles', vehicles);
         
         // Broadcast to sync if available
-        if (typeof Sync !== 'undefined' && Sync.enabled) {
+        if (typeof Sync !== 'undefined') {
             Sync.broadcastVehicleUpdate(vehicle);
         }
         
@@ -94,7 +94,7 @@ const Storage = {
         await localforage.setItem('vehicles', filtered);
         
         // Broadcast to sync if available
-        if (typeof Sync !== 'undefined' && Sync.enabled) {
+        if (typeof Sync !== 'undefined') {
             Sync.broadcastVehicleDelete(vehicleId);
         }
     },
@@ -120,7 +120,7 @@ const Storage = {
             await localforage.setItem('vehicles', vehicles);
             
             // Broadcast to sync if available
-            if (typeof Sync !== 'undefined' && Sync.enabled) {
+            if (typeof Sync !== 'undefined') {
                 // Broadcast full vehicle update to include deploymentInfo
                 Sync.broadcastVehicleUpdate(vehicle);
             }

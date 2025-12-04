@@ -499,7 +499,7 @@
                     break;
                 
                 case 'vehicle_position':
-                    updateVehiclePosition(message.vehicleId, message.position);
+                    updateVehiclePosition(message.vehicleId, message.position, message.deploymentInfo);
                     renderAll();
                     break;
                 
@@ -550,11 +550,21 @@
         }
 
         // Update vehicle position
-        function updateVehiclePosition(vehicleId, position) {
+        function updateVehiclePosition(vehicleId, position, deploymentInfo = null) {
             const vehicle = vehicles.find(v => v.id === vehicleId);
             if (vehicle) {
                 vehicle.position = position;
                 vehicle.deployed = !!position;
+                
+                // Update deployment info if provided
+                if (deploymentInfo !== null) {
+                    vehicle.deploymentInfo = deploymentInfo;
+                }
+                
+                // Clear deployment info when recalling vehicle
+                if (!position) {
+                    vehicle.deploymentInfo = null;
+                }
             }
         }
 

@@ -123,7 +123,7 @@ class EmbeddedServer {
                             this.deleteVehicle(data.vehicleId);
                             break;
                         case 'vehicle_position':
-                            this.updateVehiclePosition(data.vehicleId, data.position);
+                            this.updateVehiclePosition(data.vehicleId, data.position, data.deploymentInfo);
                             break;
                         case 'sync_request':
                             // Client requests full sync
@@ -193,11 +193,21 @@ class EmbeddedServer {
     }
 
     // Update vehicle position
-    updateVehiclePosition(vehicleId, position) {
+    updateVehiclePosition(vehicleId, position, deploymentInfo = null) {
         const vehicle = this.currentState.vehicles.find(v => v.id === vehicleId);
         if (vehicle) {
             vehicle.position = position;
             vehicle.deployed = !!position;
+            
+            // Update deployment info if provided
+            if (deploymentInfo !== null) {
+                vehicle.deploymentInfo = deploymentInfo;
+            }
+            
+            // Clear deployment info when recalling vehicle
+            if (!position) {
+                vehicle.deploymentInfo = null;
+            }
         }
     }
 
