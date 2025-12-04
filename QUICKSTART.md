@@ -1,5 +1,7 @@
 # FW Lagekarte - Schnellstart
 
+![FW Lagekarte Hauptansicht](assets/screenshots/hauptansicht.png)
+
 ## 🚀 Installation & Start
 
 ```bash
@@ -17,12 +19,18 @@ npm start
 ## 🎯 Erste Schritte
 
 ### Schritt 1: Standort hinzufügen
+
+![Standort Dialog](assets/screenshots/standort-dialog.png)
+
 1. Klicken Sie auf "➕ Standort hinzufügen"
 2. Geben Sie den Namen ein (z.B. "Feuerwache Nord")
 3. Klicken Sie auf die Karte um die Position zu markieren
 4. Klicken Sie auf "Speichern"
 
 ### Schritt 2: Fahrzeuge hinzufügen
+
+![Fahrzeug Dialog](assets/screenshots/fahrzeug-dialog.png)
+
 1. Klicken Sie auf "➕ Fahrzeug hinzufügen"
 2. Geben Sie Rufname ein (z.B. "Florian Hamburg 1/44/1")
 3. Wählen Sie den Fahrzeugtyp (LF, DLK, TLF, etc.)
