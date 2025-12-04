@@ -6,7 +6,9 @@ let mainWindow;
 
 function openDocumentation(filename) {
     const filePath = path.join(__dirname, filename);
-    shell.openPath(filePath).catch(error => {
+    // Use file:// protocol for better compatibility with packaged apps
+    const fileUrl = `file://${filePath}`;
+    shell.openExternal(fileUrl).catch(error => {
         console.error(`Failed to open documentation: ${filename}`, error);
         // Show error dialog to user
         dialog.showErrorBox(
@@ -29,6 +31,71 @@ function createMenu() {
                     visible: !isMac, // Hide on macOS since quit is in app menu
                     click: () => {
                         app.quit();
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Ansicht',
+            submenu: [
+                {
+                    label: 'Neu laden',
+                    accelerator: 'CmdOrCtrl+R',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.reload();
+                    }
+                },
+                {
+                    label: 'Erzwungenes Neuladen',
+                    accelerator: 'CmdOrCtrl+Shift+R',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.webContents.reloadIgnoringCache();
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Vergrößern',
+                    accelerator: 'CmdOrCtrl+Plus',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) {
+                            const currentZoom = focusedWindow.webContents.getZoomLevel();
+                            focusedWindow.webContents.setZoomLevel(currentZoom + 1);
+                        }
+                    }
+                },
+                {
+                    label: 'Verkleinern',
+                    accelerator: 'CmdOrCtrl+-',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) {
+                            const currentZoom = focusedWindow.webContents.getZoomLevel();
+                            focusedWindow.webContents.setZoomLevel(currentZoom - 1);
+                        }
+                    }
+                },
+                {
+                    label: 'Tatsächliche Größe',
+                    accelerator: 'CmdOrCtrl+0',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.webContents.setZoomLevel(0);
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Vollbild',
+                    accelerator: isMac ? 'Ctrl+Cmd+F' : 'F11',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) {
+                            focusedWindow.setFullScreen(!focusedWindow.isFullScreen());
+                        }
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Entwicklertools',
+                    accelerator: isMac ? 'Alt+Cmd+I' : 'Ctrl+Shift+I',
+                    click: (item, focusedWindow) => {
+                        if (focusedWindow) focusedWindow.webContents.toggleDevTools();
                     }
                 }
             ]
