@@ -12,10 +12,13 @@
 
 const embeddedServer = require('./embedded-server');
 
+// Test counter for unique IDs
+let testCounter = 0;
+
 // Mock test data
 function createTestStation(index) {
     return {
-        id: `station_${Date.now()}_${index}`,
+        id: `station_test_${++testCounter}`,
         name: `Test Station ${index}`,
         address: `Address ${index}`,
         lat: 51.1657 + (index * 0.1),
@@ -25,7 +28,7 @@ function createTestStation(index) {
 
 function createTestVehicle(index) {
     return {
-        id: `vehicle_${Date.now()}_${index}`,
+        id: `vehicle_test_${++testCounter}`,
         callsign: `Test Vehicle ${index}`,
         type: 'HLF',
         crew: '1/8',

@@ -448,6 +448,8 @@ const Sync = {
     // Send incremental update to embedded server
     sendToEmbeddedServer: function(message) {
         if (!window.embeddedServer || this.mode !== 'server') {
+            // Silently return if embedded server is not available or not in server mode
+            // This is expected behavior when called in standalone/client mode
             return;
         }
 
@@ -494,7 +496,7 @@ const Sync = {
                     break;
                 
                 default:
-                    console.log('[Sync] Unknown message type for embedded server:', message.type);
+                    console.warn('[Sync] Unknown message type for embedded server:', message.type);
             }
         } catch (error) {
             console.error('[Sync] Error sending to embedded server:', error);
