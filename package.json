@@ -1,6 +1,6 @@
 {
   "name": "fw-lagekarte",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.1",
   "description": "Eine Lagekarte für Großeinsätze",
   "main": "main.js",
   "scripts": {
@@ -16,24 +16,23 @@
     "tactical-map",
     "emergency"
   ],
-  "author": "",
+  "author": "TimUx <info@example.com>",
   "license": "ISC",
   "dependencies": {
-    "electron": "^39.2.4",
     "express": "^4.21.2",
     "leaflet": "^1.9.4",
     "localforage": "^1.10.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "electron": "^39.2.4",
     "electron-builder": "^26.0.12"
   },
   "build": {
     "appId": "com.fw-lagekarte.app",
     "productName": "FW Lagekarte",
     "win": {
-      "target": "nsis",
-      "icon": "assets/icon.ico"
+      "target": "nsis"
     },
     "linux": {
       "target": ["AppImage", "deb"],
