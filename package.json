@@ -1,6 +1,6 @@
 {
   "name": "fw-lagekarte",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Eine Lagekarte für Großeinsätze",
   "main": "main.js",
   "scripts": {
@@ -35,7 +35,10 @@
       "target": "nsis"
     },
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Utility"
     },
     "mac": {
