@@ -356,7 +356,11 @@
             
             // Map default center and zoom
             mapCenter: [51.1657, 10.4515], // Germany center
-            mapZoom: 6
+            mapZoom: 6,
+            
+            // Auto-zoom settings
+            autoZoomPadding: 50,    // Padding in pixels around markers when auto-zooming
+            autoZoomMaxZoom: 15     // Maximum zoom level when auto-zooming to prevent zooming too close
         };
 
         // Global variables
@@ -739,6 +743,33 @@
                 marker.bindPopup(popupContent);
                 vehicleMarkers[vehicle.id] = marker;
             });
+            
+            // Auto-zoom to fit all stations and deployed vehicles
+            autoZoomToMarkers();
+        }
+
+        // Automatically zoom map to fit all stations and deployed vehicles
+        function autoZoomToMarkers() {
+            const bounds = [];
+            
+            // Add all station positions
+            stations.forEach(station => {
+                bounds.push([station.lat, station.lng]);
+            });
+            
+            // Add all deployed vehicle positions
+            vehicles.filter(v => v.deployed && v.position).forEach(vehicle => {
+                bounds.push([vehicle.position.lat, vehicle.position.lng]);
+            });
+            
+            // If we have at least one marker, fit the map to show all of them
+            if (bounds.length > 0) {
+                const leafletBounds = L.latLngBounds(bounds);
+                map.fitBounds(leafletBounds, {
+                    padding: [CONFIG.autoZoomPadding, CONFIG.autoZoomPadding],
+                    maxZoom: CONFIG.autoZoomMaxZoom
+                });
+            }
         }
 
         // Initialize when page loads
