@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FW Lagekarte - Nur-Lese-Ansicht</title>
+    <title>Lagekarte - Nur-Lese-Ansicht</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-512.png">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
           crossorigin="anonymous" />
@@ -36,6 +41,15 @@
         .header h1 {
             font-size: 24px;
             margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-icon {
+            height: 48px;
+            width: 48px;
+            vertical-align: middle;
+            margin-right: 10px;
         }
 
         .readonly-badge {
@@ -317,7 +331,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🚒 FW Lagekarte - Nur-Lese-Ansicht</h1>
+        <h1><img src="app-icon.png" alt="Lagekarte" class="header-icon"> Lagekarte - Nur-Lese-Ansicht</h1>
         <div class="sync-status-container">
             <div id="syncStatus" class="sync-status sync-status-disconnected">⚫ Nicht verbunden</div>
         </div>
