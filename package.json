@@ -55,7 +55,8 @@
       "readonly-viewer.html",
       "styles.css",
       "assets/**/*",
-      "node_modules/**/*"
+      "node_modules/**/*",
+      "*.md"
     ]
   }
 }

@@ -1,8 +1,99 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron');
 const path = require('path');
 const embeddedServer = require('./embedded-server');
 
 let mainWindow;
+
+function openDocumentation(filename) {
+    const filePath = path.join(__dirname, filename);
+    shell.openPath(filePath).catch(error => {
+        console.error(`Failed to open documentation: ${filename}`, error);
+        // Show error dialog to user
+        dialog.showErrorBox(
+            'Dokumentation konnte nicht geöffnet werden',
+            `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.`
+        );
+    });
+}
+
+function createMenu() {
+    const isMac = process.platform === 'darwin';
+    
+    const template = [
+        {
+            label: 'Datei',
+            submenu: [
+                {
+                    label: 'Beenden',
+                    accelerator: isMac ? 'Cmd+Q' : 'Alt+F4',
+                    visible: !isMac, // Hide on macOS since quit is in app menu
+                    click: () => {
+                        app.quit();
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Hilfe',
+            submenu: [
+                {
+                    label: 'Benutzerhandbuch',
+                    click: () => openDocumentation('BENUTZERHANDBUCH.md')
+                },
+                {
+                    label: 'README',
+                    click: () => openDocumentation('README.md')
+                },
+                {
+                    label: 'Quickstart',
+                    click: () => openDocumentation('QUICKSTART.md')
+                },
+                {
+                    label: 'Features',
+                    click: () => openDocumentation('FEATURES.md')
+                },
+                { type: 'separator' },
+                {
+                    label: 'Readonly Viewer Dokumentation',
+                    click: () => openDocumentation('READONLY_VIEWER.md')
+                },
+                {
+                    label: 'Sync Server Setup',
+                    click: () => openDocumentation('SYNC_SERVER_SETUP.md')
+                },
+                {
+                    label: 'Embedded Server Dokumentation',
+                    click: () => openDocumentation('EMBEDDED_SERVER.md')
+                },
+                {
+                    label: 'Taktische Zeichen Implementierung',
+                    click: () => openDocumentation('TACTICAL_SYMBOLS_IMPLEMENTATION.md')
+                }
+            ]
+        }
+    ];
+
+    // On macOS, add the app menu
+    if (isMac) {
+        template.unshift({
+            label: app.getName(),
+            submenu: [
+                { role: 'about' },
+                { type: 'separator' },
+                { role: 'services' },
+                { type: 'separator' },
+                { role: 'hide' },
+                { role: 'hideOthers' },
+                { role: 'unhide' },
+                { type: 'separator' },
+                { role: 'quit' }
+            ]
+        });
+    }
+
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -59,6 +150,7 @@ ipcMain.handle('server:updateState', async (event, stations, vehicles) => {
 });
 
 app.whenReady().then(() => {
+    createMenu();
     createWindow();
 
     app.on('activate', () => {
