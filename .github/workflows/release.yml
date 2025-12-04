@@ -3,7 +3,6 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
 
 jobs:
   release:
@@ -92,6 +91,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG_NAME=${GITHUB_REF#refs/tags/}
+          
+          # Validate that TAG_NAME doesn't start with refs/ (safety check)
+          if [[ $TAG_NAME == refs/* ]]; then
+            echo "Error: TAG_NAME still contains 'refs/' prefix: $TAG_NAME"
+            echo "GITHUB_REF was: $GITHUB_REF"
+            exit 1
+          fi
           
           # Check if this is a prerelease (contains alpha, beta, rc, etc.)
           if [[ $TAG_NAME =~ (alpha|beta|rc) ]]; then
