@@ -390,7 +390,12 @@ function updateStationDropdown() {
     const select = document.getElementById('vehicleStation');
     select.innerHTML = '<option value="">Keine Station zugeordnet</option>';
     
-    stations.forEach(station => {
+    // Sort stations alphabetically by name
+    const sortedStations = [...stations].sort((a, b) => 
+        a.name.localeCompare(b.name, 'de', { sensitivity: 'base' })
+    );
+    
+    sortedStations.forEach(station => {
         const option = document.createElement('option');
         option.value = station.id;
         option.textContent = station.name;
