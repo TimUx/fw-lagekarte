@@ -1,11 +1,19 @@
-const { app, BrowserWindow, ipcMain, Menu, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron');
 const path = require('path');
 const embeddedServer = require('./embedded-server');
 
 let mainWindow;
 
 function openDocumentation(filename) {
-    shell.openPath(path.join(__dirname, filename));
+    const filePath = path.join(__dirname, filename);
+    shell.openPath(filePath).catch(error => {
+        console.error(`Failed to open documentation: ${filename}`, error);
+        // Show error dialog to user
+        dialog.showErrorBox(
+            'Dokumentation konnte nicht geöffnet werden',
+            `Die Datei ${filename} konnte nicht geöffnet werden.\n\nStellen Sie sicher, dass ein Markdown-Viewer installiert ist.`
+        );
+    });
 }
 
 function createMenu() {
