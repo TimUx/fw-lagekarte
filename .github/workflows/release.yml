@@ -6,68 +6,50 @@ on:
       - 'v*'
 
 jobs:
-  release:
-    runs-on: ${{ matrix.os }}
-    
-    permissions:
-      contents: read
-    
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Setup Node.js
+      - uses: actions/checkout@v4
+      - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
-      
+          node-version: '18'
       - name: Install dependencies
         run: npm ci
-      
-      - name: Build for Linux
-        if: matrix.os == 'ubuntu-latest'
+      - name: Build Linux
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:linux
-      
-      - name: Build for Windows
-        if: matrix.os == 'windows-latest'
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build Windows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:win
-      
-      - name: Build for macOS
-        if: matrix.os == 'macos-latest'
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build mac
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:mac
-      
-      - name: Upload Linux artifacts
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: linux-build
-          path: |
-            dist/*.AppImage
-            dist/*.deb
-      
-      - name: Upload Windows artifacts
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: windows-build
-          path: dist/*.exe
-      
-      - name: Upload macOS artifacts
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4.4.3
-        with:
-          name: macos-build
-          path: dist/*.dmg
   
   create-release:
     needs: release
