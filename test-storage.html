@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Test</title>
+    <script src="node_modules/localforage/dist/localforage.min.js"></script>
+    <script src="storage.js"></script>
+</head>
+<body>
+    <h1>Storage Test</h1>
+    <button onclick="testVehicles()">Test Vehicle Limits</button>
+    <button onclick="testStations()">Test Station Limits</button>
+    <button onclick="clearData()">Clear All Data</button>
+    <pre id="output"></pre>
+
+    <script>
+        function log(message) {
+            document.getElementById('output').textContent += message + '\n';
+        }
+
+        async function testVehicles() {
+            document.getElementById('output').textContent = '';
+            log('Testing vehicle limits...');
+            
+            // Clear existing vehicles
+            await localforage.setItem('vehicles', []);
+            
+            // Try to add 10 vehicles
+            for (let i = 1; i <= 10; i++) {
+                const vehicle = {
+                    callsign: `Test Vehicle ${i}`,
+                    type: 'HLF',
+                    crew: '1/8',
+                    stationId: null,
+                    notes: `Vehicle number ${i}`,
+                    deployed: false,
+                    position: null,
+                    deploymentInfo: null
+                };
+                
+                const saved = await Storage.saveVehicle(vehicle);
+                log(`Added vehicle ${i}: ${saved.id}`);
+            }
+            
+            // Check how many were saved
+            const vehicles = await Storage.getVehicles();
+            log(`\nTotal vehicles saved: ${vehicles.length}`);
+            vehicles.forEach((v, i) => {
+                log(`  ${i + 1}. ${v.callsign} (${v.id})`);
+            });
+        }
+
+        async function testStations() {
+            document.getElementById('output').textContent = '';
+            log('Testing station limits...');
+            
+            // Clear existing stations
+            await localforage.setItem('stations', []);
+            
+            // Try to add 10 stations
+            for (let i = 1; i <= 10; i++) {
+                const station = {
+                    name: `Test Station ${i}`,
+                    address: `Address ${i}`,
+                    lat: 51.1657 + (i * 0.1),
+                    lng: 10.4515 + (i * 0.1)
+                };
+                
+                const saved = await Storage.saveStation(station);
+                log(`Added station ${i}: ${saved.id}`);
+            }
+            
+            // Check how many were saved
+            const stations = await Storage.getStations();
+            log(`\nTotal stations saved: ${stations.length}`);
+            stations.forEach((s, i) => {
+                log(`  ${i + 1}. ${s.name} (${s.id})`);
+            });
+        }
+
+        async function clearData() {
+            await localforage.setItem('vehicles', []);
+            await localforage.setItem('stations', []);
+            document.getElementById('output').textContent = 'Data cleared.\n';
+        }
+    </script>
+</body>
+</html>
