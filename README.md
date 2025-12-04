@@ -22,7 +22,17 @@ Eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen mit interaktive
 
 ## Installation
 
-### Voraussetzungen
+### Fertige Executables herunterladen
+
+Die einfachste Methode ist, ein fertiges Executable von den [GitHub Releases](https://github.com/TimUx/fw-lagekarte/releases) herunterzuladen:
+
+- **Windows**: `FW-Lagekarte-Setup-X.X.X.exe` - NSIS Installer
+- **Linux**: `FW-Lagekarte-X.X.X.AppImage` oder `fw-lagekarte_X.X.X_amd64.deb` - AppImage oder Debian Paket
+- **macOS**: `FW-Lagekarte-X.X.X.dmg` - DMG Image
+
+Einfach herunterladen, installieren und starten!
+
+### Voraussetzungen für Entwicklung
 - Node.js (v16 oder höher)
 - npm
 

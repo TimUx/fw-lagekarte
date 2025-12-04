@@ -2,6 +2,25 @@
 
 Dieses Dokument beschreibt, wie man ein neues Release für FW Lagekarte erstellt.
 
+## Schnellstart: Erstes Prerelease erstellen
+
+Um das erste Prerelease `v0.1.0-alpha.1` zu erstellen:
+
+```bash
+# Tag erstellen und pushen
+git tag v0.1.0-alpha.1
+git push origin v0.1.0-alpha.1
+```
+
+Das war's! Der GitHub Actions Workflow wird automatisch starten und:
+1. Executables für Windows, Linux und macOS bauen
+2. Ein Prerelease auf GitHub erstellen
+3. Alle Executables dem Release hinzufügen
+
+Du kannst den Build-Fortschritt unter [Actions](https://github.com/TimUx/fw-lagekarte/actions) verfolgen.
+
+---
+
 ## Voraussetzungen
 
 - Push-Rechte für das Repository
