@@ -11,8 +11,9 @@ function openDocumentation(filename) {
     const filePath = path.join(basePath, filename);
     
     // Use shell.openPath() which works better for local files
+    // shell.openPath() returns an empty string on success, or an error message on failure
     shell.openPath(filePath).then(result => {
-        if (result) {
+        if (result !== '') {
             console.error(`Failed to open documentation: ${filename}`, result);
             // Show error dialog to user
             dialog.showErrorBox(
@@ -66,7 +67,7 @@ function createMenu() {
                 { type: 'separator' },
                 {
                     label: 'Vergrößern',
-                    accelerator: 'CmdOrCtrl+Plus',
+                    accelerator: 'CmdOrCtrl+=',
                     click: (item, focusedWindow) => {
                         if (focusedWindow) {
                             const currentZoom = focusedWindow.webContents.getZoomLevel();
