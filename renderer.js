@@ -155,11 +155,40 @@ function renderVehicles() {
     const vehicleList = document.getElementById('vehicleList');
     vehicleList.innerHTML = '';
     
-    // Group vehicles by station
+    // Separate deployed and non-deployed vehicles
+    const deployedVehicles = [];
+    const nonDeployedVehicles = [];
+    
+    vehicles.forEach(vehicle => {
+        if (vehicle.deployed) {
+            deployedVehicles.push(vehicle);
+        } else {
+            nonDeployedVehicles.push(vehicle);
+        }
+    });
+    
+    // Render deployed vehicles first (at the top), sorted by callsign
+    if (deployedVehicles.length > 0) {
+        const deployedHeader = document.createElement('div');
+        deployedHeader.className = 'station-group-header deployed-vehicles-header';
+        deployedHeader.innerHTML = `
+            <div class="station-group-name">🚨 Im Einsatz</div>
+        `;
+        vehicleList.appendChild(deployedHeader);
+        
+        // Sort deployed vehicles by callsign
+        deployedVehicles
+            .sort((a, b) => a.callsign.localeCompare(b.callsign, 'de'))
+            .forEach(vehicle => {
+                vehicleList.appendChild(createVehicleCard(vehicle));
+            });
+    }
+    
+    // Group non-deployed vehicles by station
     const vehiclesByStation = {};
     const unassignedVehicles = [];
     
-    vehicles.forEach(vehicle => {
+    nonDeployedVehicles.forEach(vehicle => {
         if (vehicle.stationId) {
             if (!vehiclesByStation[vehicle.stationId]) {
                 vehiclesByStation[vehicle.stationId] = [];
@@ -175,7 +204,7 @@ function renderVehicles() {
         .filter(station => vehiclesByStation[station.id])
         .sort((a, b) => a.name.localeCompare(b.name, 'de'));
     
-    // Render grouped vehicles
+    // Render grouped vehicles by station
     sortedStations.forEach(station => {
         // Create station header
         const stationHeader = document.createElement('div');

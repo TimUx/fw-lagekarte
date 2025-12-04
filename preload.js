@@ -10,7 +10,12 @@ contextBridge.exposeInMainWorld('embeddedServer', {
     stop: () => ipcRenderer.invoke('server:stop'),
     getStatus: () => ipcRenderer.invoke('server:status'),
     getNetworkInfo: () => ipcRenderer.invoke('server:networkInfo'),
-    updateState: (stations, vehicles) => ipcRenderer.invoke('server:updateState', stations, vehicles)
+    updateState: (stations, vehicles) => ipcRenderer.invoke('server:updateState', stations, vehicles),
+    updateStation: (station) => ipcRenderer.invoke('server:updateStation', station),
+    deleteStation: (stationId) => ipcRenderer.invoke('server:deleteStation', stationId),
+    updateVehicle: (vehicle) => ipcRenderer.invoke('server:updateVehicle', vehicle),
+    deleteVehicle: (vehicleId) => ipcRenderer.invoke('server:deleteVehicle', vehicleId),
+    updateVehiclePosition: (vehicleId, position, deploymentInfo) => ipcRenderer.invoke('server:updateVehiclePosition', vehicleId, position, deploymentInfo)
 });
 
 window.addEventListener('DOMContentLoaded', () => {
