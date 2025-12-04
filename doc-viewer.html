@@ -113,16 +113,5 @@
     <div id="content">
         <p>Dokumentation wird geladen...</p>
     </div>
-    
-    <script>
-        // This will be populated by the main process
-        const markdownContent = window.docContent || 'Keine Dokumentation verfügbar.';
-        const docTitle = window.docTitle || 'Dokumentation';
-        
-        document.title = docTitle;
-        
-        // The content is already HTML (converted in main process)
-        document.getElementById('content').innerHTML = markdownContent;
-    </script>
 </body>
 </html>

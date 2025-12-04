@@ -18,7 +18,7 @@ function openDocumentation(filename) {
         
         // Convert markdown to HTML
         const md = new MarkdownIt({
-            html: true,
+            html: false,  // Disable raw HTML for security
             linkify: true,
             typographer: true
         });
@@ -33,8 +33,7 @@ function openDocumentation(filename) {
             height: 800,
             webPreferences: {
                 nodeIntegration: false,
-                contextIsolation: true,
-                preload: path.join(__dirname, 'preload.js')
+                contextIsolation: true
             },
             title: docTitle,
             icon: path.join(__dirname, 'assets', 'icon.png')
