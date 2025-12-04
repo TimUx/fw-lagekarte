@@ -232,6 +232,31 @@ ipcMain.handle('server:updateState', async (event, stations, vehicles) => {
     return { success: true };
 });
 
+ipcMain.handle('server:updateStation', async (event, station) => {
+    embeddedServer.updateStation(station);
+    return { success: true };
+});
+
+ipcMain.handle('server:deleteStation', async (event, stationId) => {
+    embeddedServer.deleteStation(stationId);
+    return { success: true };
+});
+
+ipcMain.handle('server:updateVehicle', async (event, vehicle) => {
+    embeddedServer.updateVehicle(vehicle);
+    return { success: true };
+});
+
+ipcMain.handle('server:deleteVehicle', async (event, vehicleId) => {
+    embeddedServer.deleteVehicle(vehicleId);
+    return { success: true };
+});
+
+ipcMain.handle('server:updateVehiclePosition', async (event, vehicleId, position, deploymentInfo) => {
+    embeddedServer.updateVehiclePosition(vehicleId, position, deploymentInfo);
+    return { success: true };
+});
+
 app.whenReady().then(() => {
     createMenu();
     createWindow();

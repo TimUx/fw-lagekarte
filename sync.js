@@ -266,13 +266,10 @@ const Sync = {
         if (this.mode === 'client' && !this.serverUrl) return false;
         
         if (this.mode === 'server') {
-            // In server mode, we need to sync the state periodically
-            // The embedded server will handle broadcasting to clients
-            // We'll sync state after a short delay to batch updates
-            clearTimeout(this._serverSyncTimeout);
-            this._serverSyncTimeout = setTimeout(() => {
-                this.syncServerState();
-            }, 250); // Batch updates for 250ms to reduce sync calls
+            // In server mode, send the update directly to the embedded server
+            // This ensures incremental updates are applied immediately without batching
+            // which prevents race conditions that cause data loss
+            this.sendToEmbeddedServer(message);
             return true;
         }
         
@@ -445,6 +442,62 @@ const Sync = {
             console.log('[Sync] Server state synchronized');
         } catch (error) {
             console.error('[Sync] Error syncing server state:', error);
+        }
+    },
+
+    // Send incremental update to embedded server
+    sendToEmbeddedServer: function(message) {
+        if (!window.embeddedServer || this.mode !== 'server') {
+            return;
+        }
+
+        try {
+            // Process the message type and update the embedded server state accordingly
+            switch (message.type) {
+                case 'station_update':
+                    if (message.station) {
+                        window.embeddedServer.updateStation(message.station);
+                        console.log('[Sync] Station updated in embedded server:', message.station.id);
+                    }
+                    break;
+                
+                case 'station_delete':
+                    if (message.stationId) {
+                        window.embeddedServer.deleteStation(message.stationId);
+                        console.log('[Sync] Station deleted from embedded server:', message.stationId);
+                    }
+                    break;
+                
+                case 'vehicle_update':
+                    if (message.vehicle) {
+                        window.embeddedServer.updateVehicle(message.vehicle);
+                        console.log('[Sync] Vehicle updated in embedded server:', message.vehicle.id);
+                    }
+                    break;
+                
+                case 'vehicle_delete':
+                    if (message.vehicleId) {
+                        window.embeddedServer.deleteVehicle(message.vehicleId);
+                        console.log('[Sync] Vehicle deleted from embedded server:', message.vehicleId);
+                    }
+                    break;
+                
+                case 'vehicle_position':
+                    if (message.vehicleId) {
+                        window.embeddedServer.updateVehiclePosition(
+                            message.vehicleId, 
+                            message.position, 
+                            message.deploymentInfo
+                        );
+                        console.log('[Sync] Vehicle position updated in embedded server:', message.vehicleId);
+                    }
+                    break;
+                
+                default:
+                    console.log('[Sync] Unknown message type for embedded server:', message.type);
+            }
+        } catch (error) {
+            console.error('[Sync] Error sending to embedded server:', error);
         }
     },
 
