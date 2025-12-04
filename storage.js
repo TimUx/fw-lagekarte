@@ -121,7 +121,8 @@ const Storage = {
             
             // Broadcast to sync if available
             if (typeof Sync !== 'undefined' && Sync.enabled) {
-                Sync.broadcastVehiclePosition(vehicleId, position);
+                // Broadcast full vehicle update to include deploymentInfo
+                Sync.broadcastVehicleUpdate(vehicle);
             }
         }
         
