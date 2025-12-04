@@ -122,6 +122,11 @@ body {
     margin-top: 0;
 }
 
+.deployed-vehicles-header {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
 .station-group-name {
     font-weight: bold;
     font-size: 14px;
