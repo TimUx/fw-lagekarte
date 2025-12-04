@@ -151,35 +151,6 @@ function createMenu() {
                 {
                     label: 'Benutzerhandbuch',
                     click: () => openDocumentation('BENUTZERHANDBUCH.md')
-                },
-                {
-                    label: 'README',
-                    click: () => openDocumentation('README.md')
-                },
-                {
-                    label: 'Quickstart',
-                    click: () => openDocumentation('QUICKSTART.md')
-                },
-                {
-                    label: 'Features',
-                    click: () => openDocumentation('FEATURES.md')
-                },
-                { type: 'separator' },
-                {
-                    label: 'Readonly Viewer Dokumentation',
-                    click: () => openDocumentation('READONLY_VIEWER.md')
-                },
-                {
-                    label: 'Sync Server Setup',
-                    click: () => openDocumentation('SYNC_SERVER_SETUP.md')
-                },
-                {
-                    label: 'Embedded Server Dokumentation',
-                    click: () => openDocumentation('EMBEDDED_SERVER.md')
-                },
-                {
-                    label: 'Taktische Zeichen Implementierung',
-                    click: () => openDocumentation('TACTICAL_SYMBOLS_IMPLEMENTATION.md')
                 }
             ]
         }
