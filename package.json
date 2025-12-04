@@ -1,6 +1,6 @@
 {
   "name": "fw-lagekarte",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "description": "Eine Lagekarte für Großeinsätze",
   "main": "main.js",
   "scripts": {
