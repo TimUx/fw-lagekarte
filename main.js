@@ -15,22 +15,21 @@ localforage.config({
     storeName: 'fw_data'
 });
 
+// Default proxy settings constant
+const DEFAULT_PROXY_SETTINGS = {
+    mode: 'system',
+    proxyUrl: '',
+    proxyBypassRules: 'localhost,127.0.0.1'
+};
+
 // Get proxy settings from storage
 async function getProxySettings() {
     try {
         const settings = await localforage.getItem('proxySettings');
-        return settings || {
-            mode: 'system',
-            proxyUrl: '',
-            proxyBypassRules: 'localhost,127.0.0.1'
-        };
+        return settings || DEFAULT_PROXY_SETTINGS;
     } catch (error) {
         console.error('Error loading proxy settings:', error);
-        return {
-            mode: 'system',
-            proxyUrl: '',
-            proxyBypassRules: 'localhost,127.0.0.1'
-        };
+        return DEFAULT_PROXY_SETTINGS;
     }
 }
 

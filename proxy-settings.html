@@ -175,6 +175,19 @@
             display: block;
         }
 
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
         .info-box {
             background: #e3f2fd;
             border-left: 4px solid #2196f3;
@@ -197,6 +210,8 @@
         <div class="success-message" id="successMessage">
             Einstellungen wurden erfolgreich gespeichert!
         </div>
+
+        <div class="error-message" id="errorMessage"></div>
 
         <div class="info-box">
             <p><strong>Hinweis:</strong> Diese Einstellungen werden verwendet, um OpenStreetMap-Karten und andere externe Ressourcen zu laden. In Unternehmensnetzwerken ist oft ein Proxy erforderlich.</p>
@@ -323,7 +338,7 @@
             
             // Validate manual mode
             if (mode === 'manual' && !proxyUrl) {
-                alert('Bitte geben Sie einen Proxy-Server an.');
+                showError('Bitte geben Sie einen Proxy-Server an.');
                 return;
             }
             
@@ -349,9 +364,19 @@
                 }, 1500);
             } catch (error) {
                 console.error('Error saving settings:', error);
-                alert('Fehler beim Speichern der Einstellungen: ' + error.message);
+                showError('Fehler beim Speichern der Einstellungen: ' + error.message);
             }
         });
+
+        // Show error message
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 5000);
+        }
 
         // Cancel button
         document.getElementById('cancelBtn').addEventListener('click', () => {

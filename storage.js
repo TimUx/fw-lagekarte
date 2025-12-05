@@ -1,4 +1,12 @@
 // Storage module using LocalForage for persistent storage
+
+// Default proxy settings (shared constant)
+const DEFAULT_PROXY_SETTINGS = {
+    mode: 'system',
+    proxyUrl: '',
+    proxyBypassRules: 'localhost,127.0.0.1'
+};
+
 const Storage = {
     // Generate unique ID (UUID v4-like)
     generateId: function(prefix) {
@@ -177,11 +185,7 @@ const Storage = {
     // Proxy settings
     getProxySettings: async function() {
         const settings = await localforage.getItem('proxySettings');
-        return settings || {
-            mode: 'system', // 'system', 'manual', 'direct'
-            proxyUrl: '',
-            proxyBypassRules: 'localhost,127.0.0.1'
-        };
+        return settings || DEFAULT_PROXY_SETTINGS;
     },
 
     saveProxySettings: async function(settings) {
