@@ -47,7 +47,7 @@ Der Computer wurde durch Windows geschützt
 Von Microsoft Defender SmartScreen wurde der Start einer unbekannten App verhindert.
 Die Ausführung dieser App stellt u. U. ein Risiko für den PC dar.
 
-App: Lagekarte.Setup.0.1.0-beta.1.exe
+App: Lagekarte.Setup.X.X.X.exe
 Herausgeber: Unbekannter Herausgeber
 ```
 
@@ -63,9 +63,6 @@ Diese Warnung erscheint, weil die Anwendung nicht mit einem teuren Code-Signing-
 2. Ein neuer Button **"Trotzdem ausführen"** wird sichtbar
 3. Klicken Sie auf **"Trotzdem ausführen"**
 4. Die Installation/Anwendung startet normal
-
-![SmartScreen Weitere Informationen](assets/screenshots/smartscreen-weitere-info.png)
-![SmartScreen Trotzdem ausführen](assets/screenshots/smartscreen-trotzdem-ausfuehren.png)
 
 **Methode 2: Rechtsklick-Ausführung**
 
