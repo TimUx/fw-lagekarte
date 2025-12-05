@@ -3,27 +3,49 @@ const path = require('path');
 const fs = require('fs');
 const embeddedServer = require('./embedded-server');
 const MarkdownIt = require('markdown-it');
-const localforage = require('localforage');
 const { DEFAULT_PROXY_SETTINGS } = require('./constants');
 
 let mainWindow;
 
-// Initialize localforage for main process
-localforage.config({
-    driver: localforage.INDEXEDDB,
-    name: 'fw-lagekarte',
-    version: 1.0,
-    storeName: 'fw_data'
-});
+// Get config file path (stored in app's userData directory)
+function getConfigFilePath() {
+    const userDataPath = app.getPath('userData');
+    return path.join(userDataPath, 'proxy-settings.json');
+}
 
 // Get proxy settings from storage
 async function getProxySettings() {
     try {
-        const settings = await localforage.getItem('proxySettings');
-        return settings || DEFAULT_PROXY_SETTINGS;
+        const configPath = getConfigFilePath();
+        if (fs.existsSync(configPath)) {
+            const data = fs.readFileSync(configPath, 'utf-8');
+            const settings = JSON.parse(data);
+            // Merge with defaults to ensure all properties exist
+            return { ...DEFAULT_PROXY_SETTINGS, ...settings };
+        }
+        return DEFAULT_PROXY_SETTINGS;
     } catch (error) {
         console.error('Error loading proxy settings:', error);
         return DEFAULT_PROXY_SETTINGS;
+    }
+}
+
+// Save proxy settings to storage
+async function saveProxySettings(settings) {
+    try {
+        const configPath = getConfigFilePath();
+        const userDataPath = app.getPath('userData');
+        
+        // Ensure userData directory exists
+        if (!fs.existsSync(userDataPath)) {
+            fs.mkdirSync(userDataPath, { recursive: true });
+        }
+        
+        fs.writeFileSync(configPath, JSON.stringify(settings, null, 2), 'utf-8');
+        return true;
+    } catch (error) {
+        console.error('Error saving proxy settings:', error);
+        throw error;
     }
 }
 
@@ -38,6 +60,13 @@ async function applyProxySettings(settings) {
                 mode: 'direct'
             });
             console.log('[Proxy] Direct connection mode enabled (no proxy)');
+        } else if (settings.mode === 'pac' && settings.pacUrl) {
+            // PAC script configuration
+            await ses.setProxy({
+                mode: 'pac_script',
+                pacScript: settings.pacUrl
+            });
+            console.log('[Proxy] PAC script configured:', settings.pacUrl);
         } else if (settings.mode === 'manual' && settings.proxyUrl) {
             // Manual proxy configuration
             const proxyConfig = {
@@ -49,10 +78,11 @@ async function applyProxySettings(settings) {
             console.log('[Proxy] Manual proxy configured:', settings.proxyUrl);
         } else {
             // System proxy (default)
+            // This will use system proxy settings including PAC files configured via GPO
             await ses.setProxy({
                 mode: 'system'
             });
-            console.log('[Proxy] Using system proxy settings');
+            console.log('[Proxy] Using system proxy settings (includes GPO PAC files)');
         }
         
         return { success: true };
@@ -348,7 +378,7 @@ ipcMain.handle('proxy:getSettings', async () => {
 
 ipcMain.handle('proxy:saveSettings', async (event, settings) => {
     try {
-        await localforage.setItem('proxySettings', settings);
+        await saveProxySettings(settings);
         await applyProxySettings(settings);
         
         // Show info dialog that restart may be needed
