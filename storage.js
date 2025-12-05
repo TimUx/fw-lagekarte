@@ -1,5 +1,9 @@
 // Storage module using LocalForage for persistent storage
 
+// Note: Proxy settings are stored in the main process (main.js) using fs.writeFileSync
+// in the userData directory, not in IndexedDB, because the main process doesn't have
+// access to IndexedDB.
+
 // Default proxy settings (must match DEFAULT_PROXY_SETTINGS in constants.js)
 const DEFAULT_PROXY_SETTINGS = {
     mode: 'system',
@@ -180,18 +184,10 @@ const Storage = {
         }
         
         return true;
-    },
-
-    // Proxy settings
-    getProxySettings: async function() {
-        const settings = await localforage.getItem('proxySettings');
-        return settings || DEFAULT_PROXY_SETTINGS;
-    },
-
-    saveProxySettings: async function(settings) {
-        await localforage.setItem('proxySettings', settings);
-        return settings;
     }
+
+    // Note: Proxy settings are managed in the main process (main.js) via IPC
+    // Use window.proxyAPI.getSettings() and window.proxyAPI.saveSettings() in renderer
 };
 
 // Initialize storage on load

@@ -406,18 +406,29 @@ Wenn Sie in einem Unternehmensnetzwerk arbeiten, das einen HTTP/HTTPS-Proxy verw
 
 **Proxy-Einstellungen öffnen:**
 1. Menü **Datei** > **Proxy-Einstellungen...**
-2. Es öffnet sich ein Dialog mit drei Optionen
+2. Es öffnet sich ein Dialog mit vier Optionen
 
 **Verfügbare Modi:**
 
 1. **System-Proxy verwenden (empfohlen):**
    - Verwendet automatisch die Proxy-Einstellungen Ihres Betriebssystems
    - Dies ist die einfachste Option und funktioniert in den meisten Fällen
-   - Windows: Verwendet die Proxy-Einstellungen aus den Windows-Netzwerkeinstellungen
-   - macOS: Verwendet die Proxy-Einstellungen aus den Systemeinstellungen
-   - Linux: Verwendet die System-Umgebungsvariablen (http_proxy, https_proxy)
+   - **Windows:** Verwendet die Proxy-Einstellungen aus den Windows-Netzwerkeinstellungen
+     - Unterstützt automatisch PAC-Dateien (Proxy Auto-Config), die per GPO konfiguriert wurden
+     - Wenn Ihr Unternehmen Proxy-Einstellungen per Gruppenrichtlinie verteilt, werden diese automatisch verwendet
+   - **macOS:** Verwendet die Proxy-Einstellungen aus den Systemeinstellungen
+   - **Linux:** Verwendet die System-Umgebungsvariablen (http_proxy, https_proxy)
 
-2. **Manueller Proxy:**
+2. **PAC-Skript (Proxy Auto-Config):**
+   - Für fortgeschrittene Benutzer, die eine spezifische PAC-Datei verwenden möchten
+   - **PAC-Skript URL:** Geben Sie die URL zur PAC-Datei ein
+     - Format: `http://proxy.beispiel.de/proxy.pac`
+     - Lokale Datei: `file:///C:/pfad/zur/proxy.pac` (Windows)
+     - Netzwerk-Freigabe: `file://server/freigabe/proxy.pac`
+   - PAC-Dateien enthalten JavaScript-Code zur automatischen Proxy-Konfiguration
+   - Nützlich, wenn Sie eine spezifische PAC-Datei verwenden möchten, die nicht über GPO konfiguriert ist
+
+3. **Manueller Proxy:**
    - Ermöglicht die manuelle Konfiguration eines Proxy-Servers
    - **Proxy-Server:** Geben Sie die Proxy-Adresse ein
      - Format: `http://proxy.beispiel.de:8080`
@@ -428,7 +439,7 @@ Wenn Sie in einem Unternehmensnetzwerk arbeiten, das einen HTTP/HTTPS-Proxy verw
      - Mehrere Hosts durch Kommas trennen
      - Wildcards möglich: `*.local`
 
-3. **Kein Proxy (Direkte Verbindung):**
+4. **Kein Proxy (Direkte Verbindung):**
    - Verbindet sich direkt ohne Proxy zum Internet
    - Verwenden Sie diese Option, wenn Sie keinen Proxy benötigen
 
@@ -446,10 +457,21 @@ Proxy-Server: http://meinuser:meinpasswort@proxy.firma.de:8080
 Proxy-Bypass: localhost,127.0.0.1
 ```
 
+*PAC-Datei verwenden:*
+```
+PAC-Skript URL: http://proxy.firma.de/proxy.pac
+```
+
 **Nach dem Speichern:**
-- Die Einstellungen werden sofort angewendet
+- Die Einstellungen werden **sofort angewendet** und dauerhaft gespeichert
+- Die Einstellungen bleiben auch nach einem Neustart der Anwendung erhalten
 - Bei anhaltenden Problemen starten Sie die Anwendung neu
 - Die Proxy-Einstellungen gelten nur für diese Anwendung
+
+**Hinweis für Unternehmensumgebungen:**
+- In den meisten Unternehmensumgebungen funktioniert der **System-Proxy**-Modus am besten
+- Dieser Modus verwendet automatisch alle Proxy-Einstellungen, die per GPO konfiguriert wurden
+- Sie müssen in der Regel keine manuellen Einstellungen vornehmen
 
 ### Server-Modus Probleme
 

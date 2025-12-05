@@ -214,7 +214,7 @@
         <div class="error-message" id="errorMessage"></div>
 
         <div class="info-box">
-            <p><strong>Hinweis:</strong> Diese Einstellungen werden verwendet, um OpenStreetMap-Karten und andere externe Ressourcen zu laden. In Unternehmensnetzwerken ist oft ein Proxy erforderlich.</p>
+            <p><strong>Hinweis:</strong> Diese Einstellungen werden verwendet, um OpenStreetMap-Karten und andere externe Ressourcen zu laden. In Unternehmensnetzwerken ist oft ein Proxy erforderlich. Der System-Proxy-Modus verwendet automatisch PAC-Dateien, die per GPO konfiguriert wurden.</p>
         </div>
 
         <form id="proxyForm">
@@ -225,7 +225,15 @@
                         <input type="radio" name="proxyMode" value="system" id="modeSystem" checked>
                         <div class="radio-option-content">
                             <div class="radio-option-title">System-Proxy verwenden</div>
-                            <div class="radio-option-description">Verwendet die Proxy-Einstellungen des Betriebssystems (empfohlen)</div>
+                            <div class="radio-option-description">Verwendet die Proxy-Einstellungen des Betriebssystems inkl. PAC-Dateien aus GPO (empfohlen)</div>
+                        </div>
+                    </div>
+
+                    <div class="radio-option" data-mode="pac">
+                        <input type="radio" name="proxyMode" value="pac" id="modePac">
+                        <div class="radio-option-content">
+                            <div class="radio-option-title">PAC-Skript (Proxy Auto-Config)</div>
+                            <div class="radio-option-description">URL zu einer PAC-Datei angeben</div>
                         </div>
                     </div>
 
@@ -243,6 +251,16 @@
                             <div class="radio-option-title">Kein Proxy (Direkte Verbindung)</div>
                             <div class="radio-option-description">Verbindung ohne Proxy herstellen</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="manual-settings hidden" id="pacSettings">
+                <div class="form-group">
+                    <label for="pacUrl">PAC-Skript URL:</label>
+                    <input type="text" id="pacUrl" placeholder="http://proxy.beispiel.de/proxy.pac">
+                    <div class="help-text">
+                        URL zur PAC-Datei (z.B. http://proxy.beispiel.de/proxy.pac oder file:///C:/proxy.pac)
                     </div>
                 </div>
             </div>
@@ -297,12 +315,19 @@
 
         function toggleManualSettings() {
             const manualMode = document.getElementById('modeManual').checked;
+            const pacMode = document.getElementById('modePac').checked;
             const manualSettings = document.getElementById('manualSettings');
+            const pacSettings = document.getElementById('pacSettings');
             
             if (manualMode) {
                 manualSettings.classList.remove('hidden');
+                pacSettings.classList.add('hidden');
+            } else if (pacMode) {
+                pacSettings.classList.remove('hidden');
+                manualSettings.classList.add('hidden');
             } else {
                 manualSettings.classList.add('hidden');
+                pacSettings.classList.add('hidden');
             }
         }
 
@@ -322,6 +347,9 @@
                 document.getElementById('proxyUrl').value = settings.proxyUrl || '';
                 document.getElementById('proxyBypass').value = settings.proxyBypassRules || 'localhost,127.0.0.1';
                 
+                // Set PAC URL
+                document.getElementById('pacUrl').value = settings.pacUrl || '';
+                
                 toggleManualSettings();
             } catch (error) {
                 console.error('Error loading settings:', error);
@@ -335,6 +363,7 @@
             const mode = document.querySelector('input[name="proxyMode"]:checked').value;
             const proxyUrl = document.getElementById('proxyUrl').value.trim();
             const proxyBypassRules = document.getElementById('proxyBypass').value.trim();
+            const pacUrl = document.getElementById('pacUrl').value.trim();
             
             // Validate manual mode
             if (mode === 'manual' && !proxyUrl) {
@@ -342,10 +371,17 @@
                 return;
             }
             
+            // Validate PAC mode
+            if (mode === 'pac' && !pacUrl) {
+                showError('Bitte geben Sie eine PAC-Skript URL an.');
+                return;
+            }
+            
             const settings = {
                 mode: mode,
                 proxyUrl: proxyUrl,
-                proxyBypassRules: proxyBypassRules || 'localhost,127.0.0.1'
+                proxyBypassRules: proxyBypassRules || 'localhost,127.0.0.1',
+                pacUrl: pacUrl
             };
             
             try {
