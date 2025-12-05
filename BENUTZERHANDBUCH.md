@@ -20,6 +20,7 @@
 7. [Datenspeicherung](#datenspeicherung)
 8. [Fehlerbehebung](#fehlerbehebung)
    - [Allgemeine Probleme](#allgemeine-probleme)
+   - [Proxy-Einstellungen](#proxy-einstellungen)
    - [Server-Modus Probleme](#server-modus-probleme)
 9. [Tastenkombinationen](#tastenkombinationen)
 10. [Support](#support)
@@ -388,6 +389,7 @@ Die Anwendung läuft auf:
 
 **Die Karte lädt nicht:**
 - Überprüfen Sie Ihre Internetverbindung (nur beim ersten Laden erforderlich)
+- In Unternehmensnetzwerken: Konfigurieren Sie die Proxy-Einstellungen (siehe [Proxy-Einstellungen](#proxy-einstellungen))
 - Starten Sie die Anwendung neu
 
 **Fahrzeuge lassen sich nicht verschieben:**
@@ -397,6 +399,57 @@ Die Anwendung läuft auf:
 **Änderungen werden nicht gespeichert:**
 - Klicken Sie immer auf "Speichern" in den Formularen
 - Überprüfen Sie, ob ausreichend Speicherplatz vorhanden ist
+
+### Proxy-Einstellungen
+
+Wenn Sie in einem Unternehmensnetzwerk arbeiten, das einen HTTP/HTTPS-Proxy verwendet, kann es sein, dass die OpenStreetMap-Karten nicht geladen werden. In diesem Fall müssen Sie die Proxy-Einstellungen konfigurieren.
+
+**Proxy-Einstellungen öffnen:**
+1. Menü **Datei** > **Proxy-Einstellungen...**
+2. Es öffnet sich ein Dialog mit drei Optionen
+
+**Verfügbare Modi:**
+
+1. **System-Proxy verwenden (empfohlen):**
+   - Verwendet automatisch die Proxy-Einstellungen Ihres Betriebssystems
+   - Dies ist die einfachste Option und funktioniert in den meisten Fällen
+   - Windows: Verwendet die Proxy-Einstellungen aus den Windows-Netzwerkeinstellungen
+   - macOS: Verwendet die Proxy-Einstellungen aus den Systemeinstellungen
+   - Linux: Verwendet die System-Umgebungsvariablen (http_proxy, https_proxy)
+
+2. **Manueller Proxy:**
+   - Ermöglicht die manuelle Konfiguration eines Proxy-Servers
+   - **Proxy-Server:** Geben Sie die Proxy-Adresse ein
+     - Format: `http://proxy.beispiel.de:8080`
+     - Mit HTTPS: `https://proxy.beispiel.de:8080`
+     - Mit Authentifizierung: `http://benutzer:passwort@proxy.beispiel.de:8080`
+   - **Proxy-Bypass (optional):** Liste von Hosts, die den Proxy umgehen sollen
+     - Standardwert: `localhost,127.0.0.1`
+     - Mehrere Hosts durch Kommas trennen
+     - Wildcards möglich: `*.local`
+
+3. **Kein Proxy (Direkte Verbindung):**
+   - Verbindet sich direkt ohne Proxy zum Internet
+   - Verwenden Sie diese Option, wenn Sie keinen Proxy benötigen
+
+**Beispiel-Konfigurationen:**
+
+*Einfacher Proxy ohne Authentifizierung:*
+```
+Proxy-Server: http://proxy.firma.de:8080
+Proxy-Bypass: localhost,127.0.0.1,*.local
+```
+
+*Proxy mit Authentifizierung:*
+```
+Proxy-Server: http://meinuser:meinpasswort@proxy.firma.de:8080
+Proxy-Bypass: localhost,127.0.0.1
+```
+
+**Nach dem Speichern:**
+- Die Einstellungen werden sofort angewendet
+- Bei anhaltenden Problemen starten Sie die Anwendung neu
+- Die Proxy-Einstellungen gelten nur für diese Anwendung
 
 ### Server-Modus Probleme
 

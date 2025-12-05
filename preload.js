@@ -18,6 +18,12 @@ contextBridge.exposeInMainWorld('embeddedServer', {
     updateVehiclePosition: (vehicleId, position, deploymentInfo) => ipcRenderer.invoke('server:updateVehiclePosition', vehicleId, position, deploymentInfo)
 });
 
+// Expose proxy API to renderer process
+contextBridge.exposeInMainWorld('proxyAPI', {
+    getSettings: () => ipcRenderer.invoke('proxy:getSettings'),
+    saveSettings: (settings) => ipcRenderer.invoke('proxy:saveSettings', settings)
+});
+
 window.addEventListener('DOMContentLoaded', () => {
     console.log('FW Lagekarte loaded successfully');
 });

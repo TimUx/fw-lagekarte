@@ -1,10 +1,89 @@
-const { app, BrowserWindow, ipcMain, Menu, shell, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell, dialog, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const embeddedServer = require('./embedded-server');
 const MarkdownIt = require('markdown-it');
+const localforage = require('localforage');
+const { DEFAULT_PROXY_SETTINGS } = require('./constants');
 
 let mainWindow;
+
+// Initialize localforage for main process
+localforage.config({
+    driver: localforage.INDEXEDDB,
+    name: 'fw-lagekarte',
+    version: 1.0,
+    storeName: 'fw_data'
+});
+
+// Get proxy settings from storage
+async function getProxySettings() {
+    try {
+        const settings = await localforage.getItem('proxySettings');
+        return settings || DEFAULT_PROXY_SETTINGS;
+    } catch (error) {
+        console.error('Error loading proxy settings:', error);
+        return DEFAULT_PROXY_SETTINGS;
+    }
+}
+
+// Apply proxy settings to Electron session
+async function applyProxySettings(settings) {
+    try {
+        const ses = session.defaultSession;
+        
+        if (settings.mode === 'direct') {
+            // Direct connection (no proxy)
+            await ses.setProxy({
+                mode: 'direct'
+            });
+            console.log('[Proxy] Direct connection mode enabled (no proxy)');
+        } else if (settings.mode === 'manual' && settings.proxyUrl) {
+            // Manual proxy configuration
+            const proxyConfig = {
+                mode: 'fixed_servers',
+                proxyRules: settings.proxyUrl,
+                proxyBypassRules: settings.proxyBypassRules || 'localhost,127.0.0.1'
+            };
+            await ses.setProxy(proxyConfig);
+            console.log('[Proxy] Manual proxy configured:', settings.proxyUrl);
+        } else {
+            // System proxy (default)
+            await ses.setProxy({
+                mode: 'system'
+            });
+            console.log('[Proxy] Using system proxy settings');
+        }
+        
+        return { success: true };
+    } catch (error) {
+        console.error('[Proxy] Error applying proxy settings:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+function openProxySettings() {
+    // Create a new window for proxy settings
+    const hasValidMainWindow = mainWindow && !mainWindow.isDestroyed();
+    
+    const proxyWindow = new BrowserWindow({
+        width: 700,
+        height: 600,
+        modal: hasValidMainWindow,
+        parent: hasValidMainWindow ? mainWindow : undefined,
+        webPreferences: {
+            nodeIntegration: false,
+            contextIsolation: true,
+            preload: path.join(__dirname, 'preload.js')
+        },
+        title: 'Proxy-Einstellungen',
+        icon: path.join(__dirname, 'assets', 'icon.png'),
+        resizable: false
+    });
+    
+    proxyWindow.loadFile('proxy-settings.html');
+    proxyWindow.setMenuBarVisibility(false);
+}
 
 function openDocumentation(filename) {
     // In packaged apps, extraResources are in process.resourcesPath
@@ -70,6 +149,11 @@ function createMenu() {
         {
             label: 'Datei',
             submenu: [
+                {
+                    label: 'Proxy-Einstellungen...',
+                    click: () => openProxySettings()
+                },
+                { type: 'separator' },
                 {
                     label: 'Beenden',
                     accelerator: isMac ? 'Cmd+Q' : 'Alt+F4',
@@ -257,7 +341,39 @@ ipcMain.handle('server:updateVehiclePosition', async (event, vehicleId, position
     return { success: true };
 });
 
-app.whenReady().then(() => {
+// IPC handlers for proxy settings
+ipcMain.handle('proxy:getSettings', async () => {
+    return await getProxySettings();
+});
+
+ipcMain.handle('proxy:saveSettings', async (event, settings) => {
+    try {
+        await localforage.setItem('proxySettings', settings);
+        await applyProxySettings(settings);
+        
+        // Show info dialog that restart may be needed
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            dialog.showMessageBox(mainWindow, {
+                type: 'info',
+                title: 'Proxy-Einstellungen gespeichert',
+                message: 'Die Proxy-Einstellungen wurden gespeichert.',
+                detail: 'Die neuen Einstellungen werden sofort angewendet. Wenn Sie weiterhin Probleme beim Laden der Karte haben, versuchen Sie die Anwendung neu zu starten.',
+                buttons: ['OK']
+            });
+        }
+        
+        return { success: true };
+    } catch (error) {
+        console.error('Error saving proxy settings:', error);
+        return { success: false, error: error.message };
+    }
+});
+
+app.whenReady().then(async () => {
+    // Load and apply proxy settings before creating window
+    const proxySettings = await getProxySettings();
+    await applyProxySettings(proxySettings);
+    
     createMenu();
     createWindow();
 
