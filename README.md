@@ -32,6 +32,16 @@ Die einfachste Methode ist, ein fertiges Executable von den [GitHub Releases](ht
 
 Einfach herunterladen, installieren und starten!
 
+#### Windows SmartScreen Warnung
+
+Beim ersten Start unter Windows kann eine SmartScreen-Warnung erscheinen ("Unbekannter Herausgeber"). Dies ist normal, da die App nicht code-signiert ist.
+
+**So umgehen Sie die Warnung:**
+1. Klicken Sie auf **"Weitere Informationen"**
+2. Klicken Sie auf **"Trotzdem ausführen"**
+
+Weitere Details finden Sie im [Benutzerhandbuch - Windows SmartScreen](BENUTZERHANDBUCH.md#windows-smartscreen-warnung-umgehen).
+
 ### Voraussetzungen für Entwicklung
 - Node.js (v16 oder höher)
 - npm
