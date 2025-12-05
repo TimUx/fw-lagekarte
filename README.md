@@ -117,7 +117,7 @@ Die Installer werden im `dist/`-Verzeichnis erstellt.
    - **WebSocket-URL** für andere Desktop-Clients (z.B. `ws://192.168.1.100:8080`)
    - **HTTP-URL** für Browser-Zugriff (z.B. `http://192.168.1.100:8080`)
 
-**Ausführliche Dokumentation:** Siehe [EMBEDDED_SERVER.md](EMBEDDED_SERVER.md) für Details zum integrierten Server.
+**Ausführliche Dokumentation:** Siehe [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md) für Details zum integrierten Server.
 
 ## Technologie
 
