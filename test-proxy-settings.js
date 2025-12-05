@@ -48,7 +48,7 @@ function saveProxySettings(settings) {
 }
 
 // Test runner
-async function runTests() {
+function runTests() {
     console.log('=== Testing Proxy Settings Storage ===\n');
     
     let testsPassed = 0;
@@ -193,7 +193,7 @@ async function runTests() {
     // Clean up test directory
     try {
         fs.unlinkSync(testConfigPath);
-        fs.rmdirSync(testDir);
+        fs.rmSync(testDir, { recursive: true });
     } catch (error) {
         console.log('Warning: Could not clean up test directory:', error.message);
     }
@@ -212,7 +212,4 @@ async function runTests() {
 }
 
 // Run tests
-runTests().catch(error => {
-    console.error('Test failed with error:', error);
-    process.exit(1);
-});
+runTests();
