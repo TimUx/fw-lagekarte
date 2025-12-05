@@ -1,6 +1,6 @@
 // Storage module using LocalForage for persistent storage
 
-// Default proxy settings (shared constant)
+// Default proxy settings (must match DEFAULT_PROXY_SETTINGS in constants.js)
 const DEFAULT_PROXY_SETTINGS = {
     mode: 'system',
     proxyUrl: '',

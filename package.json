@@ -57,6 +57,7 @@
       "sync.js",
       "tactical-symbols.js",
       "embedded-server.js",
+      "constants.js",
       "index.html",
       "readonly-viewer.html",
       "doc-viewer.html",

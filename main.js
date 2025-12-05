@@ -4,6 +4,7 @@ const fs = require('fs');
 const embeddedServer = require('./embedded-server');
 const MarkdownIt = require('markdown-it');
 const localforage = require('localforage');
+const { DEFAULT_PROXY_SETTINGS } = require('./constants');
 
 let mainWindow;
 
@@ -14,13 +15,6 @@ localforage.config({
     version: 1.0,
     storeName: 'fw_data'
 });
-
-// Default proxy settings constant
-const DEFAULT_PROXY_SETTINGS = {
-    mode: 'system',
-    proxyUrl: '',
-    proxyBypassRules: 'localhost,127.0.0.1'
-};
 
 // Get proxy settings from storage
 async function getProxySettings() {
@@ -73,8 +67,8 @@ function openProxySettings() {
     const proxyWindow = new BrowserWindow({
         width: 700,
         height: 600,
-        modal: true,
-        parent: mainWindow,
+        modal: mainWindow && !mainWindow.isDestroyed() ? true : false,
+        parent: mainWindow && !mainWindow.isDestroyed() ? mainWindow : undefined,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
