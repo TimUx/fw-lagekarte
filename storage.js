@@ -172,6 +172,21 @@ const Storage = {
         }
         
         return true;
+    },
+
+    // Proxy settings
+    getProxySettings: async function() {
+        const settings = await localforage.getItem('proxySettings');
+        return settings || {
+            mode: 'system', // 'system', 'manual', 'direct'
+            proxyUrl: '',
+            proxyBypassRules: 'localhost,127.0.0.1'
+        };
+    },
+
+    saveProxySettings: async function(settings) {
+        await localforage.setItem('proxySettings', settings);
+        return settings;
     }
 };
 
