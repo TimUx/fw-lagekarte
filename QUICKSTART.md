@@ -4,6 +4,18 @@
 
 ## 🚀 Installation & Start
 
+### Option 1: Vorgefertigte Installer (Empfohlen)
+
+Laden Sie die passende Version für Ihr Betriebssystem von den [GitHub Releases](https://github.com/TimUx/fw-lagekarte/releases) herunter:
+
+- **Windows**: `FW-Lagekarte-Setup-X.X.X.exe` - NSIS Installer
+- **Linux**: `FW-Lagekarte-X.X.X.AppImage` oder `.deb` Paket
+- **macOS**: `FW-Lagekarte-X.X.X.dmg` - DMG Image
+
+**Windows SmartScreen Hinweis:** Bei der ersten Ausführung kann eine Warnung erscheinen. Klicken Sie auf "Weitere Informationen" → "Trotzdem ausführen". Details siehe [Benutzerhandbuch](BENUTZERHANDBUCH.md#windows-smartscreen-warnung-umgehen).
+
+### Option 2: Aus Quellcode
+
 ```bash
 # 1. Repository klonen
 git clone https://github.com/TimUx/fw-lagekarte.git

@@ -1,5 +1,29 @@
 # Benutzerhandbuch - FW Lagekarte
 
+## Inhaltsverzeichnis
+
+1. [Übersicht](#übersicht)
+2. [Installation](#installation)
+   - [Windows SmartScreen Warnung umgehen](#windows-smartscreen-warnung-umgehen)
+3. [Erste Schritte](#erste-schritte)
+   - [Grundfunktionen](#grundfunktionen)
+     - [1. Feuerwehr-Standorte verwalten](#1-feuerwehr-standorte-verwalten)
+     - [2. Fahrzeuge verwalten](#2-fahrzeuge-verwalten)
+     - [3. Fahrzeuge im Einsatz einsetzen](#3-fahrzeuge-im-einsatz-einsetzen)
+     - [4. Kartenansicht anpassen](#4-kartenansicht-anpassen)
+4. [Tipps und Tricks](#tipps-und-tricks)
+5. [Erweiterte Funktionen](#erweiterte-funktionen)
+   - [Karten-Layer wechseln](#karten-layer-wechseln)
+   - [Lagekarte drucken](#lagekarte-drucken)
+   - [Netzwerk-Synchronisation (Multi-User)](#netzwerk-synchronisation-multi-user)
+6. [Offline-Nutzung](#offline-nutzung)
+7. [Datenspeicherung](#datenspeicherung)
+8. [Fehlerbehebung](#fehlerbehebung)
+   - [Allgemeine Probleme](#allgemeine-probleme)
+   - [Server-Modus Probleme](#server-modus-probleme)
+9. [Tastenkombinationen](#tastenkombinationen)
+10. [Support](#support)
+
 ## Übersicht
 
 Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen. Sie ermöglicht die Visualisierung von Standorten und Fahrzeugen auf einer interaktiven Karte.
@@ -13,6 +37,71 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 ### Installation
 1. Laden Sie die Anwendung herunter und installieren Sie sie
 2. Starten Sie die Anwendung - die Karte wird mit einer Standardansicht von Deutschland geladen
+
+#### Windows SmartScreen Warnung umgehen
+
+Beim ersten Start der Anwendung auf Windows-Systemen kann es zu einer Warnung von **Microsoft Defender SmartScreen** kommen:
+
+```
+Der Computer wurde durch Windows geschützt
+Von Microsoft Defender SmartScreen wurde der Start einer unbekannten App verhindert.
+Die Ausführung dieser App stellt u. U. ein Risiko für den PC dar.
+
+App: Lagekarte.Setup.X.X.X.exe
+Herausgeber: Unbekannter Herausgeber
+```
+
+**Warum erscheint diese Warnung?**
+
+Diese Warnung erscheint, weil die Anwendung nicht mit einem teuren Code-Signing-Zertifikat signiert ist. Die Anwendung ist dennoch sicher und Open Source - der Quellcode kann jederzeit auf GitHub eingesehen werden.
+
+**So umgehen Sie die Warnung:**
+
+**Methode 1: Bei Installation/Ausführung (EMPFOHLEN)**
+
+1. Wenn die SmartScreen-Warnung erscheint, klicken Sie auf **"Weitere Informationen"**
+2. Ein neuer Button **"Trotzdem ausführen"** wird sichtbar
+3. Klicken Sie auf **"Trotzdem ausführen"**
+4. Die Installation/Anwendung startet normal
+
+**Methode 2: Rechtsklick-Ausführung**
+
+1. Klicken Sie mit der **rechten Maustaste** auf die EXE-Datei
+2. Wählen Sie **"Eigenschaften"**
+3. Setzen Sie ein Häkchen bei **"Zulassen"** oder **"Nicht mehr blockieren"** (falls vorhanden)
+4. Klicken Sie auf **"Übernehmen"** und **"OK"**
+5. Führen Sie die Datei normal per Doppelklick aus
+
+**Methode 3: Windows Defender SmartScreen deaktivieren (Nur für Administratoren)**
+
+⚠️ **Vorsicht:** Diese Methode deaktiviert den SmartScreen-Schutz für alle Anwendungen!
+
+1. Öffnen Sie **Windows-Sicherheit** (Windows-Taste → "Windows-Sicherheit" eingeben)
+2. Gehen Sie zu **"App- & Browsersteuerung"**
+3. Klicken Sie unter **"Zuverlässigkeitsbasierter Schutz"** auf **"Einstellungen für zuverlässigkeitsbasierten Schutz"**
+4. Ändern Sie **"Apps und Dateien überprüfen"** von "Warnen" auf **"Aus"**
+5. Bestätigen Sie die Änderung mit Administratorrechten
+
+**Hinweise für Unternehmensumgebungen (GPO/Domänen):**
+
+Wenn Sie die Anwendung in einer Unternehmensumgebung mit Gruppenrichtlinien (GPO) einsetzen möchten:
+
+1. **IT-Administrator kontaktieren:** Bitten Sie Ihren IT-Administrator, die EXE-Datei auf eine Whitelist zu setzen
+2. **Hash-basierte Ausnahme:** Der Administrator kann den SHA256-Hash der Datei zu den vertrauenswürdigen Anwendungen hinzufügen
+3. **Pfad-basierte Ausnahme:** Der Administrator kann den Installationspfad als vertrauenswürdig markieren
+4. **AppLocker-Regel:** In Umgebungen mit AppLocker kann eine entsprechende Regel erstellt werden
+
+**Alternative: Aus Quellcode selbst kompilieren**
+
+Wenn Sie der vorgefertigten EXE-Datei nicht vertrauen, können Sie die Anwendung selbst aus dem Quellcode bauen:
+
+1. Node.js installieren (https://nodejs.org/)
+2. Repository klonen: `git clone https://github.com/TimUx/fw-lagekarte.git`
+3. Abhängigkeiten installieren: `npm install`
+4. Anwendung starten: `npm start`
+5. Oder Installer erstellen: `npm run build:win`
+
+Der komplette Quellcode ist auf GitHub verfügbar und kann vor der Nutzung überprüft werden.
 
 ### Grundfunktionen
 
