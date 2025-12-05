@@ -64,11 +64,13 @@ async function applyProxySettings(settings) {
 
 function openProxySettings() {
     // Create a new window for proxy settings
+    const hasValidMainWindow = mainWindow && !mainWindow.isDestroyed();
+    
     const proxyWindow = new BrowserWindow({
         width: 700,
         height: 600,
-        modal: mainWindow && !mainWindow.isDestroyed() ? true : false,
-        parent: mainWindow && !mainWindow.isDestroyed() ? mainWindow : undefined,
+        modal: hasValidMainWindow,
+        parent: hasValidMainWindow ? mainWindow : undefined,
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,
