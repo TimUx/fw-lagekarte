@@ -281,10 +281,6 @@ function createMenu() {
                     click: () => openDocumentation('FEATURES.md')
                 },
                 {
-                    label: 'Integration',
-                    click: () => openDocumentation('INTEGRATION.md')
-                },
-                {
                     label: 'Architektur',
                     click: () => openDocumentation('ARCHITEKTUR.md')
                 }

@@ -15,12 +15,6 @@ Die Dokumentation ist in mehrere Dateien aufgeteilt, die jeweils einen spezifisc
 | **[BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md)** | Ausführliche Bedienungsanleitung | Alle Nutzer | ~30 Min. |
 | **[FEATURES.md](FEATURES.md)** | Detaillierte Feature-Beschreibungen | Interessierte Nutzer | ~15 Min. |
 
-### Für Administratoren und Integratoren
-
-| Dokument | Zweck | Zielgruppe | Länge |
-|----------|-------|------------|-------|
-| **[INTEGRATION.md](INTEGRATION.md)** | Integration mit alarm-mail, alarm-messenger, alarm-monitor | Admins, Integratoren | ~15 Min. |
-
 ### Für Entwickler
 
 | Dokument | Zweck | Zielgruppe | Länge |
@@ -40,9 +34,6 @@ Die Dokumentation ist in mehrere Dateien aufgeteilt, die jeweils einen spezifisc
 
 ### Ich möchte wissen, was die App alles kann
 → **[FEATURES.md](FEATURES.md)** - Vollständige Feature-Liste
-
-### Ich möchte die App mit anderen Systemen integrieren
-→ **[INTEGRATION.md](INTEGRATION.md)** - Integration mit alarm-mail, alarm-messenger, etc.
 
 ### Ich möchte an der App mitentwickeln
 → **[ARCHITEKTUR.md](ARCHITEKTUR.md)** - Technische Dokumentation
@@ -93,16 +84,6 @@ npm start
 - **F11** - Vollbild
 - **Ctrl/Cmd + R** - Neu laden
 
-## 🔗 Verwandte Projekte
-
-FW Lagekarte ist Teil eines größeren Ökosystems:
-
-- **[alarm-mail](https://github.com/TimUx/alarm-mail)** - E-Mail-Parser für Leitstellen-Alarmierungen
-- **[alarm-messenger](https://github.com/TimUx/alarm-messenger)** - Mobile Alarmierungs-App mit Push-Benachrichtigungen
-- **[alarm-monitor](https://github.com/TimUx/alarm-monitor)** - Dashboard für große Displays
-
-Siehe [INTEGRATION.md](INTEGRATION.md) für Details zur Integration.
-
 ## 📂 Dateistruktur
 
 ```
@@ -111,7 +92,6 @@ fw-lagekarte/
 ├── QUICKSTART.md            # 5-Minuten-Schnelleinstieg
 ├── BENUTZERHANDBUCH.md      # Ausführliches Handbuch
 ├── FEATURES.md              # Feature-Liste
-├── INTEGRATION.md           # System-Integration
 ├── ARCHITEKTUR.md           # Technische Dokumentation
 ├── DOKUMENTATION.md         # Diese Datei
 │

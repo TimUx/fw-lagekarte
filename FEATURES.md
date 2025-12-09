@@ -376,22 +376,6 @@ Siehe [ARCHITEKTUR.md](ARCHITEKTUR.md) für detaillierte technische Dokumentatio
 - Mehrere Personen können gleichzeitig arbeiten
 - Displays zeigen immer aktuellen Stand
 
-### Szenario 3: Integration mit Alarmierungs-System
-
-**Anwendungsfall**: Vollautomatische Lageerfassung
-
-**Komponenten**:
-1. **alarm-mail**: Empfängt und parst Leitstellen-E-Mails
-2. **alarm-messenger**: Alarmiert Einsatzkräfte
-3. **FW Lagekarte**: Visualisiert taktische Lage
-
-**Ablauf**:
-1. Leitstelle sendet Alarm-E-Mail
-2. alarm-mail parst Einsatzinformationen
-3. Einsatzort wird automatisch auf Lagekarte markiert
-4. alarm-messenger alarmiert Einsatzkräfte
-5. Disponenten ziehen alarmierte Fahrzeuge zum Einsatzort
-
 ## Vorteile
 
 ### Für Einsatzkräfte

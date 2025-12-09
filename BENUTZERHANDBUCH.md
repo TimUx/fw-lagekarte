@@ -45,13 +45,6 @@ Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatz
 - Echtzeit-Synchronisation über integriertem Server
 - Displays zeigen aktuelle Lage per Web Viewer
 
-**Systemintegration (Optional)**:
-- [alarm-mail](https://github.com/TimUx/alarm-mail): Automatische Einsatzübernahme aus E-Mails
-- [alarm-messenger](https://github.com/TimUx/alarm-messenger): Mobile Alarmierung mit Rückmeldung
-- [alarm-monitor](https://github.com/TimUx/alarm-monitor): Großbildanzeige für Feuerwache
-
-Siehe [README.md - Systemintegration](README.md#systemintegration) für Details zur Integration.
-
 ## Erste Schritte
 
 ### Installation
