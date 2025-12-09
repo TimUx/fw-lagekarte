@@ -263,8 +263,30 @@ function createMenu() {
             label: 'Hilfe',
             submenu: [
                 {
+                    label: 'Dokumentations-Übersicht',
+                    click: () => openDocumentation('DOKUMENTATION.md')
+                },
+                { type: 'separator' },
+                {
+                    label: 'Schnellstart',
+                    click: () => openDocumentation('QUICKSTART.md')
+                },
+                {
                     label: 'Benutzerhandbuch',
                     click: () => openDocumentation('BENUTZERHANDBUCH.md')
+                },
+                { type: 'separator' },
+                {
+                    label: 'Features',
+                    click: () => openDocumentation('FEATURES.md')
+                },
+                {
+                    label: 'Integration',
+                    click: () => openDocumentation('INTEGRATION.md')
+                },
+                {
+                    label: 'Architektur',
+                    click: () => openDocumentation('ARCHITEKTUR.md')
                 }
             ]
         }

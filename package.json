@@ -72,7 +72,13 @@
       "node_modules/**/*"
     ],
     "extraResources": [
-      "BENUTZERHANDBUCH.md"
+      "README.md",
+      "QUICKSTART.md",
+      "BENUTZERHANDBUCH.md",
+      "FEATURES.md",
+      "INTEGRATION.md",
+      "ARCHITEKTUR.md",
+      "DOKUMENTATION.md"
     ]
   }
 }
