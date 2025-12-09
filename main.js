@@ -263,6 +263,11 @@ function createMenu() {
             label: 'Hilfe',
             submenu: [
                 {
+                    label: 'Dokumentations-Übersicht',
+                    click: () => openDocumentation('DOKUMENTATION.md')
+                },
+                { type: 'separator' },
+                {
                     label: 'Schnellstart',
                     click: () => openDocumentation('QUICKSTART.md')
                 },
