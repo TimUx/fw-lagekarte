@@ -1,104 +1,316 @@
 # FW Lagekarte - Funktionsübersicht
 
-## Übersicht
+Vollständige Liste aller implementierten Features und technischen Details der FW Lagekarte.
 
-Die FW Lagekarte ist eine vollständige Desktop-Anwendung für Feuerwehr-Großeinsätze mit folgenden Hauptfunktionen:
+## Inhaltsverzeichnis
 
-## Implementierte Features ✅
+- [Kern-Funktionen](#kern-funktionen)
+- [Benutzeroberfläche](#benutzeroberfläche)
+- [Multi-User-Funktionen](#multi-user-funktionen)
+- [Datenmanagement](#datenmanagement)
+- [Plattformunterstützung](#plattformunterstützung)
+- [Technische Details](#technische-details)
+- [Nutzungsszenarien](#nutzungsszenarien)
 
-### 1. Kartendarstellung
-- ✅ OpenStreetMap Integration
-- ✅ Zoom- und Navigationsfunktionen
-- ✅ Speicherbare Kartenansicht
-- ✅ Offline-Fähigkeit (gecachte Kartenkacheln)
-- ✅ Mehrere Karten-Layer (OpenStreetMap, Satellit, Topographisch, Hybrid)
-- ✅ Layer-Auswahl mit automatischer Speicherung
+## Kern-Funktionen
 
-### 2. Standortverwaltung
-- ✅ Standorte hinzufügen (Name, Adresse, GPS-Koordinaten)
-- ✅ Standorte auf Karte per Klick platzieren
-- ✅ Standorte bearbeiten
-- ✅ Standorte löschen
-- ✅ Standort-Icons auf Karte (🏢 Symbol)
-- ✅ Popup mit Standort-Details
+### Kartendarstellung und Navigation
 
-### 3. Fahrzeugverwaltung
-- ✅ Fahrzeuge hinzufügen mit:
-  - Rufname (z.B. "Florian Hamburg 1/44/1")
-  - Fahrzeugtyp (LF, DLK, TLF, RW, ELW, MTW, KTW, RTW, NEF)
-  - Besatzung (z.B. "1/8")
-  - Zugeordnete Station
-  - Notizen
-- ✅ Fahrzeuge bearbeiten
-- ✅ Fahrzeuge löschen
-- ✅ Fahrzeuge in Seitenleiste anzeigen
+- ✅ **OpenStreetMap Integration** - Hochwertige, freie Kartendaten
+- ✅ **Mehrere Karten-Layer**:
+  - OpenStreetMap (Standard) - Detaillierte Straßenkarte
+  - Satellit (Esri World Imagery) - Luftbildaufnahmen
+  - Topographisch (OpenTopoMap) - Mit Höhenlinien
+  - Hybrid - Satellit mit Straßenbeschriftung
+- ✅ **Intuitive Navigation**:
+  - Zoomen mit Mausrad oder +/- Buttons
+  - Verschieben per Drag & Drop
+  - Tastatursteuerung (Ctrl +/-/0)
+- ✅ **Speicherbare Kartenansicht** - Position und Zoom werden gespeichert
+- ✅ **Offline-Fähigkeit** - Bereits angesehene Bereiche funktionieren offline
+- ✅ **Layer-Persistenz** - Ausgewählter Layer wird beim Neustart wiederhergestellt
 
-### 4. Drag & Drop Funktionalität
-- ✅ Fahrzeuge aus Seitenleiste auf Karte ziehen
-- ✅ Fahrzeuge auf Karte verschieben
-- ✅ Fahrzeuge zurückrufen zur Seitenleiste
-- ✅ Visuelles Feedback beim Ziehen
-- ✅ Statusanzeige (verfügbar/im Einsatz)
+### Standortverwaltung
 
-### 5. Persistente Datenspeicherung
-- ✅ LocalForage/IndexedDB für lokale Speicherung
-- ✅ Automatisches Speichern aller Änderungen
-- ✅ Daten bleiben nach Neustart erhalten
-- ✅ Export-Funktion (JSON-Backup)
-- ✅ Import-Funktion (Daten wiederherstellen)
+- ✅ **Standorte hinzufügen**:
+  - Name und Adresse erfassen
+  - GPS-Koordinaten (Lat/Lng)
+  - Manuell oder per Klick auf Karte
+  - Rechtsklick-Kontextmenü für schnelles Hinzufügen
+- ✅ **Standorte bearbeiten** - Alle Details können nachträglich geändert werden
+- ✅ **Standorte löschen** - Mit Sicherheitsabfrage
+- ✅ **Visuelle Darstellung**:
+  - 🏢 Symbol auf der Karte
+  - Klickbares Icon mit Popup
+  - Details-Anzeige im Popup
+- ✅ **Standort-Kategorien**:
+  - Feuerwachen und Gerätehäuser
+  - Einsatzstellen
+  - Sonstige wichtige Orte
 
-### 6. Benutzeroberfläche
-- ✅ Responsive Design
-- ✅ Deutsche Benutzeroberfläche
-- ✅ Modale Dialoge für Eingaben
-- ✅ Statistik-Anzeige (Fahrzeuge gesamt/im Einsatz)
-- ✅ Farbcodierung (verfügbar/eingesetzt)
-- ✅ Tastaturkürzel (ESC zum Schließen)
+### Fahrzeugverwaltung
 
-### 7. Offline & Plattformübergreifend
-- ✅ Electron Desktop-App
-- ✅ Vollständig offline nutzbar
-- ✅ Windows-Installer (.exe) erstellbar
-- ✅ Linux-Installer (AppImage & .deb) erstellbar
-- ✅ macOS-Installer (.dmg) erstellbar
-- ✅ Keine externe Server-Verbindung nötig
+- ✅ **Umfassende Fahrzeugtypen** mit taktischen Zeichen:
+  - **Einsatzleitung**: ELW (Einsatzleitwagen)
+  - **Löschfahrzeuge**: HLF, LF, StLF, TLF, TSF, TSF-W
+  - **Rüst- und Gerätewagen**: GW-L1, GW-L2, RW
+  - **Mannschaft**: MTF, MTW
+  - **Hubrettung**: DLK (Drehleiter)
+  - **Rettungswesen**: KTW, NEF, RTW
+- ✅ **Fahrzeugdetails**:
+  - Rufname nach Florian-System (z.B. "Florian Hamburg 1/44/1")
+  - Besatzungsstärke (z.B. "1/8")
+  - Standortzuordnung
+  - Freitext-Notizen für besondere Ausrüstung
+- ✅ **CRUD-Operationen**:
+  - Fahrzeuge hinzufügen
+  - Bearbeiten aller Details
+  - Löschen mit Bestätigung
+- ✅ **Seitenleiste**:
+  - Gruppierung nach Standorten
+  - Taktische Zeichen-Anzeige
+  - Status-Kennzeichnung (verfügbar/im Einsatz)
+  - Sortierung nach Rufzeichen
 
-### 8. Druckfunktion
-- ✅ Professionelle Druckansicht der Lagekarte
-- ✅ Automatische Legende mit Fahrzeug- und Standortliste
-- ✅ Zeitstempel für Dokumentation
-- ✅ PDF-Export möglich
-- ✅ Optimierte Print-Layout mit separater Seite für Details
+### Einsatzdarstellung und Drag & Drop
 
-### 9. Netzwerk-Synchronisation (Multi-User)
-- ✅ WebSocket-basierte Echtzeit-Synchronisation
-- ✅ Automatische Synchronisation von Standorten und Fahrzeugen
-- ✅ Verbindungsstatus-Anzeige
-- ✅ Automatische Wiederverbindung bei Verbindungsabbruch
-- ✅ Optional aktivierbar (funktioniert auch ohne Sync)
-- ✅ Konfigurierbarer Server-Endpoint
-- ✅ Echtzeit-Updates bei Änderungen anderer Benutzer
+- ✅ **Drag & Drop**:
+  - Fahrzeuge aus Seitenleiste ziehen
+  - Auf beliebiger Kartenposition platzieren
+  - Visuelles Feedback während des Ziehens
+  - Ghost-Image des Fahrzeugs beim Ziehen
+- ✅ **Auf der Karte**:
+  - Fahrzeuge verschieben per Drag & Drop
+  - Taktisches Zeichen als Marker
+  - Klickbares Icon mit Details
+  - Popup mit Fahrzeuginfo und Aktionen
+- ✅ **Status-Management**:
+  - Automatische Status-Änderung (verfügbar → im Einsatz)
+  - Grüne Markierung für eingesetzte Fahrzeuge
+  - "Im Einsatz"-Sektion in Seitenleiste
+  - Zurückrufen-Funktion mit einem Klick
+- ✅ **Statistiken**:
+  - Anzahl verfügbare Fahrzeuge
+  - Anzahl eingesetzte Fahrzeuge
+  - Live-Aktualisierung bei Änderungen
+
+### Druckfunktion
+
+- ✅ **Professionelle Druckausgabe**:
+  - Komplette Lagekarte als Druck
+  - Zeitstempel der Erstellung
+  - Anpassbares Layout
+- ✅ **Automatische Legende**:
+  - Liste aller Standorte mit Adressen
+  - Liste verfügbarer Fahrzeuge
+  - Liste eingesetzter Fahrzeuge mit Positionen
+  - Besatzungsstärken
+- ✅ **Export-Optionen**:
+  - Direkt drucken
+  - Als PDF speichern
+  - Für digitale Archivierung
+
+## Benutzeroberfläche
+
+- ✅ **Moderne Oberfläche**:
+  - Klares, übersichtliches Design
+  - Deutsche Benutzeroberfläche
+  - Responsive Layout
+  - Intuitive Bedienung
+- ✅ **Modale Dialoge**:
+  - Standort hinzufügen/bearbeiten
+  - Fahrzeug hinzufügen/bearbeiten
+  - Synchronisations-Einstellungen
+  - Proxy-Konfiguration
+- ✅ **Visuelle Feedback**:
+  - Status-Indikatoren
+  - Farbcodierung (grün = im Einsatz)
+  - Hover-Effekte
+  - Loading-Animationen
+- ✅ **Statistiken**:
+  - Live-Zähler für Fahrzeuge
+  - Anzahl verfügbar/im Einsatz
+  - Client-Anzahl (Server-Modus)
+- ✅ **Tastaturkürzel**:
+  - ESC - Dialoge schließen
+  - Ctrl/Cmd + Plus - Hineinzoomen
+  - Ctrl/Cmd + Minus - Herauszoomen
+  - Ctrl/Cmd + 0 - Zoom zurücksetzen
+
+## Multi-User-Funktionen
+
+### Integrierter Server
+
+- ✅ **WebSocket + HTTP Server**:
+  - Läuft direkt in der Electron-App
+  - Keine externe Server-Installation nötig
+  - Konfigurierbarer Port (Standard: 8080)
+  - Automatisches Starten/Stoppen
+- ✅ **Netzwerk-Erkennung**:
+  - Zeigt alle verfügbaren IP-Adressen
+  - Localhost-Adressen
+  - LAN-Adressen (Ethernet, WiFi)
+  - URLs für WebSocket und HTTP
+- ✅ **Client-Management**:
+  - Live-Anzeige verbundener Clients
+  - Client-Zähler im UI
+  - Automatische Trennung bei Server-Stop
+
+### Synchronisation
+
+- ✅ **Echtzeit-Updates**:
+  - Alle Änderungen werden sofort übertragen
+  - Inkrementelle Updates (nur Änderungen)
+  - Keine spürbaren Verzögerungen
+- ✅ **Synchronisierte Daten**:
+  - Standorte (Hinzufügen, Bearbeiten, Löschen)
+  - Fahrzeuge (Hinzufügen, Bearbeiten, Löschen)
+  - Fahrzeugpositionen (Verschieben)
+  - Einsatzstatus (Verfügbar/Im Einsatz)
+- ✅ **Verbindungs-Management**:
+  - Automatische Wiederverbindung
+  - Status-Anzeige (Verbunden/Getrennt)
+  - Fehlerbehandlung
+  - Reconnect-Logik mit Backoff
+
+### Web Viewer
+
+- ✅ **Browser-basiert**:
+  - Keine Installation erforderlich
+  - Funktioniert auf allen modernen Browsern
+  - Responsive Design für verschiedene Bildschirme
+- ✅ **Read-Only Modus**:
+  - Anzeige aller Standorte und Fahrzeuge
+  - Live-Updates bei Änderungen
+  - Keine Bearbeitungsmöglichkeiten
+  - Sichere Anzeige für öffentliche Displays
+- ✅ **Verwendungszwecke**:
+  - Große Displays in Leitstellen
+  - Tablets für Einsatzleiter
+  - Mobile Geräte für Information
+  - Mehrere Anzeigestationen ohne Desktop-Installation
+
+## Datenmanagement
+
+### Persistente Speicherung
+
+- ✅ **LocalForage/IndexedDB**:
+  - Schnelle, lokale Datenspeicherung
+  - Skalierbar für tausende Einträge
+  - Automatisches Speichern
+  - Keine externen Datenbanken nötig
+- ✅ **Datenpersistenz**:
+  - Alle Daten bleiben nach Neustart erhalten
+  - Kartenansicht wird gespeichert
+  - Sync-Konfiguration bleibt erhalten
+  - Proxy-Einstellungen bleiben erhalten
+
+### Import/Export
+
+- ✅ **Datenexport**:
+  - Kompletter Export als JSON
+  - Backup-Funktion
+  - Alle Standorte und Fahrzeuge
+  - Manueller Download
+- ✅ **Datenimport**:
+  - JSON-Datei einlesen
+  - Wiederherstellung aus Backup
+  - Migration zwischen Installationen
+  - Überschreiben oder Zusammenführen
+
+### Proxy-Unterstützung
+
+- ✅ **Proxy-Modi**:
+  - System-Proxy (empfohlen)
+  - PAC-Skript (Proxy Auto-Config)
+  - Manueller Proxy
+  - Kein Proxy (direkte Verbindung)
+- ✅ **Enterprise-Features**:
+  - GPO-PAC-Unterstützung
+  - Proxy-Authentifizierung
+  - Bypass-Regeln
+  - Persistente Konfiguration
+- ✅ **UI**:
+  - Eigenes Einstellungs-Fenster
+  - Sofortige Anwendung
+  - Konfiguration über Menü
+
+## Plattformunterstützung
+
+### Betriebssysteme
+
+- ✅ **Windows**:
+  - Windows 10 und 11
+  - NSIS-Installer (.exe)
+  - Startmenü-Integration
+  - Desktop-Verknüpfung
+- ✅ **Linux**:
+  - AppImage (universal)
+  - .deb Paket (Debian/Ubuntu)
+  - Funktioniert auf den meisten Distributionen
+- ✅ **macOS**:
+  - macOS 10.14+
+  - DMG-Installer
+  - Native Mac-Anwendung
+
+### Offline-Fähigkeit
+
+- ✅ **Vollständig offline**:
+  - Keine Internet-Verbindung für Betrieb nötig
+  - Alle Daten lokal gespeichert
+  - Kartenkacheln werden gecacht
+  - Keine Cloud-Abhängigkeiten
+- ✅ **Hybrid-Modus**:
+  - Online: Neue Kartenbereiche laden
+  - Offline: Bereits gesehene Bereiche verfügbar
+  - Automatisches Caching
 
 ## Technische Details
 
+### Technologie-Stack
+
+**Frontend**:
+- **Electron 39.x** - Plattformübergreifendes Desktop-Framework
+- **Leaflet.js 1.9.x** - Interaktive Kartenvisualisierung
+- **OpenStreetMap** - Freie Kartendaten
+- **LocalForage 1.10.x** - Lokale Datenspeicherung (IndexedDB)
+
+**Backend (Embedded Server)**:
+- **WebSocket (ws 8.x)** - Echtzeit-Kommunikation
+- **Express 4.x** - HTTP-Server
+- **Node.js** - JavaScript-Runtime
+
+**Build & Deployment**:
+- **Electron Builder 26.x** - Installer-Erstellung
+- **NSIS** - Windows-Installer
+- **AppImage & .deb** - Linux-Packages
+- **DMG** - macOS-Installer
+
 ### Architektur
+
 ```
 fw-lagekarte/
-├── main.js           # Electron Hauptprozess
-├── renderer.js       # UI-Logik & Event-Handler
-├── storage.js        # Datenverwaltung (LocalForage)
-├── index.html        # HTML-Struktur
-├── styles.css        # Styling
-├── package.json      # Abhängigkeiten & Konfiguration
-└── assets/           # Icons & Ressourcen
+├── main.js                    # Electron Hauptprozess
+├── preload.js                 # Preload-Script (Context Bridge)
+├── renderer.js                # UI-Logik & Event-Handler
+├── storage.js                 # Datenverwaltung (LocalForage)
+├── sync.js                    # Synchronisations-Modul
+├── embedded-server.js         # Integrierter WebSocket + HTTP Server
+├── tactical-symbols.js        # Taktische Zeichen (FwDV 100)
+├── constants.js               # Geteilte Konstanten
+├── index.html                 # Haupt-HTML
+├── readonly-viewer.html       # Web Viewer
+├── proxy-settings.html        # Proxy-Konfiguration
+├── doc-viewer.html            # Dokumentations-Viewer
+├── styles.css                 # Styling
+├── package.json               # Dependencies & Build-Config
+└── assets/
+    ├── tactical-symbols/      # SVG-Symbole für Fahrzeugtypen
+    ├── screenshots/           # Screenshots
+    └── icons/                 # App-Icons
 ```
 
-### Verwendete Technologien
-- **Electron 39.x** - Desktop-Framework
-- **Leaflet.js 1.9.x** - Kartenvisualisierung
-- **LocalForage 1.10.x** - Lokale Datenspeicherung
-- **OpenStreetMap** - Kartendaten
-- **Electron Builder** - Windows-Installer
+Siehe [ARCHITEKTUR.md](ARCHITEKTUR.md) für detaillierte technische Dokumentation.
 
 ### Datenstruktur
 
@@ -129,54 +341,106 @@ fw-lagekarte/
 
 ## Nutzungsszenarien
 
-### Szenario 1: Vorbereitung
-1. Alle Feuerwehr-Standorte im Einsatzgebiet auf der Karte markieren
-2. Verfügbare Fahrzeuge mit Details erfassen
-3. Kartenansicht auf Einsatzgebiet einstellen und speichern
+### Szenario 1: Einzelplatz-Betrieb (Standalone)
 
-### Szenario 2: Einsatzleitung
-1. Fahrzeuge per Drag & Drop zu Einsatzorten bewegen
-2. Echtzeitübersicht über eingesetzte Ressourcen
-3. Fahrzeuge bei Bedarf umpositionieren
-4. Statistik im Blick: Wieviele Fahrzeuge noch verfügbar?
+**Anwendungsfall**: Einsatzleiter mit eigenem Laptop
 
-### Szenario 3: Nachbereitung
-1. Einsatzdaten exportieren (Backup)
-2. Alle Fahrzeuge zurückrufen
-3. Nächster Einsatz: Daten importieren oder neu beginnen
+1. **Vorbereitung**:
+   - Alle Feuerwehr-Standorte im Einsatzbereich markieren
+   - Verfügbare Fahrzeuge mit Details erfassen
+   - Kartenansicht auf Einsatzgebiet einstellen und speichern
+
+2. **Während des Einsatzes**:
+   - Fahrzeuge per Drag & Drop zu Einsatzorten bewegen
+   - Echtzeitübersicht über eingesetzte Ressourcen
+   - Fahrzeuge bei Bedarf umpositionieren
+   - Neue Fahrzeuge hinzufügen, wenn nachalarmiert wird
+
+3. **Nachbereitung**:
+   - Lagekarte für Einsatzbericht drucken
+   - Einsatzdaten exportieren (Backup)
+   - Alle Fahrzeuge zurückrufen für nächsten Einsatz
+
+### Szenario 2: Multi-User-Betrieb (Leitstelle)
+
+**Anwendungsfall**: Mehrere Disponenten arbeiten gemeinsam
+
+**Setup**:
+1. **Haupt-Computer** (Server-Modus): Startet integrierten Server
+2. **Client-Computer** (Client-Modus): Verbinden zu Server-WebSocket
+3. **Große Displays** (Web Viewer): Browser zeigt schreibgeschützte Ansicht
+
+**Ablauf**:
+- Alle sehen die gleiche Lagekarte
+- Änderungen werden sofort synchronisiert
+- Mehrere Personen können gleichzeitig arbeiten
+- Displays zeigen immer aktuellen Stand
+
+### Szenario 3: Integration mit Alarmierungs-System
+
+**Anwendungsfall**: Vollautomatische Lageerfassung
+
+**Komponenten**:
+1. **alarm-mail**: Empfängt und parst Leitstellen-E-Mails
+2. **alarm-messenger**: Alarmiert Einsatzkräfte
+3. **FW Lagekarte**: Visualisiert taktische Lage
+
+**Ablauf**:
+1. Leitstelle sendet Alarm-E-Mail
+2. alarm-mail parst Einsatzinformationen
+3. Einsatzort wird automatisch auf Lagekarte markiert
+4. alarm-messenger alarmiert Einsatzkräfte
+5. Disponenten ziehen alarmierte Fahrzeuge zum Einsatzort
 
 ## Vorteile
 
-✅ **Offline-Fähig** - Keine Internetabhängigkeit im Einsatz
-✅ **Einfach zu bedienen** - Intuitive Drag & Drop Oberfläche
-✅ **Datenschutz** - Alle Daten bleiben lokal
-✅ **Flexibel** - Beliebige Standorte und Fahrzeuge
-✅ **Skalierbar** - Für kleine und große Einsätze geeignet
-✅ **Portable** - Export/Import für Datensicherung
+### Für Einsatzkräfte
 
-## Installation & Start
+✅ **Einfache Bedienung** - Intuitive Drag & Drop Oberfläche ohne Schulungsaufwand
+✅ **Schneller Überblick** - Alle Ressourcen auf einen Blick
+✅ **Taktische Zeichen** - Sofortige Erkennung von Fahrzeugtypen nach FwDV 100
+✅ **Offline-Fähig** - Funktioniert auch bei Netzausfall
 
-```bash
-# Abhängigkeiten installieren
-npm install
+### Für Organisationen
 
-# Anwendung starten
-npm start
+✅ **Kostenlos** - Open Source, keine Lizenzkosten
+✅ **Datenschutz** - Alle Daten bleiben lokal, keine Cloud
+✅ **Flexibel** - Anpassbar für verschiedene Einsatzszenarien
+✅ **Skalierbar** - Von Einzelplatz bis Multi-User
+✅ **Portable** - Export/Import für Datensicherung und Migration
 
-# Windows-Installer erstellen
-npm run build
-```
+### Technische Vorteile
 
-## Weiterentwicklungsmöglichkeiten
+✅ **Plattformunabhängig** - Windows, Linux, macOS
+✅ **Moderne Technologie** - Electron, Leaflet, WebSocket
+✅ **Erweiterbar** - Offene Architektur für Integrationen
+✅ **Wartbar** - Klare Code-Struktur, gut dokumentiert
 
-Zukünftige Features könnten sein:
-- 📊 Einsatzberichte und Statistiken
-- 🎨 Anpassbare Fahrzeug-Icons
-- 📍 GPS-Integration für Echtzeit-Tracking
-- 📱 Mobile App-Version
+## Bekannte Einschränkungen
 
-## Support & Dokumentation
+⚠️ **LAN-Only Multi-User** - Server ist für lokale Netzwerke konzipiert
+⚠️ **Keine Authentifizierung** - Multi-User hat keine Benutzer-Verwaltung
+⚠️ **Begrenzte Offline-Karten** - Nur bereits angesehene Bereiche verfügbar
+⚠️ **Last-Write-Wins** - Bei gleichzeitigen Änderungen gewinnt die letzte
 
-- README.md - Schnellstart-Anleitung
-- BENUTZERHANDBUCH.md - Ausführliche Bedienungsanleitung
-- GitHub Issues - Fehlerberichte und Feature-Requests
+## Geplante Erweiterungen
+
+Potenzielle zukünftige Features:
+
+- 📊 **Einsatzberichte** - Automatische Berichtserstellung mit Statistiken
+- 🔐 **Benutzer-Authentifizierung** - Multi-User mit Login und Rechten
+- 🔒 **TLS/SSL** - Verschlüsselte WebSocket-Verbindungen
+- 📍 **GPS-Integration** - Echtzeit-Tracking von Fahrzeugen
+- 🗺️ **Offline-Karten-Download** - Vordefinierte Bereiche herunterladen
+- 📱 **Native Mobile App** - React Native App für iOS/Android
+
+## Weitere Dokumentation
+
+- **[README.md](README.md)** - Übersicht, Installation und Schnellstart
+- **[QUICKSTART.md](QUICKSTART.md)** - Schnelleinstieg für neue Benutzer
+- **[BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md)** - Ausführliche Bedienungsanleitung
+- **[ARCHITEKTUR.md](ARCHITEKTUR.md)** - Technische Architektur und Entwickler-Docs
+
+---
+
+**Stand**: Dezember 2024

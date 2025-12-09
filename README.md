@@ -1,54 +1,165 @@
-# FW Lagekarte - Feuerwehr Lagekarte für Großeinsätze
+# FW Lagekarte - Einsatz-Lagekarte für Großeinsätze
 
-Eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen mit interaktiver Karte.
+Eine Desktop-Anwendung zur visuellen Verwaltung von Feuerwehr-Einsatzlagen mit interaktiver Karte, Fahrzeugverwaltung und Multi-User-Synchronisation.
 
 ![Hauptansicht der FW Lagekarte](assets/screenshots/hauptansicht.png)
 
-## Features
+## 📋 Inhaltsverzeichnis
 
-- 🗺️ **OpenStreetMap Integration** - Interaktive Kartenansicht mit OSM
-- 🌍 **Mehrere Karten-Layer** - Wechsel zwischen OpenStreetMap, Satellit, Topographisch und Hybrid-Ansicht
-- 🏢 **Standortverwaltung** - Feuerwehr-Standorte auf der Karte markieren und verwalten
-- 🚒 **Fahrzeugverwaltung** - Fahrzeuge mit Typ, Rufname, Besatzung usw. anlegen
-- 🎯 **Drag & Drop** - Fahrzeuge per Drag & Drop auf der Karte platzieren
-- 💾 **Persistente Speicherung** - Alle Daten werden lokal gespeichert
-- 🖨️ **Druckfunktion** - Professionelle Druckausgabe der Lagekarte mit Legende
-- 🔄 **Netzwerk-Synchronisation** - Optional: Multi-User Echtzeit-Synchronisation über WebSocket
-- 🖥️ **Integrierter Server** - Eingebauter WebSocket + HTTP Server für einfache Multi-User-Nutzung
-- 🌐 **Web Viewer** - Schreibgeschützter Browser-Zugriff ohne Installation
-- ✏️ **Bearbeitung** - Standorte und Fahrzeuge können jederzeit bearbeitet oder gelöscht werden
-- 🔌 **Offline-Fähig** - Funktioniert komplett offline (nach erstem Kartenladen)
-- 💻 **Plattformübergreifend** - Läuft auf Windows, Linux und macOS
+- [Überblick](#überblick)
+- [Funktionen](#funktionen)
+- [Systemintegration](#systemintegration)
+- [Installation](#installation)
+- [Schnellstart](#schnellstart)
+- [Dokumentation](#dokumentation)
+- [Technologie](#technologie)
+- [Lizenz](#lizenz)
+
+## Überblick
+
+**FW Lagekarte** ist eine Electron-basierte Desktop-Anwendung zur Visualisierung und Verwaltung von Einsatzlagen bei Feuerwehr-Großeinsätzen. Die Anwendung ermöglicht die Darstellung von Standorten, Fahrzeugen und Einsatzkräften auf einer interaktiven OpenStreetMap-Karte.
+
+### Hauptmerkmale
+
+- 🗺️ **Interaktive Kartendarstellung** - OpenStreetMap mit verschiedenen Kartenansichten
+- 🚒 **Fahrzeugverwaltung** - Verwaltung aller Einsatzfahrzeuge mit taktischen Zeichen
+- 🏢 **Standortverwaltung** - Feuerwachen und Einsatzstellen markieren
+- 🎯 **Drag & Drop** - Intuitive Bedienung per Maus
+- 💾 **Offline-Fähig** - Funktioniert vollständig ohne Internetverbindung
+- 🔄 **Multi-User-Synchronisation** - Echtzeit-Synchronisation über integriertem Server
+- 🌐 **Web Viewer** - Schreibgeschützter Browser-Zugriff für Displays
+- 🖨️ **Druckfunktion** - Professionelle Druckausgabe mit Legende
+- 💻 **Plattformübergreifend** - Windows, Linux und macOS
+
+## Funktionen
+
+### Kartendarstellung und Navigation
+
+- **Mehrere Karten-Layer**: OpenStreetMap (Standard), Satellit, Topographisch, Hybrid
+- **Zoom und Pan**: Intuitive Navigation mit Maus und Tastatur
+- **Speicherbare Ansicht**: Kartenausschnitt und Zoom-Level werden gespeichert
+- **Offline-Karten**: Bereits angesehene Bereiche werden gecacht
+
+### Standortverwaltung
+
+- **Feuerwehr-Standorte**: Wachen, Gerätehäuser und andere Standorte markieren
+- **Einsatzstellen**: Einsatzorte auf der Karte markieren
+- **Kontextmenü**: Rechtsklick auf Karte zum schnellen Hinzufügen
+- **Details**: Name, Adresse und GPS-Koordinaten
+
+### Fahrzeugverwaltung
+
+- **Umfassende Fahrzeugtypen**: HLF, LF, DLK, TLF, RW, ELW, MTW, KTW, RTW, NEF und mehr
+- **Taktische Zeichen**: Automatische Darstellung nach FwDV 100
+- **Besatzungsstärke**: Erfassung der aktuellen Besatzung
+- **Standortzuordnung**: Fahrzeuge können Standorten zugeordnet werden
+- **Notizen**: Zusätzliche Informationen zu Fahrzeugen
+
+### Einsatzdarstellung
+
+- **Drag & Drop**: Fahrzeuge per Drag & Drop auf Karte platzieren
+- **Verschieben**: Fahrzeuge auf Karte frei bewegen
+- **Status-Anzeige**: Verfügbare vs. eingesetzte Fahrzeuge
+- **Seitenleiste**: Übersicht über verfügbare und eingesetzte Fahrzeuge
+- **Gruppierung**: Fahrzeuge werden nach Standorten gruppiert
+
+### Multi-User-Funktionalität
+
+- **Integrierter Server**: WebSocket + HTTP Server direkt in der App
+- **Echtzeit-Synchronisation**: Alle Änderungen werden sofort synchronisiert
+- **Client-Modus**: Verbindung zu Server-Instanz
+- **Web Viewer**: Read-Only Browser-Zugriff ohne Installation
+- **Netzwerk-Erkennung**: Automatische Anzeige aller Netzwerk-IPs
+
+### Import/Export
+
+- **Datenexport**: Backup als JSON-Datei
+- **Datenimport**: Wiederherstellung aus Backup
+- **Portabilität**: Daten zwischen Installationen übertragen
+
+## Systemintegration
+
+**FW Lagekarte** ist Teil eines umfassenden Feuerwehr-Alarmierungs- und Einsatz-Management-Systems und kann mit folgenden Komponenten integriert werden:
+
+### 📧 [alarm-mail](https://github.com/TimUx/alarm-mail)
+E-Mail-Parser für Leitstellen-Alarmierungen. Ruft Alarm-E-Mails ab, parst die Einsatzinformationen und leitet sie an die nachfolgenden Systeme weiter.
+
+**Integration**: alarm-mail kann Einsatzdaten per API an die FW Lagekarte senden, um automatisch neue Einsatzstellen auf der Karte zu erstellen.
+
+### 📱 [alarm-messenger](https://github.com/TimUx/alarm-messenger)
+Mobile Alarmierungs-App mit Push-Benachrichtigungen und Rückmeldefunktion für Einsatzkräfte.
+
+**Integration**: alarm-messenger zeigt die alarmierten Einsatzkräfte an, während FW Lagekarte die Fahrzeuge und deren Positionen verwaltet. Beide Systeme können synchronisiert werden.
+
+### 🖥️ [alarm-monitor](https://github.com/TimUx/alarm-monitor)
+Dashboard zur Anzeige von Einsätzen auf großen Bildschirmen in der Feuerwache.
+
+**Integration**: alarm-monitor zeigt aktuelle Einsätze, FW Lagekarte visualisiert die taktische Lage. Der Web Viewer der FW Lagekarte kann parallel zum alarm-monitor auf Displays angezeigt werden.
+
+### Systemarchitektur
+
+```
+┌──────────────────┐
+│  IMAP Postfach   │ (Leitstelle sendet Alarm-E-Mail)
+└────────┬─────────┘
+         │
+         v
+┌──────────────────┐
+│   alarm-mail     │ (Parst E-Mail und extrahiert Einsatzdaten)
+└────────┬─────────┘
+         │
+         ├─────────────────────┬────────────────────┐
+         │                     │                    │
+         v                     v                    v
+┌──────────────┐      ┌──────────────┐    ┌──────────────────┐
+│ alarm-monitor│      │alarm-messenger│    │  FW Lagekarte    │
+│  (Display)   │      │  (Mobile App) │    │ (Taktische Karte)│
+└──────────────┘      └──────────────┘    └──────────────────┘
+                               │                    │
+                               └────────┬───────────┘
+                                        │
+                              Gemeinsame Datenbasis
+```
+
+**Hinweis**: FW Lagekarte kann auch vollständig unabhängig ohne die anderen Komponenten betrieben werden.
 
 ## Installation
 
-### Fertige Executables herunterladen
+### Vorgefertigte Installer (Empfohlen)
 
-Die einfachste Methode ist, ein fertiges Executable von den [GitHub Releases](https://github.com/TimUx/fw-lagekarte/releases) herunterzuladen:
+Die einfachste Methode ist der Download eines fertigen Installers von den [GitHub Releases](https://github.com/TimUx/fw-lagekarte/releases):
 
-- **Windows**: `FW-Lagekarte-Setup-X.X.X.exe` - NSIS Installer
-- **Linux**: `FW-Lagekarte-X.X.X.AppImage` oder `fw-lagekarte_X.X.X_amd64.deb` - AppImage oder Debian Paket
-- **macOS**: `FW-Lagekarte-X.X.X.dmg` - DMG Image
+#### Windows
+- **`FW-Lagekarte-Setup-X.X.X.exe`** - NSIS Installer
+- Installiert die Anwendung im Programme-Verzeichnis
+- Erstellt Desktop-Verknüpfung und Startmenü-Eintrag
 
-Einfach herunterladen, installieren und starten!
+**Hinweis**: Bei der ersten Ausführung kann eine Windows SmartScreen-Warnung erscheinen. Siehe [Benutzerhandbuch - SmartScreen-Warnung](BENUTZERHANDBUCH.md#windows-smartscreen-warnung-umgehen).
 
-#### Windows SmartScreen Warnung
+#### Linux
+- **`FW-Lagekarte-X.X.X.AppImage`** - Portable AppImage-Datei
+  - Ausführbar machen: `chmod +x FW-Lagekarte-*.AppImage`
+  - Starten: `./FW-Lagekarte-*.AppImage`
+- **`fw-lagekarte_X.X.X_amd64.deb`** - Debian/Ubuntu Paket
+  - Installieren: `sudo dpkg -i fw-lagekarte_*.deb`
 
-Beim ersten Start unter Windows kann eine SmartScreen-Warnung erscheinen ("Unbekannter Herausgeber"). Dies ist normal, da die App nicht code-signiert ist.
+#### macOS
+- **`FW-Lagekarte-X.X.X.dmg`** - DMG Installer
+- DMG öffnen und Anwendung in Programme-Ordner ziehen
 
-**So umgehen Sie die Warnung:**
-1. Klicken Sie auf **"Weitere Informationen"**
-2. Klicken Sie auf **"Trotzdem ausführen"**
+### Entwicklung und Build
 
-Weitere Details finden Sie im [Benutzerhandbuch - Windows SmartScreen](BENUTZERHANDBUCH.md#windows-smartscreen-warnung-umgehen).
-
-### Voraussetzungen für Entwicklung
+#### Voraussetzungen
 - Node.js (v16 oder höher)
 - npm
 
-### Entwicklungsumgebung starten
+#### Anwendung starten
 
 ```bash
+# Repository klonen
+git clone https://github.com/TimUx/fw-lagekarte.git
+cd fw-lagekarte
+
 # Abhängigkeiten installieren
 npm install
 
@@ -56,78 +167,109 @@ npm install
 npm start
 ```
 
-### Installer erstellen
+#### Installer erstellen
 
 ```bash
-# Alle Plattformen bauen
+# Alle Plattformen
 npm run build
 
-# Nur Windows-Installer bauen
+# Nur Windows
 npm run build:win
 
-# Nur Linux-Installer bauen (AppImage und .deb)
+# Nur Linux (AppImage + .deb)
 npm run build:linux
 
-# Nur macOS-Installer bauen
+# Nur macOS
 npm run build:mac
 ```
 
 Die Installer werden im `dist/`-Verzeichnis erstellt.
 
-## Benutzung
+## Schnellstart
 
-### Standorte hinzufügen
+### 1. Standort hinzufügen
 
-![Standort hinzufügen Dialog](assets/screenshots/standort-dialog.png)
+![Standort Dialog](assets/screenshots/standort-dialog.png)
 
-1. Klicken Sie auf "➕ Standort hinzufügen"
+1. Klicken Sie auf **"➕ Standort hinzufügen"**
 2. Geben Sie Name und Adresse ein
-3. Klicken Sie auf die Karte, um die Position zu wählen (oder geben Sie Koordinaten ein)
-4. Klicken Sie auf "Speichern"
+3. Klicken Sie auf die Karte, um die Position zu markieren
+4. Klicken Sie auf **"Speichern"**
 
-### Fahrzeuge hinzufügen
+### 2. Fahrzeug hinzufügen
 
-![Fahrzeug hinzufügen Dialog](assets/screenshots/fahrzeug-dialog.png)
+![Fahrzeug Dialog](assets/screenshots/fahrzeug-dialog.png)
 
-1. Klicken Sie auf "➕ Fahrzeug hinzufügen"
-2. Geben Sie Rufname, Typ, Besatzung usw. ein
-3. Klicken Sie auf "Speichern"
-4. Das Fahrzeug erscheint in der linken Seitenleiste
+1. Klicken Sie auf **"➕ Fahrzeug hinzufügen"**
+2. Geben Sie Rufname ein (z.B. "Florian Hamburg 1/44/1")
+3. Wählen Sie den Fahrzeugtyp (LF, HLF, DLK, etc.)
+4. Geben Sie die Besatzung ein (z.B. "1/8")
+5. Optional: Wählen Sie einen zugeordneten Standort
+6. Klicken Sie auf **"Speichern"**
 
-### Fahrzeuge zum Einsatz schicken
-1. Ziehen Sie ein Fahrzeug aus der Seitenleiste auf die Karte (Drag & Drop)
-2. Das Fahrzeug wird an der Position platziert
-3. Sie können das Fahrzeug auf der Karte weiter verschieben
+### 3. Fahrzeug einsetzen
 
-### Fahrzeuge zurückrufen
-1. Klicken Sie auf das Fahrzeug-Icon auf der Karte
-2. Klicken Sie auf "↩️ Zurückrufen"
-3. Das Fahrzeug erscheint wieder in der Seitenleiste
+1. **Ziehen** Sie ein Fahrzeug aus der linken Seitenleiste
+2. **Lassen** Sie es an der gewünschten Position auf der Karte fallen
+3. Das Fahrzeug wird nun auf der Karte angezeigt und als "im Einsatz" markiert
 
-### Kartenansicht speichern
-1. Zoomen und verschieben Sie die Karte zur gewünschten Ansicht
-2. Klicken Sie auf "💾 Kartenansicht speichern"
-3. Die Ansicht wird beim nächsten Start wiederhergestellt
+### 4. Multi-User-Modus aktivieren (Optional)
 
-### Multi-User Synchronisation (Server-Modus)
+**Server starten:**
 1. Klicken Sie auf **"🔄 Synchronisation"**
-2. Wählen Sie Modus **"Server (Synchronisation bereitstellen)"**
-3. Klicken Sie auf **"Speichern"** - Der Server startet automatisch!
-4. Teilen Sie die angezeigten URLs mit anderen Benutzern:
-   - **WebSocket-URL** für andere Desktop-Clients (z.B. `ws://192.168.1.100:8080`)
-   - **HTTP-URL** für Browser-Zugriff (z.B. `http://192.168.1.100:8080`)
+2. Wählen Sie **"Server (Synchronisation bereitstellen)"**
+3. Optional: Ändern Sie den Port (Standard: 8080)
+4. Klicken Sie auf **"Speichern"**
 
-**Ausführliche Dokumentation:** Siehe [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md) für Details zum integrierten Server.
+**Client verbinden:**
+1. Öffnen Sie FW Lagekarte auf einem anderen Computer
+2. Klicken Sie auf **"🔄 Synchronisation"**
+3. Wählen Sie **"Client (Zum Server verbinden)"**
+4. Geben Sie die WebSocket-URL ein (z.B. `ws://192.168.1.100:8080`)
+5. Klicken Sie auf **"Speichern"**
+
+**Web Viewer öffnen:**
+- Öffnen Sie einen Browser
+- Geben Sie die HTTP-URL ein (z.B. `http://192.168.1.100:8080`)
+- Der schreibgeschützte Viewer wird angezeigt
+
+## Dokumentation
+
+- **[README.md](README.md)** - Diese Datei (Übersicht und Installation)
+- **[QUICKSTART.md](QUICKSTART.md)** - Schnelleinstieg für neue Benutzer
+- **[BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md)** - Ausführliche Bedienungsanleitung
+- **[FEATURES.md](FEATURES.md)** - Detaillierte Feature-Liste und technische Details
+- **[ARCHITEKTUR.md](ARCHITEKTUR.md)** - Technische Architektur und Entwicklerdokumentation
 
 ## Technologie
 
-- **Electron** - Plattformübergreifendes Desktop-Framework für Windows/Linux/macOS
-- **Leaflet.js** - Interaktive Kartenvisualisierung
-- **OpenStreetMap** - Kartendaten
-- **LocalForage** - Lokale Datenspeicherung (IndexedDB)
-- **WebSocket (ws)** - Echtzeit-Synchronisation
-- **Express** - HTTP-Server für Web Viewer
+### Frontend
+- **Electron 39.x** - Desktop-Framework für plattformübergreifende Apps
+- **Leaflet.js 1.9.x** - Interaktive Kartenvisualisierung
+- **OpenStreetMap** - Freie Kartendaten und Tiles
+- **LocalForage 1.10.x** - Lokale Datenspeicherung (IndexedDB)
+
+### Backend (Embedded Server)
+- **WebSocket (ws 8.x)** - Echtzeit-Synchronisation
+- **Express 4.x** - HTTP-Server für Web Viewer
+- **Node.js** - JavaScript-Runtime
+
+### Build und Deployment
+- **Electron Builder 26.x** - Erstellung plattformspezifischer Installer
+- **NSIS** - Windows-Installer
+- **AppImage & .deb** - Linux-Installer
+- **DMG** - macOS-Installer
 
 ## Lizenz
 
-Siehe LICENSE-Datei
+ISC License - Siehe [LICENSE](LICENSE) Datei für Details.
+
+## Support und Beiträge
+
+- **Bugs und Feature-Requests**: [GitHub Issues](https://github.com/TimUx/fw-lagekarte/issues)
+- **Fragen**: Erstellen Sie eine [Discussion](https://github.com/TimUx/fw-lagekarte/discussions)
+- **Beiträge**: Pull Requests sind willkommen!
+
+---
+
+**Entwickelt für Feuerwehren und Rettungsdienste - Open Source und kostenlos** 🚒🚨
