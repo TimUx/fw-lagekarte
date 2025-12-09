@@ -27,11 +27,30 @@
 
 ## Übersicht
 
-Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen. Sie ermöglicht die Visualisierung von Standorten und Fahrzeugen auf einer interaktiven Karte.
+Die FW Lagekarte ist eine Desktop-Anwendung zur Verwaltung von Feuerwehr-Einsatzlagen. Sie ermöglicht die Visualisierung von Standorten und Fahrzeugen auf einer interaktiven Karte und kann optional in ein umfassendes Alarmierungs-System integriert werden.
 
 ![Hauptansicht der Anwendung](assets/screenshots/hauptansicht.png)
 
 *Die Hauptansicht zeigt die Seitenleiste mit Fahrzeugen (gruppiert nach Standorten mit taktischen Zeichen) und die interaktive Karte.*
+
+### Verwendungsmöglichkeiten
+
+**Standalone (Einzelplatz)**:
+- Laptop des Einsatzleiters vor Ort
+- Einsatzdokumentation und -planung
+- Keine Internetverbindung erforderlich
+
+**Multi-User (Leitstelle)**:
+- Mehrere Disponenten arbeiten gemeinsam
+- Echtzeit-Synchronisation über integriertem Server
+- Displays zeigen aktuelle Lage per Web Viewer
+
+**Systemintegration (Optional)**:
+- [alarm-mail](https://github.com/TimUx/alarm-mail): Automatische Einsatzübernahme aus E-Mails
+- [alarm-messenger](https://github.com/TimUx/alarm-messenger): Mobile Alarmierung mit Rückmeldung
+- [alarm-monitor](https://github.com/TimUx/alarm-monitor): Großbildanzeige für Feuerwache
+
+Siehe [README.md - Systemintegration](README.md#systemintegration) für Details zur Integration.
 
 ## Erste Schritte
 
@@ -198,6 +217,26 @@ Der komplette Quellcode ist auf GitHub verfügbar und kann vor der Nutzung über
 2. Klicken Sie auf "💾 Kartenansicht speichern"
 3. Die Ansicht wird gespeichert und beim nächsten Start wiederhergestellt
 
+#### 5. Daten sichern und wiederherstellen (Import/Export)
+
+**Daten exportieren (Backup):**
+1. Klicken Sie auf "📤 Export" in der oberen Leiste
+2. Ein JSON-Datei-Download startet automatisch
+3. Die Datei enthält alle Standorte und Fahrzeuge
+4. **Empfehlung:** Exportieren Sie regelmäßig Backups!
+
+**Daten importieren (Wiederherstellen):**
+1. Klicken Sie auf "📥 Import" in der oberen Leiste
+2. Wählen Sie eine zuvor exportierte JSON-Datei
+3. Bestätigen Sie die Import-Aktion
+4. **Achtung:** Vorhandene Daten werden überschrieben!
+
+**Anwendungsfälle:**
+- Regelmäßige Backups vor Großeinsätzen
+- Übertragung der Konfiguration auf anderen Computer
+- Wiederherstellung nach Neuinstallation
+- Bereitstellung vordefinierter Konfigurationen (z.B. für Übungen)
+
 ## Tipps und Tricks
 
 1. **Schnelle Orientierung:** Verwenden Sie aussagekräftige Rufnamen für Fahrzeuge (z.B. nach dem Florian-System)
@@ -209,6 +248,10 @@ Der komplette Quellcode ist auf GitHub verfügbar und kann vor der Nutzung über
 4. **Besatzungsstärke:** Notieren Sie die Besatzung im Format "Führer/Mannschaft" (z.B. "1/8")
 
 5. **Notizen:** Nutzen Sie das Notizen-Feld für wichtige Informationen wie Ausrüstung oder besondere Fähigkeiten
+
+6. **Regelmäßige Backups:** Exportieren Sie Ihre Daten regelmäßig als Backup
+
+7. **Kontextmenü nutzen:** Rechtsklick auf Karte für schnelles Hinzufügen von Standorten
 
 ## Erweiterte Funktionen
 

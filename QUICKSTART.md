@@ -1,185 +1,154 @@
 # FW Lagekarte - Schnellstart
 
+Schnelleinstieg für neue Benutzer - in 5 Minuten einsatzbereit!
+
 ![FW Lagekarte Hauptansicht](assets/screenshots/hauptansicht.png)
 
-## 🚀 Installation & Start
+## 🚀 Installation (2 Minuten)
 
-### Option 1: Vorgefertigte Installer (Empfohlen)
+### Vorgefertigte Installer (Empfohlen)
 
-Laden Sie die passende Version für Ihr Betriebssystem von den [GitHub Releases](https://github.com/TimUx/fw-lagekarte/releases) herunter:
+Laden Sie die passende Version von den [GitHub Releases](https://github.com/TimUx/fw-lagekarte/releases):
 
-- **Windows**: `FW-Lagekarte-Setup-X.X.X.exe` - NSIS Installer
-- **Linux**: `FW-Lagekarte-X.X.X.AppImage` oder `.deb` Paket
-- **macOS**: `FW-Lagekarte-X.X.X.dmg` - DMG Image
+| Betriebssystem | Installer | Installation |
+|----------------|-----------|--------------|
+| **Windows** | `FW-Lagekarte-Setup-X.X.X.exe` | Ausführen und Anweisungen folgen |
+| **Linux** | `FW-Lagekarte-X.X.X.AppImage` | `chmod +x *.AppImage && ./FW-Lagekarte-*.AppImage` |
+| **Linux** | `fw-lagekarte_X.X.X_amd64.deb` | `sudo dpkg -i fw-lagekarte_*.deb` |
+| **macOS** | `FW-Lagekarte-X.X.X.dmg` | Öffnen und in Programme ziehen |
 
-**Windows SmartScreen Hinweis:** Bei der ersten Ausführung kann eine Warnung erscheinen. Klicken Sie auf "Weitere Informationen" → "Trotzdem ausführen". Details siehe [Benutzerhandbuch](BENUTZERHANDBUCH.md#windows-smartscreen-warnung-umgehen).
+**Windows-Hinweis**: Bei SmartScreen-Warnung auf "Weitere Informationen" → "Trotzdem ausführen" klicken. Siehe [Details](BENUTZERHANDBUCH.md#windows-smartscreen-warnung-umgehen).
 
-### Option 2: Aus Quellcode
+### Entwicklung (für Entwickler)
 
 ```bash
-# 1. Repository klonen
 git clone https://github.com/TimUx/fw-lagekarte.git
 cd fw-lagekarte
-
-# 2. Abhängigkeiten installieren
 npm install
-
-# 3. Anwendung starten
 npm start
 ```
 
-## 🎯 Erste Schritte
+## 🎯 Erste Schritte (3 Minuten)
 
-### Schritt 1: Standort hinzufügen
+### 1️⃣ Standort hinzufügen (30 Sekunden)
 
 ![Standort Dialog](assets/screenshots/standort-dialog.png)
 
-1. Klicken Sie auf "➕ Standort hinzufügen"
-2. Geben Sie den Namen ein (z.B. "Feuerwache Nord")
-3. Klicken Sie auf die Karte um die Position zu markieren
-4. Klicken Sie auf "Speichern"
+**Schnellvariante**:
+- Rechtsklick auf Karte → "🏢 Standort hier hinzufügen"
+- Name eingeben → Speichern
 
-### Schritt 2: Fahrzeuge hinzufügen
+**Alternative**:
+- Button "➕ Standort hinzufügen" → Formular ausfüllen → Speichern
+
+### 2️⃣ Fahrzeuge hinzufügen (1 Minute)
 
 ![Fahrzeug Dialog](assets/screenshots/fahrzeug-dialog.png)
 
-1. Klicken Sie auf "➕ Fahrzeug hinzufügen"
-2. Geben Sie Rufname ein (z.B. "Florian Hamburg 1/44/1")
-3. Wählen Sie den Fahrzeugtyp (LF, DLK, TLF, etc.)
-4. Geben Sie die Besatzung ein (z.B. "1/8")
-5. Klicken Sie auf "Speichern"
+**Minimal**:
+1. Button "➕ Fahrzeug hinzufügen"
+2. **Rufname**: "Florian Hamburg 1/44/1" (oder Ihr Rufzeichen)
+3. **Typ**: HLF, LF, DLK, etc. auswählen
+4. **Besatzung**: "1/8" (Führer/Mannschaft)
+5. Speichern
 
-### Schritt 3: Fahrzeuge einsetzen
-1. Ziehen Sie ein Fahrzeug aus der linken Seitenleiste
-2. Lassen Sie es auf der Karte am Einsatzort fallen
-3. Das Fahrzeug wird grün markiert (im Einsatz)
+**Optional**: Station zuordnen, Notizen hinzufügen
 
-### Schritt 4: Kartenansicht speichern
-1. Zoomen und positionieren Sie die Karte wie gewünscht
-2. Klicken Sie auf "💾 Kartenansicht speichern"
-3. Die Ansicht wird beim nächsten Start wiederhergestellt
+### 3️⃣ Fahrzeuge einsetzen (30 Sekunden)
 
-## 🎨 Benutzeroberfläche
+**Drag & Drop**:
+1. Fahrzeug aus linker Seitenleiste **klicken und halten**
+2. Auf gewünschte Position auf Karte **ziehen**
+3. **Loslassen** → Fahrzeug wird platziert
+4. ✅ Fahrzeug ist jetzt grün markiert (im Einsatz)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│ 🚒 FW Lagekarte - Einsatzübersicht                          │
-│ [➕ Standort] [➕ Fahrzeug] [💾 Karte] [📤 Export] [📥 Import]│
-├───────────────┬─────────────────────────────────────────────┤
-│ Verfügbare    │                                             │
-│ Fahrzeuge     │                                             │
-│               │           Karte (OpenStreetMap)             │
-│ ┌───────────┐ │                                             │
-│ │ Florian   │ │          🏢 Feuerwache Nord                 │
-│ │ Hamburg   │ │                                             │
-│ │ 1/44/1    │ │     🚒 (Fahrzeug im Einsatz)                │
-│ │ LF        │ │                                             │
-│ │ Bes: 1/8  │ │                                             │
-│ └───────────┘ │          🏢 Feuerwache Süd                  │
-│               │                                             │
-│ ┌───────────┐ │                                             │
-│ │ Florian   │ │                                             │
-│ │ Hamburg   │ │                                             │
-│ │ 1/45/1    │ │                                             │
-│ │ DLK       │ │                                             │
-│ │ Bes: 1/3  │ │                                             │
-│ └───────────┘ │                                             │
-│               │                                             │
-│ 2 Fahrzeuge   │                                             │
-│ 1 im Einsatz  │                                             │
-└───────────────┴─────────────────────────────────────────────┘
-```
+**Zurückrufen**:
+- Auf Fahrzeug-Icon auf Karte klicken → "↩️ Zurückrufen"
 
-## 📚 Dokumentation
+### 4️⃣ Kartenansicht speichern (10 Sekunden)
 
-- **README.md** - Diese Datei
-- **BENUTZERHANDBUCH.md** - Ausführliches Benutzerhandbuch
-- **FEATURES.md** - Feature-Übersicht und technische Details
-- **IMPLEMENTATION_SUMMARY.md** - Implementierungsdetails
+1. Karte auf gewünschten Bereich zoomen/verschieben
+2. Button "💾 Kartenansicht speichern" klicken
+3. ✅ Beim nächsten Start wird diese Ansicht geladen
 
-## 🔧 Entwicklung
+## 💡 Wichtige Tipps
 
-### Projektstruktur
-```
-fw-lagekarte/
-├── main.js              # Electron Hauptprozess
-├── preload.js           # Sicherer Preload-Script
-├── renderer.js          # UI-Logik (522 Zeilen)
-├── storage.js           # Datenpersistenz (129 Zeilen)
-├── index.html           # HTML-Struktur
-├── styles.css           # Styling (371 Zeilen)
-├── package.json         # Abhängigkeiten
-└── assets/              # Icons & Ressourcen
-```
+### Bedienung
+- **ESC** - Schließt Dialoge
+- **Mausrad** - Zoom auf Karte
+- **Drag & Drop** - Fahrzeuge ziehen
+- **Rechtsklick auf Karte** - Schnell Standort hinzufügen
+- **Klick auf Marker** - Details und Aktionen
 
-### Technologie-Stack
-- **Electron 39.x** - Plattformübergreifendes Desktop-Framework
-- **Leaflet.js 1.9.x** - Karten-Bibliothek
-- **LocalForage 1.10.x** - Datenspeicherung
-- **OpenStreetMap** - Kartendaten
+### Best Practices
+- ✅ Aussagekräftige Rufnamen verwenden (Florian-System)
+- ✅ Fahrzeuge Standorten zuordnen (bessere Übersicht)
+- ✅ Besatzung im Format "Führer/Mannschaft" (z.B. "1/8")
+- ✅ Notizen für besondere Ausrüstung nutzen
+- ✅ Regelmäßig Backup exportieren (📤 Export)
 
-## 🛡️ Sicherheit
+## 🔄 Multi-User aktivieren (Optional)
 
-✅ Context Isolation aktiviert
-✅ XSS-Schutz durch HTML-Sanitization
-✅ Keine Node-Integration im Renderer
-✅ CodeQL-Scan: 0 Sicherheitslücken
-✅ Alle Daten bleiben lokal
+### Für Leitstellen-Betrieb mit mehreren Arbeitsplätzen:
 
-## 🌐 Offline-Fähigkeit
+**Server starten** (Haupt-Computer):
+1. Button "🔄 Synchronisation"
+2. Modus: **"Server (Synchronisation bereitstellen)"**
+3. Port: 8080 (Standard)
+4. Speichern → Server läuft!
 
-Die Anwendung funktioniert vollständig offline:
-- Keine Internet-Verbindung für den Betrieb nötig
-- Kartenkacheln werden gecacht
-- Alle Daten lokal in IndexedDB
-- Keine externe Server-Kommunikation
+**Client verbinden** (andere Computer):
+1. Button "🔄 Synchronisation"
+2. Modus: **"Client (Zum Server verbinden)"**
+3. URL: `ws://192.168.1.XXX:8080` (aus Server-Dialog kopieren)
+4. Speichern → Verbunden!
 
-## 📦 Installer erstellen
+**Web Viewer** (Tablets/Displays):
+- Browser öffnen
+- URL: `http://192.168.1.XXX:8080`
+- Fertig! (schreibgeschützte Ansicht)
 
+## 📚 Weitere Dokumentation
+
+| Dokument | Inhalt |
+|----------|--------|
+| **[README.md](README.md)** | Übersicht, Features, Systemintegration |
+| **[BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md)** | Ausführliche Bedienungsanleitung |
+| **[FEATURES.md](FEATURES.md)** | Detaillierte Feature-Liste |
+| **[ARCHITEKTUR.md](ARCHITEKTUR.md)** | Technische Architektur (für Entwickler) |
+
+## 🔧 Für Entwickler
+
+### Entwicklung starten
 ```bash
-# Alle Plattformen
-npm run build
-
-# Nur Windows
-npm run build:win
-
-# Nur Linux (AppImage & .deb)
-npm run build:linux
-
-# Nur macOS
-npm run build:mac
+git clone https://github.com/TimUx/fw-lagekarte.git
+cd fw-lagekarte
+npm install
+npm start
 ```
 
-Die Installer werden im `dist/`-Verzeichnis erstellt.
+### Installer bauen
+```bash
+npm run build       # Alle Plattformen
+npm run build:win   # Nur Windows
+npm run build:linux # Nur Linux
+npm run build:mac   # Nur macOS
+```
 
-## 🖥️ Plattformunterstützung
+Siehe [ARCHITEKTUR.md](ARCHITEKTUR.md) für technische Details.
 
-Die Anwendung läuft auf allen gängigen Betriebssystemen:
-- ✅ **Windows** - NSIS Installer (.exe)
-- ✅ **Linux** - AppImage und .deb Pakete
-- ✅ **macOS** - DMG Installer
+## 🆘 Hilfe & Support
 
-Alle Funktionen sind auf allen Plattformen verfügbar.
+**Problem?** → Prüfen Sie zuerst das [Benutzerhandbuch](BENUTZERHANDBUCH.md#fehlerbehebung)
 
-## 💡 Tipps
+**Karte lädt nicht?** → [Proxy-Einstellungen](BENUTZERHANDBUCH.md#proxy-einstellungen)
 
-- **ESC-Taste**: Schließt Dialoge
-- **Drag & Drop**: Fahrzeuge auf Karte ziehen
-- **Rechtsklick**: Marker auf Karte zeigen Details
-- **Export**: Regelmäßig Backups erstellen
-- **Zoom**: Mausrad oder +/- Buttons
+**Multi-User funktioniert nicht?** → [Server-Probleme](BENUTZERHANDBUCH.md#server-modus-probleme)
 
-## 🆘 Support
-
-Bei Fragen oder Problemen:
-1. Prüfen Sie die Dokumentation in BENUTZERHANDBUCH.md
-2. Erstellen Sie ein Issue auf GitHub
-3. Kontaktieren Sie den Maintainer
-
-## 📄 Lizenz
-
-Siehe LICENSE-Datei
+**Noch Fragen?** → [GitHub Issues](https://github.com/TimUx/fw-lagekarte/issues)
 
 ---
 
-**Viel Erfolg beim Einsatz! 🚒🚨**
+**Fertig! Sie können jetzt mit der FW Lagekarte arbeiten.** 🚒
+
+Für erweiterte Funktionen siehe [BENUTZERHANDBUCH.md](BENUTZERHANDBUCH.md).
