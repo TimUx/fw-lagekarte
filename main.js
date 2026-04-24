@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, shell, dialog, session } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, shell, dialog, session, safeStorage } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const embeddedServer = require('./embedded-server');
@@ -13,6 +13,78 @@ function getConfigFilePath() {
     return path.join(userDataPath, 'proxy-settings.json');
 }
 
+function getProxySecretFilePath() {
+    const userDataPath = app.getPath('userData');
+    return path.join(userDataPath, 'proxy-secret.bin');
+}
+
+function extractProxyCredentials(proxyUrl = '') {
+    if (!proxyUrl) return { proxyUrlWithoutAuth: '', credentials: null };
+    try {
+        const parsed = new URL(proxyUrl);
+        if (!parsed.username && !parsed.password) {
+            return { proxyUrlWithoutAuth: proxyUrl, credentials: null };
+        }
+
+        const credentials = {
+            username: decodeURIComponent(parsed.username || ''),
+            password: decodeURIComponent(parsed.password || '')
+        };
+        parsed.username = '';
+        parsed.password = '';
+
+        return { proxyUrlWithoutAuth: parsed.toString(), credentials };
+    } catch (error) {
+        return { proxyUrlWithoutAuth: proxyUrl, credentials: null };
+    }
+}
+
+function injectProxyCredentials(proxyUrl = '', credentials = null) {
+    if (!proxyUrl || !credentials || !credentials.username) return proxyUrl;
+    try {
+        const parsed = new URL(proxyUrl);
+        parsed.username = credentials.username;
+        parsed.password = credentials.password || '';
+        return parsed.toString();
+    } catch (error) {
+        return proxyUrl;
+    }
+}
+
+function loadProxyCredentials() {
+    const secretPath = getProxySecretFilePath();
+    if (!fs.existsSync(secretPath)) return null;
+
+    try {
+        const encrypted = fs.readFileSync(secretPath);
+        if (safeStorage.isEncryptionAvailable()) {
+            const decrypted = safeStorage.decryptString(encrypted);
+            return JSON.parse(decrypted);
+        }
+        return JSON.parse(encrypted.toString('utf-8'));
+    } catch (error) {
+        console.error('Error loading proxy credentials:', error);
+        return null;
+    }
+}
+
+function saveProxyCredentials(credentials) {
+    const secretPath = getProxySecretFilePath();
+    if (!credentials || !credentials.username) {
+        if (fs.existsSync(secretPath)) {
+            fs.rmSync(secretPath);
+        }
+        return;
+    }
+
+    const serialized = JSON.stringify(credentials);
+    const payload = safeStorage.isEncryptionAvailable()
+        ? safeStorage.encryptString(serialized)
+        : Buffer.from(serialized, 'utf-8');
+
+    fs.writeFileSync(secretPath, payload);
+}
+
 // Get proxy settings from storage
 async function getProxySettings() {
     try {
@@ -20,6 +92,8 @@ async function getProxySettings() {
         if (fs.existsSync(configPath)) {
             const data = fs.readFileSync(configPath, 'utf-8');
             const settings = JSON.parse(data);
+            const credentials = loadProxyCredentials();
+            settings.proxyUrl = injectProxyCredentials(settings.proxyUrl, credentials);
             // Merge with defaults to ensure all properties exist
             return { ...DEFAULT_PROXY_SETTINGS, ...settings };
         }
@@ -41,7 +115,14 @@ async function saveProxySettings(settings) {
             fs.mkdirSync(userDataPath, { recursive: true });
         }
         
-        fs.writeFileSync(configPath, JSON.stringify(settings, null, 2), 'utf-8');
+        const { proxyUrlWithoutAuth, credentials } = extractProxyCredentials(settings.proxyUrl);
+        const settingsToSave = {
+            ...settings,
+            proxyUrl: proxyUrlWithoutAuth
+        };
+
+        saveProxyCredentials(credentials);
+        fs.writeFileSync(configPath, JSON.stringify(settingsToSave, null, 2), 'utf-8');
         return true;
     } catch (error) {
         console.error('Error saving proxy settings:', error);
@@ -123,17 +204,6 @@ function openDocumentation(filename) {
     
     try {
         // Read the markdown file
-        const markdownContent = fs.readFileSync(filePath, 'utf-8');
-        
-        // Convert markdown to HTML
-        const md = new MarkdownIt({
-            html: false,  // Disable raw HTML for security
-            linkify: true,
-            typographer: true
-        });
-        const htmlContent = md.render(markdownContent);
-        
-        // Get a nice title from filename
         const docTitle = filename.replace('.md', '').replace(/_/g, ' ');
         
         // Create a new window to display the documentation
@@ -142,26 +212,15 @@ function openDocumentation(filename) {
             height: 800,
             webPreferences: {
                 nodeIntegration: false,
-                contextIsolation: true
+                contextIsolation: true,
+                preload: path.join(__dirname, 'preload.js')
             },
             title: docTitle,
             icon: path.join(__dirname, 'assets', 'icon.png')
         });
         
         // Load the doc viewer HTML
-        docWindow.loadFile('doc-viewer.html');
-        
-        // Inject the converted HTML content and title once the page is ready
-        docWindow.webContents.on('did-finish-load', () => {
-            // Note: innerHTML is safe here because markdown-it is configured with html: false,
-            // which escapes all HTML tags in the markdown content
-            docWindow.webContents.executeJavaScript(`
-                window.docContent = ${JSON.stringify(htmlContent)};
-                window.docTitle = ${JSON.stringify(docTitle)};
-                document.title = window.docTitle;
-                document.getElementById('content').innerHTML = window.docContent;
-            `);
-        });
+        docWindow.loadFile('doc-viewer.html', { query: { doc: filename } });
         
     } catch (error) {
         console.error(`Failed to open documentation: ${filename}`, error);
@@ -342,6 +401,15 @@ ipcMain.handle('server:start', async (event, port) => {
     }
 });
 
+ipcMain.handle('server:startWithAuth', async (event, port, authToken) => {
+    try {
+        const result = await embeddedServer.start(port, authToken || null);
+        return result;
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+});
+
 ipcMain.handle('server:stop', async () => {
     try {
         const result = await embeddedServer.stop();
@@ -415,6 +483,34 @@ ipcMain.handle('proxy:saveSettings', async (event, settings) => {
         console.error('Error saving proxy settings:', error);
         return { success: false, error: error.message };
     }
+});
+
+ipcMain.handle('docs:get', async (event, filename) => {
+    const allowedDocs = new Set([
+        'DOKUMENTATION.md',
+        'QUICKSTART.md',
+        'BENUTZERHANDBUCH.md',
+        'FEATURES.md',
+        'ARCHITEKTUR.md'
+    ]);
+
+    if (!allowedDocs.has(filename)) {
+        throw new Error('Unzulässige Dokumentation angefordert.');
+    }
+
+    const basePath = app.isPackaged ? process.resourcesPath : __dirname;
+    const filePath = path.join(basePath, filename);
+    const markdownContent = fs.readFileSync(filePath, 'utf-8');
+    const md = new MarkdownIt({
+        html: false,
+        linkify: true,
+        typographer: true
+    });
+
+    return {
+        title: filename.replace('.md', '').replace(/_/g, ' '),
+        html: md.render(markdownContent)
+    };
 });
 
 app.whenReady().then(async () => {

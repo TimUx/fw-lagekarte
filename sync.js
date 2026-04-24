@@ -6,6 +6,7 @@ const Sync = {
     mode: 'standalone', // 'standalone', 'server', 'client'
     serverUrl: '',
     serverPort: 8080,
+    authToken: '',
     reconnectInterval: null,
     reconnectDelay: 5000,
     isConnecting: false,
@@ -18,6 +19,7 @@ const Sync = {
         this.mode = config.mode || 'standalone';
         this.serverUrl = config.serverUrl || '';
         this.serverPort = config.serverPort || 8080;
+        this.authToken = config.authToken || '';
         
         if (this.mode === 'client' && this.serverUrl) {
             this.connect();
@@ -34,6 +36,7 @@ const Sync = {
             mode: 'standalone',
             serverUrl: '',
             serverPort: 8080,
+            authToken: '',
             clientId: this.generateClientId()
         };
     },
@@ -44,6 +47,7 @@ const Sync = {
         this.mode = config.mode;
         this.serverUrl = config.serverUrl;
         this.serverPort = config.serverPort;
+        this.authToken = config.authToken || '';
         
         // Disconnect existing connection
         this.disconnect();
@@ -132,7 +136,8 @@ const Sync = {
         this.updateConnectionStatus('connecting');
 
         try {
-            this.ws = new WebSocket(this.serverUrl);
+            const connectUrl = this.buildAuthenticatedServerUrl(this.serverUrl, this.authToken);
+            this.ws = new WebSocket(connectUrl);
 
             this.ws.onopen = () => {
                 console.log('[Sync] Connected to server');
@@ -172,6 +177,20 @@ const Sync = {
             this.isConnecting = false;
             this.updateConnectionStatus('error');
             this.startReconnectTimer();
+        }
+    },
+
+    buildAuthenticatedServerUrl: function(baseUrl, authToken) {
+        if (!authToken) {
+            return baseUrl;
+        }
+
+        try {
+            const url = new URL(baseUrl);
+            url.searchParams.set('token', authToken);
+            return url.toString();
+        } catch (error) {
+            return baseUrl;
         }
     },
 
@@ -392,7 +411,16 @@ const Sync = {
 
         try {
             console.log('[Sync] Starting embedded server on port', this.serverPort);
-            const result = await window.embeddedServer.start(this.serverPort);
+            if (!this.authToken) {
+                this.authToken = this.generateClientId();
+                const currentConfig = await this.getConfig();
+                await localforage.setItem('syncConfig', {
+                    ...currentConfig,
+                    authToken: this.authToken
+                });
+            }
+
+            const result = await window.embeddedServer.startWithAuth(this.serverPort, this.authToken);
             
             if (result.success) {
                 console.log('[Sync] Embedded server started:', result);
@@ -525,6 +553,9 @@ const Sync = {
             infoHtml += `<strong>Lokale Verbindungen:</strong><br>`;
             infoHtml += `• WebSocket: <code>${wsUrl}</code><br>`;
             infoHtml += `• Web Viewer: <code>${httpUrl}</code><br>`;
+            if (this.authToken) {
+                infoHtml += `• Token: <code>${this.authToken}</code><br>`;
+            }
             
             if (networkInfo && networkInfo.length > 0) {
                 infoHtml += `<br><strong>Netzwerk-Adressen (andere Geräte):</strong><br>`;

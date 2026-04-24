@@ -7,6 +7,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 // Expose embedded server API to renderer process
 contextBridge.exposeInMainWorld('embeddedServer', {
     start: (port) => ipcRenderer.invoke('server:start', port),
+    startWithAuth: (port, authToken) => ipcRenderer.invoke('server:startWithAuth', port, authToken),
     stop: () => ipcRenderer.invoke('server:stop'),
     getStatus: () => ipcRenderer.invoke('server:status'),
     getNetworkInfo: () => ipcRenderer.invoke('server:networkInfo'),
@@ -22,6 +23,10 @@ contextBridge.exposeInMainWorld('embeddedServer', {
 contextBridge.exposeInMainWorld('proxyAPI', {
     getSettings: () => ipcRenderer.invoke('proxy:getSettings'),
     saveSettings: (settings) => ipcRenderer.invoke('proxy:saveSettings', settings)
+});
+
+contextBridge.exposeInMainWorld('docsAPI', {
+    getDocument: (filename) => ipcRenderer.invoke('docs:get', filename)
 });
 
 window.addEventListener('DOMContentLoaded', () => {

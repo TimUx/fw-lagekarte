@@ -186,6 +186,13 @@
                         Port für den lokalen Sync-Server (Standard: 8080)
                     </small>
                 </div>
+                <div class="form-group" id="syncAuthTokenGroup">
+                    <label for="syncAuthToken">Synchronisations-Token:</label>
+                    <input type="text" id="syncAuthToken" placeholder="Gemeinsames Token für Client/Server">
+                    <small style="color: #6c757d; display: block; margin-top: 5px;">
+                        Optional empfohlen: Nur Clients mit diesem Token können sich verbinden.
+                    </small>
+                </div>
                 <div class="sync-status-info">
                     <strong>Status:</strong> <span id="syncModalStatus">Nicht verbunden</span>
                 </div>
@@ -247,6 +254,8 @@
     <script src="storage.js"></script>
     <script src="sync.js"></script>
     <script src="tactical-symbols.js"></script>
+    <script src="renderer/collections.js"></script>
+    <script src="renderer/formatters.js"></script>
     <script src="renderer.js"></script>
 </body>
 </html>
