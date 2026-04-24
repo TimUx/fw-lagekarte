@@ -10,12 +10,14 @@ let tempMarker = null;
 const CONTEXT_MENU_CLOSE_DELAY = 10; // ms delay to avoid immediate closing
 const PRINT_CLEANUP_DELAY = 1000; // ms delay before removing print legend
 
-// Sanitize HTML to prevent XSS
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
+const { sortByLocale, splitVehiclesByDeployment, groupAvailableVehiclesByStation } = window.RendererCollections;
+const {
+    escapeHtml,
+    buildDeploymentInfoHtmlForCard,
+    buildDeploymentInfoHtmlForPopup,
+    formatVehicleForPrint,
+    formatStationForPrint
+} = window.RendererFormatters;
 
 // Initialize the application
 async function init() {
@@ -29,8 +31,20 @@ async function init() {
 function setupSyncListeners() {
     if (typeof Sync !== 'undefined') {
         Sync.addListener(async (eventType, data) => {
-            // Reload data when sync events occur
-            if (['station_update', 'station_delete', 'vehicle_update', 'vehicle_delete', 'vehicle_position', 'full_sync'].includes(eventType)) {
+            if (['station_update', 'station_delete'].includes(eventType)) {
+                stations = await Storage.getStations();
+                renderStations();
+                renderVehicles();
+                return;
+            }
+
+            if (['vehicle_update', 'vehicle_delete', 'vehicle_position'].includes(eventType)) {
+                vehicles = await Storage.getVehicles();
+                renderVehicles();
+                return;
+            }
+
+            if (eventType === 'full_sync') {
                 await loadData();
             }
         });
@@ -155,17 +169,7 @@ function renderVehicles() {
     const vehicleList = document.getElementById('vehicleList');
     vehicleList.innerHTML = '';
     
-    // Separate deployed and non-deployed vehicles
-    const deployedVehicles = [];
-    const nonDeployedVehicles = [];
-    
-    vehicles.forEach(vehicle => {
-        if (vehicle.deployed) {
-            deployedVehicles.push(vehicle);
-        } else {
-            nonDeployedVehicles.push(vehicle);
-        }
-    });
+    const { deployed: deployedVehicles, available: nonDeployedVehicles } = splitVehiclesByDeployment(vehicles);
     
     // Render deployed vehicles first (at the top), sorted by callsign
     if (deployedVehicles.length > 0) {
@@ -177,32 +181,18 @@ function renderVehicles() {
         vehicleList.appendChild(deployedHeader);
         
         // Sort deployed vehicles by callsign
-        deployedVehicles
-            .sort((a, b) => a.callsign.localeCompare(b.callsign, 'de'))
-            .forEach(vehicle => {
+        sortByLocale(deployedVehicles, v => v.callsign).forEach(vehicle => {
                 vehicleList.appendChild(createVehicleCard(vehicle));
             });
     }
     
-    // Group non-deployed vehicles by station
-    const vehiclesByStation = {};
-    const unassignedVehicles = [];
-    
-    nonDeployedVehicles.forEach(vehicle => {
-        if (vehicle.stationId) {
-            if (!vehiclesByStation[vehicle.stationId]) {
-                vehiclesByStation[vehicle.stationId] = [];
-            }
-            vehiclesByStation[vehicle.stationId].push(vehicle);
-        } else {
-            unassignedVehicles.push(vehicle);
-        }
-    });
+    const { byStation: vehiclesByStation, unassigned: unassignedVehicles } = groupAvailableVehiclesByStation(nonDeployedVehicles);
     
     // Sort stations alphabetically by name
-    const sortedStations = stations
-        .filter(station => vehiclesByStation[station.id])
-        .sort((a, b) => a.name.localeCompare(b.name, 'de'));
+    const sortedStations = sortByLocale(
+        stations.filter(station => vehiclesByStation[station.id]),
+        s => s.name
+    );
     
     // Render grouped vehicles by station
     sortedStations.forEach(station => {
@@ -222,8 +212,7 @@ function renderVehicles() {
         vehicleList.appendChild(stationHeader);
         
         // Sort vehicles by callsign within station
-        const stationVehicles = vehiclesByStation[station.id]
-            .sort((a, b) => a.callsign.localeCompare(b.callsign, 'de'));
+        const stationVehicles = sortByLocale(vehiclesByStation[station.id], v => v.callsign);
         
         // Render vehicles for this station
         stationVehicles.forEach(vehicle => {
@@ -241,9 +230,7 @@ function renderVehicles() {
         vehicleList.appendChild(unassignedHeader);
         
         // Sort unassigned vehicles by callsign
-        unassignedVehicles
-            .sort((a, b) => a.callsign.localeCompare(b.callsign, 'de'))
-            .forEach(vehicle => {
+        sortByLocale(unassignedVehicles, v => v.callsign).forEach(vehicle => {
                 vehicleList.appendChild(createVehicleCard(vehicle));
             });
     }
@@ -270,16 +257,7 @@ function createVehicleCard(vehicle) {
         ? `<img src="${escapeHtml(symbolPath)}" alt="${escapeHtml(vehicle.type)}" class="vehicle-card-icon" />`
         : `<div class="vehicle-card-icon-fallback">${escapeHtml(vehicle.type)}</div>`;
     
-    // Build deployment info section for vehicle card
-    let deploymentInfoHtml = '';
-    if (vehicle.deployed && vehicle.deploymentInfo) {
-        if (vehicle.deploymentInfo.missionNumber) {
-            deploymentInfoHtml += `<div class="vehicle-mission">📋 ${escapeHtml(vehicle.deploymentInfo.missionNumber)}</div>`;
-        }
-        if (vehicle.deploymentInfo.missionKeyword) {
-            deploymentInfoHtml += `<div class="vehicle-mission">🚨 ${escapeHtml(vehicle.deploymentInfo.missionKeyword)}</div>`;
-        }
-    }
+    const deploymentInfoHtml = buildDeploymentInfoHtmlForCard(vehicle);
     
     card.innerHTML = `
         <div class="vehicle-actions">
@@ -346,19 +324,7 @@ function renderDeployedVehicles() {
             draggable: true
         }).addTo(map);
         
-        // Build deployment info section
-        let deploymentInfoHtml = '';
-        if (vehicle.deploymentInfo) {
-            if (vehicle.deploymentInfo.missionNumber) {
-                deploymentInfoHtml += `<div class="popup-info"><strong>Einsatznummer:</strong> ${escapeHtml(vehicle.deploymentInfo.missionNumber)}</div>`;
-            }
-            if (vehicle.deploymentInfo.missionKeyword) {
-                deploymentInfoHtml += `<div class="popup-info"><strong>Einsatzstichwort:</strong> ${escapeHtml(vehicle.deploymentInfo.missionKeyword)}</div>`;
-            }
-            if (vehicle.deploymentInfo.remarks) {
-                deploymentInfoHtml += `<div class="popup-info"><strong>Bemerkungen:</strong> ${escapeHtml(vehicle.deploymentInfo.remarks)}</div>`;
-            }
-        }
+        const deploymentInfoHtml = buildDeploymentInfoHtmlForPopup(vehicle);
         
         const popupContent = `
             <div class="popup-title">${escapeHtml(vehicle.callsign)}</div>
@@ -391,9 +357,7 @@ function updateStationDropdown() {
     select.innerHTML = '<option value="">Keine Station zugeordnet</option>';
     
     // Sort stations alphabetically by name
-    const sortedStations = [...stations].sort((a, b) => 
-        a.name.localeCompare(b.name, 'de', { sensitivity: 'base' })
-    );
+    const sortedStations = sortByLocale(stations, s => s.name);
     
     sortedStations.forEach(station => {
         const option = document.createElement('option');
@@ -416,6 +380,13 @@ function onMapContextMenu(e) {
 // Show custom context menu
 let contextMenuInstance = null;
 let contextMenuCloseHandler = null;
+
+function clearTempMarker() {
+    if (tempMarker) {
+        map.removeLayer(tempMarker);
+        tempMarker = null;
+    }
+}
 
 function closeContextMenu() {
     if (contextMenuInstance) {
@@ -598,9 +569,7 @@ function openStationModalAtLocation(latlng) {
     document.getElementById('stationLng').value = latlng.lng.toFixed(5);
     
     // Show temporary marker
-    if (tempMarker) {
-        map.removeLayer(tempMarker);
-    }
+    clearTempMarker();
     tempMarker = L.marker(latlng).addTo(map);
 }
 
@@ -698,19 +667,19 @@ async function printMap() {
             <div class="print-section">
                 <h3>Im Einsatz (${deployedVehicles.length})</h3>
                 <ul>
-                    ${deployedVehicles.map(v => `<li><strong>${escapeHtml(v.callsign)}</strong> - ${escapeHtml(v.type)}${v.crew ? ` (${escapeHtml(v.crew)})` : ''}</li>`).join('')}
+                    ${deployedVehicles.map(formatVehicleForPrint).join('')}
                 </ul>
             </div>
             <div class="print-section">
                 <h3>Verfügbar (${availableVehicles.length})</h3>
                 <ul>
-                    ${availableVehicles.map(v => `<li><strong>${escapeHtml(v.callsign)}</strong> - ${escapeHtml(v.type)}${v.crew ? ` (${escapeHtml(v.crew)})` : ''}</li>`).join('')}
+                    ${availableVehicles.map(formatVehicleForPrint).join('')}
                 </ul>
             </div>
             <div class="print-section">
                 <h3>Standorte (${stations.length})</h3>
                 <ul>
-                    ${stations.map(s => `<li><strong>${escapeHtml(s.name)}</strong>${s.address ? ` - ${escapeHtml(s.address)}` : ''}</li>`).join('')}
+                    ${stations.map(formatStationForPrint).join('')}
                 </ul>
             </div>
         </div>
@@ -760,6 +729,7 @@ async function openSyncModal() {
     document.getElementById('syncMode').value = config.mode || 'standalone';
     document.getElementById('syncServerUrl').value = config.serverUrl || '';
     document.getElementById('syncServerPort').value = config.serverPort || 8080;
+    document.getElementById('syncAuthToken').value = config.authToken || '';
     
     // Show/hide fields based on mode
     updateSyncModalFields();
@@ -783,16 +753,20 @@ function updateSyncModalFields() {
     const mode = document.getElementById('syncMode').value;
     const serverUrlGroup = document.getElementById('syncServerUrlGroup');
     const serverPortGroup = document.getElementById('syncServerPortGroup');
+    const authTokenGroup = document.getElementById('syncAuthTokenGroup');
     
     if (mode === 'client') {
         serverUrlGroup.style.display = 'block';
         serverPortGroup.style.display = 'none';
+        authTokenGroup.style.display = 'block';
     } else if (mode === 'server') {
         serverUrlGroup.style.display = 'none';
         serverPortGroup.style.display = 'block';
+        authTokenGroup.style.display = 'block';
     } else {
         serverUrlGroup.style.display = 'none';
         serverPortGroup.style.display = 'none';
+        authTokenGroup.style.display = 'none';
     }
 }
 
@@ -897,10 +871,7 @@ function setupEventListeners() {
         await loadData();
         closeModal('stationModal');
         
-        if (tempMarker) {
-            map.removeLayer(tempMarker);
-            tempMarker = null;
-        }
+        clearTempMarker();
     });
     
     // Vehicle form submit
@@ -936,6 +907,7 @@ function setupEventListeners() {
             mode: mode,
             serverUrl: document.getElementById('syncServerUrl').value,
             serverPort: parseInt(document.getElementById('syncServerPort').value),
+            authToken: document.getElementById('syncAuthToken').value.trim(),
             clientId: (await Sync.getConfig()).clientId
         };
         
@@ -976,10 +948,7 @@ function setupEventListeners() {
             const modalId = btn.dataset.modal;
             closeModal(modalId);
             if (modalId === 'stationModal') {
-                if (tempMarker) {
-                    map.removeLayer(tempMarker);
-                    tempMarker = null;
-                }
+                clearTempMarker();
             }
         });
     });
@@ -989,10 +958,7 @@ function setupEventListeners() {
             const modalId = btn.dataset.close;
             closeModal(modalId);
             if (modalId === 'stationModal') {
-                if (tempMarker) {
-                    map.removeLayer(tempMarker);
-                    tempMarker = null;
-                }
+                clearTempMarker();
             }
         });
     });
@@ -1003,10 +969,7 @@ function setupEventListeners() {
             if (e.target === modal) {
                 closeModal(modal.id);
                 if (modal.id === 'stationModal') {
-                    if (tempMarker) {
-                        map.removeLayer(tempMarker);
-                        tempMarker = null;
-                    }
+                    clearTempMarker();
                 }
             }
         });
@@ -1023,10 +986,7 @@ function setupEventListeners() {
             if (openModal) {
                 closeModal(openModal.id);
                 if (openModal.id === 'stationModal') {
-                    if (tempMarker) {
-                        map.removeLayer(tempMarker);
-                        tempMarker = null;
-                    }
+                    clearTempMarker();
                 }
             }
         }

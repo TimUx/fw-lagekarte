@@ -9,7 +9,14 @@
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
     "build:mac": "electron-builder --mac",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
+    "test:unit": "vitest run --config vitest.config.js --project unit",
+    "test:integration": "vitest run --config vitest.config.js --project integration",
+    "test:e2e": "node scripts/run-e2e.js",
+    "test:all": "npm run test",
+    "coverage": "vitest run --config vitest.config.js --coverage",
+    "coverage:unit": "vitest run --config vitest.config.js --project unit --coverage",
+    "coverage:integration": "vitest run --config vitest.config.js --project integration --coverage"
   },
   "keywords": [
     "fire-department",
@@ -26,8 +33,13 @@
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@vitest/coverage-v8": "^4.1.5",
     "electron": "^39.2.4",
-    "electron-builder": "^26.0.12"
+    "electron-builder": "^26.0.12",
+    "jsdom": "^29.0.2",
+    "playwright": "^1.59.1",
+    "vitest": "^4.1.5"
   },
   "build": {
     "appId": "com.fw-lagekarte.app",
@@ -53,6 +65,7 @@
       "main.js",
       "preload.js",
       "renderer.js",
+      "renderer/**/*",
       "storage.js",
       "sync.js",
       "tactical-symbols.js",

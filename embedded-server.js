@@ -5,6 +5,7 @@ const WebSocket = require('ws');
 const express = require('express');
 const http = require('http');
 const path = require('path');
+const { URL } = require('url');
 
 class EmbeddedServer {
     constructor() {
@@ -18,10 +19,11 @@ class EmbeddedServer {
             vehicles: []
         };
         this.isRunning = false;
+        this.authToken = null;
     }
 
     // Start the server
-    start(port = 8080) {
+    start(port = 8080, authToken = null) {
         return new Promise((resolve, reject) => {
             if (this.isRunning) {
                 resolve({ success: true, message: 'Server is already running', port: this.port });
@@ -29,6 +31,7 @@ class EmbeddedServer {
             }
 
             this.port = port;
+            this.authToken = authToken || null;
 
             try {
                 // Create Express app for HTTP server
@@ -94,7 +97,12 @@ class EmbeddedServer {
 
     // Setup WebSocket connection handlers
     setupWebSocketHandlers() {
-        this.wss.on('connection', (ws) => {
+        this.wss.on('connection', (ws, req) => {
+            if (this.authToken && !this.isValidToken(req.url)) {
+                ws.close(1008, 'Unauthorized');
+                return;
+            }
+
             console.log('[EmbeddedServer] New client connected');
             this.clients.add(ws);
 
@@ -151,6 +159,20 @@ class EmbeddedServer {
                 this.clients.delete(ws);
             });
         });
+    }
+
+    isValidToken(requestUrl) {
+        if (!this.authToken) {
+            return true;
+        }
+
+        try {
+            const parsedUrl = new URL(requestUrl, `http://localhost:${this.port}`);
+            const token = parsedUrl.searchParams.get('token');
+            return token === this.authToken;
+        } catch (error) {
+            return false;
+        }
     }
 
     // Broadcast message to all clients except sender
@@ -277,7 +299,8 @@ class EmbeddedServer {
             port: this.port,
             clientCount: this.clients.size,
             wsUrl: this.isRunning ? `ws://localhost:${this.port}` : null,
-            httpUrl: this.isRunning ? `http://localhost:${this.port}` : null
+            httpUrl: this.isRunning ? `http://localhost:${this.port}` : null,
+            requiresAuth: !!this.authToken
         };
     }
 

@@ -113,5 +113,25 @@
     <div id="content">
         <p>Dokumentation wird geladen...</p>
     </div>
+    <script>
+        async function loadDocument() {
+            const params = new URLSearchParams(window.location.search);
+            const docName = params.get('doc');
+            if (!docName) {
+                document.getElementById('content').innerHTML = '<p>Keine Dokumentation ausgewählt.</p>';
+                return;
+            }
+
+            try {
+                const result = await window.docsAPI.getDocument(docName);
+                document.title = result.title;
+                document.getElementById('content').innerHTML = result.html;
+            } catch (error) {
+                document.getElementById('content').innerHTML = `<p>Fehler beim Laden der Dokumentation: ${error.message}</p>`;
+            }
+        }
+
+        loadDocument();
+    </script>
 </body>
 </html>

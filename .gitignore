@@ -7,3 +7,6 @@ Thumbs.db
 *.tmp
 .vscode/
 .idea/
+coverage/
+test-results/
+playwright-report/
