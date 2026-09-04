@@ -12,20 +12,17 @@ test.describe('FW Lagekarte E2E', () => {
       const window = await electronApp.firstWindow();
       await window.waitForSelector('#addStationBtn');
 
-      await window.evaluate(() => {
-        document.getElementById('addStationBtn').click();
-      });
+      await window.locator('#addStationBtn').click();
+      await window.locator('#stationModal').waitFor({ state: 'visible' });
       await window.fill('#stationName', 'Feuerwache E2E');
       await window.fill('#stationAddress', 'Testweg 1');
       await window.fill('#stationLat', '53.5511');
       await window.fill('#stationLng', '9.9937');
-      await window.evaluate(() => {
-        document.getElementById('stationForm').requestSubmit();
-      });
+      await window.locator('#stationForm').evaluate((form) => form.requestSubmit());
+      await window.locator('#stationModal').waitFor({ state: 'hidden' });
 
-      await window.evaluate(() => {
-        document.getElementById('addVehicleBtn').click();
-      });
+      await window.locator('#addVehicleBtn').click();
+      await window.locator('#vehicleModal').waitFor({ state: 'visible' });
       await window.fill('#vehicleCallsign', 'Florian E2E 1/46/1');
       await window.selectOption('#vehicleType', 'HLF');
       await window.fill('#vehicleCrew', '1/8');
