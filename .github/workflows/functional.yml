@@ -31,7 +31,7 @@ jobs:
       - name: Build Linux package
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build:linux
+        run: npm run build:linux -- --publish never
 
       - name: Upload Linux package
         uses: actions/upload-artifact@v4
