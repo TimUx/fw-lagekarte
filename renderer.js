@@ -21,10 +21,10 @@ const {
 
 // Initialize the application
 async function init() {
-    await initMap();
-    await loadData();
     setupEventListeners();
     setupSyncListeners();
+    await initMap();
+    await loadData();
 }
 
 // Setup sync event listeners
