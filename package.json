@@ -30,7 +30,7 @@
     "leaflet": "^1.9.4",
     "localforage": "^1.10.0",
     "markdown-it": "^14.1.0",
-    "ws": "^8.18.0"
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1",
