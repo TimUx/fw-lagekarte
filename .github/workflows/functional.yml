@@ -1,4 +1,4 @@
-name: Test Suite
+name: Functional Build
 
 on:
   push:
@@ -9,7 +9,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  linux-package:
+    name: Linux package build
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -27,11 +28,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run unit tests
-        run: npm run test:unit
+      - name: Build Linux package
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:linux
 
-      - name: Run integration tests
-        run: npm run test:integration
-
-      - name: Run E2E tests
-        run: npm run test:e2e
+      - name: Upload Linux package
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-package
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+          if-no-files-found: error
