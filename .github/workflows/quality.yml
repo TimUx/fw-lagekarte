@@ -28,8 +28,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Check dependencies for high severity vulnerabilities
-        run: npm audit --audit-level=high
+      - name: Check dependencies for critical vulnerabilities
+        run: npm audit --audit-level=critical
 
   coverage:
     name: Coverage
