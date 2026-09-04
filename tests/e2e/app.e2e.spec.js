@@ -28,9 +28,7 @@ test.describe('FW Lagekarte E2E', () => {
       await window.fill('#stationAddress', 'Testweg 1');
       await window.fill('#stationLat', '53.5511');
       await window.fill('#stationLng', '9.9937');
-      await window.evaluate(() => {
-        document.getElementById('stationForm').requestSubmit();
-      });
+      await window.locator('#stationForm').evaluate((form) => form.requestSubmit());
       await expect(window.locator('#stationModal')).toBeHidden();
 
       await openModal(window, '#addVehicleBtn', '#vehicleModal');
