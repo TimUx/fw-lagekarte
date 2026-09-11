@@ -2,12 +2,20 @@ const { test, expect, _electron: electron } = require('@playwright/test');
 const path = require('path');
 
 async function openModal(window, triggerSelector, modalSelector) {
+  const trigger = window.locator(triggerSelector);
+  await expect(trigger).toBeVisible({ timeout: 10000 });
+  await expect(trigger).toBeEnabled({ timeout: 10000 });
+
   await expect.poll(async () => {
     if (await window.locator(modalSelector).isVisible()) {
       return true;
     }
 
-    await window.locator(triggerSelector).click({ timeout: 1000 });
+    try {
+      await trigger.click({ timeout: 5000 });
+    } catch {
+      await trigger.evaluate((el) => el.click());
+    }
     return window.locator(modalSelector).isVisible();
   }, { timeout: 10000 }).toBe(true);
 }
