@@ -1,4 +1,5 @@
 const WebSocket = require('ws');
+const http = require('http');
 
 const server = require('../../embedded-server');
 
@@ -70,5 +71,19 @@ describe('Embedded server integration', () => {
 
     sender.close();
     receiver.close();
+  });
+
+  it('rejects gracefully when the port is already in use', async () => {
+    const occupiedServer = http.createServer();
+    await new Promise((resolve) => occupiedServer.listen(port, '127.0.0.1', resolve));
+
+    await expect(server.start(port, 'sync-token')).rejects.toMatchObject({
+      success: false,
+      code: 'EADDRINUSE',
+    });
+
+    expect(server.getStatus().isRunning).toBe(false);
+
+    await new Promise((resolve, reject) => occupiedServer.close((error) => (error ? reject(error) : resolve())));
   });
 });

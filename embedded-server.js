@@ -4,8 +4,32 @@
 const WebSocket = require('ws');
 const express = require('express');
 const http = require('http');
+const net = require('net');
 const path = require('path');
 const { URL } = require('url');
+
+function ensurePortAvailable(port) {
+    return new Promise((resolve, reject) => {
+        const probe = net.createServer();
+
+        probe.once('error', (error) => {
+            probe.close();
+            reject(error);
+        });
+
+        probe.once('listening', () => {
+            probe.close((error) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve();
+            });
+        });
+
+        probe.listen(port);
+    });
+}
 
 class EmbeddedServer {
     constructor() {
@@ -23,15 +47,27 @@ class EmbeddedServer {
     }
 
     // Start the server
-    start(port = 8080, authToken = null) {
+    async start(port = 8080, authToken = null) {
+        if (this.isRunning) {
+            return { success: true, message: 'Server is already running', port: this.port };
+        }
+
+        this.port = port;
+        this.authToken = authToken || null;
+
+        try {
+            await ensurePortAvailable(this.port);
+        } catch (error) {
+            console.error('[EmbeddedServer] Port availability check failed:', error);
+            this.isRunning = false;
+            throw { success: false, message: error.message, code: error.code, error };
+        }
+
         return new Promise((resolve, reject) => {
             if (this.isRunning) {
                 resolve({ success: true, message: 'Server is already running', port: this.port });
                 return;
             }
-
-            this.port = port;
-            this.authToken = authToken || null;
 
             try {
                 // Create Express app for HTTP server
@@ -67,8 +103,28 @@ class EmbeddedServer {
                 // Setup WebSocket handlers
                 this.setupWebSocketHandlers();
 
+                const cleanupFailedStart = () => {
+                    this.clients.clear();
+                    if (this.wss) {
+                        this.wss.close();
+                    }
+                    this.app = null;
+                    this.server = null;
+                    this.wss = null;
+                    this.isRunning = false;
+                };
+
+                const onError = (error) => {
+                    console.error('[EmbeddedServer] Server error:', error);
+                    cleanupFailedStart();
+                    reject({ success: false, message: error.message, code: error.code, error });
+                };
+
+                this.server.once('error', onError);
+
                 // Start listening
                 this.server.listen(this.port, () => {
+                    this.server.off('error', onError);
                     this.isRunning = true;
                     console.log(`[EmbeddedServer] Server running on http://localhost:${this.port}`);
                     console.log(`[EmbeddedServer] WebSocket endpoint: ws://localhost:${this.port}`);
@@ -80,12 +136,6 @@ class EmbeddedServer {
                         wsUrl: `ws://localhost:${this.port}`,
                         httpUrl: `http://localhost:${this.port}`
                     });
-                });
-
-                this.server.on('error', (error) => {
-                    console.error('[EmbeddedServer] Server error:', error);
-                    this.isRunning = false;
-                    reject({ success: false, message: error.message, error });
                 });
 
             } catch (error) {
