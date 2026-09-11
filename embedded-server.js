@@ -4,8 +4,32 @@
 const WebSocket = require('ws');
 const express = require('express');
 const http = require('http');
+const net = require('net');
 const path = require('path');
 const { URL } = require('url');
+
+function ensurePortAvailable(port) {
+    return new Promise((resolve, reject) => {
+        const probe = net.createServer();
+
+        probe.once('error', (error) => {
+            probe.close();
+            reject(error);
+        });
+
+        probe.once('listening', () => {
+            probe.close((error) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve();
+            });
+        });
+
+        probe.listen(port);
+    });
+}
 
 class EmbeddedServer {
     constructor() {
@@ -23,15 +47,27 @@ class EmbeddedServer {
     }
 
     // Start the server
-    start(port = 8080, authToken = null) {
+    async start(port = 8080, authToken = null) {
+        if (this.isRunning) {
+            return { success: true, message: 'Server is already running', port: this.port };
+        }
+
+        this.port = port;
+        this.authToken = authToken || null;
+
+        try {
+            await ensurePortAvailable(this.port);
+        } catch (error) {
+            console.error('[EmbeddedServer] Port availability check failed:', error);
+            this.isRunning = false;
+            throw { success: false, message: error.message, code: error.code, error };
+        }
+
         return new Promise((resolve, reject) => {
             if (this.isRunning) {
                 resolve({ success: true, message: 'Server is already running', port: this.port });
                 return;
             }
-
-            this.port = port;
-            this.authToken = authToken || null;
 
             try {
                 // Create Express app for HTTP server
