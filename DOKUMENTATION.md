@@ -155,4 +155,4 @@ Siehe [LICENSE](LICENSE) für Details.
 
 **Dokumentations-Version**: 1.0
 
-**App-Version**: 0.1.0-beta.5
+**App-Version**: 0.2.1

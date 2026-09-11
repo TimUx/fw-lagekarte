@@ -67,8 +67,28 @@ class EmbeddedServer {
                 // Setup WebSocket handlers
                 this.setupWebSocketHandlers();
 
+                const cleanupFailedStart = () => {
+                    this.clients.clear();
+                    if (this.wss) {
+                        this.wss.close();
+                    }
+                    this.app = null;
+                    this.server = null;
+                    this.wss = null;
+                    this.isRunning = false;
+                };
+
+                const onError = (error) => {
+                    console.error('[EmbeddedServer] Server error:', error);
+                    cleanupFailedStart();
+                    reject({ success: false, message: error.message, code: error.code, error });
+                };
+
+                this.server.once('error', onError);
+
                 // Start listening
                 this.server.listen(this.port, () => {
+                    this.server.off('error', onError);
                     this.isRunning = true;
                     console.log(`[EmbeddedServer] Server running on http://localhost:${this.port}`);
                     console.log(`[EmbeddedServer] WebSocket endpoint: ws://localhost:${this.port}`);
@@ -80,12 +100,6 @@ class EmbeddedServer {
                         wsUrl: `ws://localhost:${this.port}`,
                         httpUrl: `http://localhost:${this.port}`
                     });
-                });
-
-                this.server.on('error', (error) => {
-                    console.error('[EmbeddedServer] Server error:', error);
-                    this.isRunning = false;
-                    reject({ success: false, message: error.message, error });
                 });
 
             } catch (error) {

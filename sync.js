@@ -433,10 +433,16 @@ const Sync = {
                 this.showServerInfo(result);
             } else {
                 console.error('[Sync] Failed to start embedded server:', result.message);
+                if (result.code === 'EADDRINUSE') {
+                    this._serverInfo = `<div style="padding: 10px; background: #fff3cd; border-radius: 5px; margin-top: 5px; font-size: 13px; line-height: 1.6;"><strong>Port ${this.serverPort} ist bereits belegt.</strong><br>Bitte wählen Sie in den Synchronisations-Einstellungen einen anderen Port oder beenden Sie den Prozess, der diesen Port verwendet.</div>`;
+                }
                 this.updateConnectionStatus('error');
             }
         } catch (error) {
             console.error('[Sync] Error starting embedded server:', error);
+            if (error.code === 'EADDRINUSE') {
+                this._serverInfo = `<div style="padding: 10px; background: #fff3cd; border-radius: 5px; margin-top: 5px; font-size: 13px; line-height: 1.6;"><strong>Port ${this.serverPort} ist bereits belegt.</strong><br>Bitte wählen Sie in den Synchronisations-Einstellungen einen anderen Port oder beenden Sie den Prozess, der diesen Port verwendet.</div>`;
+            }
             this.updateConnectionStatus('error');
         }
     },
