@@ -39,7 +39,7 @@
     "electron-builder": "^26.15.3",
     "jsdom": "^30.0.1",
     "playwright": "^1.63.0",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.4"
   },
   "build": {
     "appId": "com.fw-lagekarte.app",
