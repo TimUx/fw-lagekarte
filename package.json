@@ -1,7 +1,11 @@
 {
   "name": "fw-lagekarte",
-  "version": "0.2.1",
+  "version": "0.2.4",
   "description": "Eine Lagekarte für Großeinsätze",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TimUx/fw-lagekarte.git"
+  },
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -9,6 +13,8 @@
     "build:win": "electron-builder --win",
     "build:linux": "electron-builder --linux",
     "build:mac": "electron-builder --mac",
+    "release:prepare": "node scripts/release-version.js",
+    "release:verify": "node scripts/verify-release.js",
     "test": "npm run test:unit && npm run test:integration && npm run test:e2e",
     "test:unit": "vitest run --config vitest.config.js --project unit",
     "test:integration": "vitest run --config vitest.config.js --project integration",
@@ -33,6 +39,7 @@
     "ws": "^8.22.0"
   },
   "devDependencies": {
+    "@electron/asar": "3.4.1",
     "@playwright/test": "^1.63.0",
     "@vitest/coverage-v8": "^5.0.0",
     "electron": "^44.9.1",

@@ -138,6 +138,43 @@ npm run build:mac
 
 Die Installer werden im `dist/`-Verzeichnis erstellt.
 
+### Release-Versionierung und Wiederherstellung
+
+`Build & Release` veröffentlicht ausschließlich beim Push eines neuen `vX.Y.Z`-
+Tags (auch mit SemVer-Prerelease wie `v0.3.0-beta.1`). Die Tag-Version wird vor
+dem Build in `package.json` und beide Versionsfelder des Lockfiles übernommen;
+ein bloßer Dateiname ist kein Versionsnachweis. Pull Requests bauen dieselben
+Windows-, Linux- und macOS-Installer ohne Veröffentlichung. Ein manueller
+Workflow-Lauf ist ebenfalls nur eine Build-Probe; sein optionales Feld `version`
+wählt die Paketversion, andernfalls gilt `package.json`.
+
+Vor einer Veröffentlichung werden alle vier Installer erneut entpackt:
+`app.asar/package.json` in DEB, AppImage, NSIS und DMG muss die erwartete Version
+enthalten. Zusätzlich werden Debian-Control-Version, macOS-Bundle-Version und
+Windows-Installer-Produktversion geprüft. Fehlende, doppelte oder falsche Pakete
+blockieren die Veröffentlichung. Der Release wird zunächst als Draft angelegt;
+erst wenn alle vier erneut heruntergeladenen Dateien bytegleich mit den
+geprüften Installern sind, wird er veröffentlicht. Bei einem Fehler bleibt er
+zur manuellen Untersuchung als Draft erhalten. Lokal benötigt
+`npm run release:verify -- <Artefaktverzeichnis> <Version>` dafür Linux mit
+`dpkg-deb`, `7z` (Paket `7zip`) und `exiftool` (`libimage-exiftool-perl`).
+Der `release: published`-Trigger bleibt für Functional Build, Quality und Test
+Suite erhalten, löst aber keinen zweiten veröffentlichenden Build mehr aus.
+Bestehende Releases werden nicht überschrieben; erneute Veröffentlichungsversuche
+für denselben Tag schlagen fehl.
+
+Für die fehlerhaften Releases `v0.2.2` und `v0.2.3` (Paketversion `0.2.1`):
+keine veröffentlichten Tags verschieben und keine alten Installer umbenennen.
+Nach Merge und zentraler Freigabe ist `v0.2.4` die vorgesehene Recovery-Version
+(vorher erneut auf Verfügbarkeit prüfen). Zunächst den freigegebenen Commit per
+manuellem Workflow mit Version `0.2.4` auf allen Plattformen prüfen, dann
+`npm version 0.2.4 --no-git-tag-version` verwenden, falls die Manifestversion
+noch abweicht, die Versionsänderung committen und prüfen lassen. Erst danach den
+neuen Tag auf genau den freigegebenen Commit setzen und pushen. Abschließend
+die vier veröffentlichten Downloads erneut mit `release:verify` prüfen; erst
+dann ist die Recovery vollständig. Dieser Fix allein korrigiert keine bereits
+veröffentlichten Downloads.
+
 ## Schnellstart
 
 ### 1. Standort hinzufügen
