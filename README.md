@@ -163,6 +163,11 @@ Suite erhalten, löst aber keinen zweiten veröffentlichenden Build mehr aus.
 Bestehende Releases werden nicht überschrieben; erneute Veröffentlichungsversuche
 für denselben Tag schlagen fehl.
 
+GitHub normalisiert Leerzeichen in Asset-Namen zu Punkten. Der Download-Vergleich
+ordnet deshalb die vier Originaldateien eindeutig den normalisierten Namen zu.
+Namenskollisionen, fehlende/zusätzliche Downloads und abweichende SHA256-Werte
+blockieren weiterhin die Veröffentlichung.
+
 Für die fehlerhaften Releases `v0.2.2` und `v0.2.3` (Paketversion `0.2.1`):
 keine veröffentlichten Tags verschieben und keine alten Installer umbenennen.
 Nach Merge und zentraler Freigabe ist `v0.2.4` die vorgesehene Recovery-Version
@@ -174,6 +179,13 @@ neuen Tag auf genau den freigegebenen Commit setzen und pushen. Abschließend
 die vier veröffentlichten Downloads erneut mit `release:verify` prüfen; erst
 dann ist die Recovery vollständig. Dieser Fix allein korrigiert keine bereits
 veröffentlichten Downloads.
+
+Beim bereits gebauten Draft `v0.2.4` blockierte ausschließlich der ursprüngliche
+Dateinamenvergleich die Veröffentlichung. Tag und Assets bleiben unverändert.
+Vor einer zentral freigegebenen Draft-Veröffentlichung die vier Draft-Downloads
+mit den Originalartefakten des Tag-Builds über
+`node scripts/verify-downloads.js <Originalartefakte> <Downloads>` vergleichen
+und zusätzlich `release:verify` für die Downloads mit Version `0.2.4` ausführen.
 
 ## Schnellstart
 
