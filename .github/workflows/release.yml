@@ -4,18 +4,27 @@ on:
   push:
     tags:
       - 'v*'
-  release:
-    types: [published]
+  pull_request:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version for a build-only rehearsal (empty = package.json)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   release:
     runs-on: ${{ matrix.os }}
 
-    permissions:
-      contents: write
-
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
@@ -31,6 +40,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Set embedded package version
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'push' && github.ref_name || '' }}
+          BUILD_VERSION: ${{ inputs.version }}
+        run: npm run release:prepare
 
       - name: Build for Linux
         if: matrix.os == 'ubuntu-latest'
@@ -58,6 +73,7 @@ jobs:
           path: |
             dist/*.AppImage
             dist/*.deb
+          if-no-files-found: error
 
       - name: Upload Windows artifacts
         if: matrix.os == 'windows-latest'
@@ -65,6 +81,7 @@ jobs:
         with:
           name: windows-build
           path: dist/*.exe
+          if-no-files-found: error
 
       - name: Upload macOS artifacts
         if: matrix.os == 'macos-latest'
@@ -72,9 +89,49 @@ jobs:
         with:
           name: macos-build
           path: dist/*.dmg
+          if-no-files-found: error
+
+  verify-artifacts:
+    needs: release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve expected version
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'push' && github.ref_name || '' }}
+          BUILD_VERSION: ${{ inputs.version }}
+        run: npm run release:prepare
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4.1.3
+        with:
+          path: artifacts
+          pattern: '*-build'
+
+      - name: Install package inspection tools
+        run: sudo apt-get update -qq && sudo apt-get install -y 7zip libimage-exiftool-perl
+
+      - name: Verify every installer payload and package version
+        run: npm run release:verify -- artifacts
 
   create-release:
-    needs: release
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: verify-artifacts
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -83,36 +140,38 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download all artifacts
+      - name: Download verified artifacts
         uses: actions/download-artifact@v4.1.3
         with:
           path: artifacts
+          pattern: '*-build'
 
-      - name: Display structure of downloaded files
-        run: ls -R artifacts
-
-      - name: Create or update GitHub Release
+      - name: Publish new GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RELEASE_TAG: ${{ github.event.release.tag_name || github.ref_name }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          RELEASE_VERSION: ${{ needs.verify-artifacts.outputs.version }}
         run: |
-          if [[ -z "$RELEASE_TAG" || "$RELEASE_TAG" == refs/* ]]; then
-            echo "Error: invalid release tag: $RELEASE_TAG"
+          if [[ "$RELEASE_TAG" != "v$RELEASE_VERSION" ]]; then
+            echo "Error: tag and verified package version differ"
             exit 1
           fi
 
-          if [[ "$RELEASE_TAG" =~ (alpha|beta|rc) ]]; then
-            PRERELEASE_FLAG="--prerelease"
-          else
-            PRERELEASE_FLAG=""
-          fi
+          flags=()
+          [[ "$RELEASE_VERSION" != *-* ]] || flags+=(--prerelease)
+          gh release create "$RELEASE_TAG" --verify-tag --draft \
+            "${flags[@]}" \
+            --title "Release $RELEASE_TAG" \
+            --notes "Automatischer Build für $RELEASE_TAG; Paketversionen aller vier Installer geprüft." \
+            artifacts/*/*
 
-          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" artifacts/*/* --clobber
-          else
-            gh release create "$RELEASE_TAG" \
-              $PRERELEASE_FLAG \
-              --title "Release $RELEASE_TAG" \
-              --notes "Automatischer Build für $RELEASE_TAG" \
-              artifacts/*/*
+          gh release download "$RELEASE_TAG" --dir published
+          files=(published/*)
+          if [[ "${#files[@]}" -ne 4 ]]; then
+            echo "Error: expected all four release downloads; leaving release as draft"
+            exit 1
           fi
+          for file in artifacts/*/*; do
+            cmp "$file" "published/$(basename "$file")"
+          done
+          gh release edit "$RELEASE_TAG" --draft=false
