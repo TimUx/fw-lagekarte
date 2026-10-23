@@ -166,12 +166,5 @@ jobs:
             artifacts/*/*
 
           gh release download "$RELEASE_TAG" --dir published
-          files=(published/*)
-          if [[ "${#files[@]}" -ne 4 ]]; then
-            echo "Error: expected all four release downloads; leaving release as draft"
-            exit 1
-          fi
-          for file in artifacts/*/*; do
-            cmp "$file" "published/$(basename "$file")"
-          done
+          node scripts/verify-downloads.js artifacts published
           gh release edit "$RELEASE_TAG" --draft=false
