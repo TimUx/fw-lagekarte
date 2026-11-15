@@ -160,8 +160,11 @@ zur manuellen Untersuchung als Draft erhalten. Lokal benötigt
 `dpkg-deb`, `7z` (Paket `7zip`) und `exiftool` (`libimage-exiftool-perl`).
 Der `release: published`-Trigger bleibt für Functional Build, Quality und Test
 Suite erhalten, löst aber keinen zweiten veröffentlichenden Build mehr aus.
-Bestehende Releases werden nicht überschrieben; erneute Veröffentlichungsversuche
-für denselben Tag schlagen fehl.
+Wird ein Release mit Beschreibung vorab in GitHub veröffentlicht (das legt den
+Tag an und startet den Workflow), hängt der Workflow die vier geprüften Installer
+an dieses Release, prüft die Downloads bytegleich und lässt Titel und
+Beschreibung unverändert. Releases mit vorhandenen Dateien werden nicht
+überschrieben; erneute Veröffentlichungsversuche für denselben Tag schlagen fehl.
 
 GitHub normalisiert Leerzeichen in Asset-Namen zu Punkten. Der Download-Vergleich
 ordnet deshalb die vier Originaldateien eindeutig den normalisierten Namen zu.

@@ -146,7 +146,7 @@ jobs:
           path: artifacts
           pattern: '*-build'
 
-      - name: Publish new GitHub Release
+      - name: Publish GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ github.ref_name }}
@@ -155,6 +155,22 @@ jobs:
           if [[ "$RELEASE_TAG" != "v$RELEASE_VERSION" ]]; then
             echo "Error: tag and verified package version differ"
             exit 1
+          fi
+
+          # A release published in the GitHub UI creates the tag and triggers
+          # this run: attach the installers to it and keep its title and notes.
+          # Releases that already carry files are never changed.
+          if gh release view "$RELEASE_TAG" > /dev/null 2>&1; then
+            assets="$(gh release view "$RELEASE_TAG" --json assets --jq '.assets | length')"
+            if [[ "$assets" != 0 ]]; then
+              echo "Error: release $RELEASE_TAG already has $assets assets; nothing is overwritten"
+              exit 1
+            fi
+            echo "Release $RELEASE_TAG already exists without assets; attaching the verified installers"
+            gh release upload "$RELEASE_TAG" artifacts/*/*
+            gh release download "$RELEASE_TAG" --dir published
+            node scripts/verify-downloads.js artifacts published
+            exit 0
           fi
 
           flags=()
